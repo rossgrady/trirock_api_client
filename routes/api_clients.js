@@ -10,6 +10,35 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+async function artist_lookup(artists) {
+  const returnarr = [];
+  for (artist of artists) {
+    const reg1 = /an evening with/ig;
+    const reg2 = /\(\d+.*\)/ig;
+    const reg3 = /[vinyl]* album release [party|show]*/i;
+    const reg4 = / and /ig;
+    const reg5 = / & /ig;
+    const reg6 = / \//ig;
+    const reg7 = / with /ig;
+    let name1 = artist.name.replace(reg1,'');
+    name1 = name1.replace(reg2,'');
+    name1 = name1.replace(reg3,'');
+    name1 = name1.replace(reg4,', ');
+    name1 = name1.replace(' w/', ', ');
+    name1 = name1.replace(reg7, ', ');
+    name1 = name1.replace(reg5, ', ');
+    name1 = name1.replace(reg6, ', ');
+    const parts = name1.split(',');
+    for (part of parts) {
+      const candidate = part.trim();
+      if (candidate !== '') {
+        returnarr.push(candidate);
+      }
+    }
+  }
+  return returnarr;
+}
+
 async function etix(venueID, timeWindow) {
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
   const config = {
@@ -133,50 +162,49 @@ async function ticketmaster(venueID, timeWindow) {
 }
 
 async function main() {
+  const main_events = [];
   for (const venue of venues) {
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
         const events = await ticketmaster(id, duration);
-        console.log(venue.name);
         for (const evt of events) {
-          console.log(evt.activity_Time);
-          console.log(evt.activity_StartDate);
-          console.log(evt.activity_EndDate);
-          console.log(evt.activity_API);
-          console.log(evt.activity_API_ID);
-          console.log(evt.artists);
+          evt.venue_ID = venue.venue_id;
+          main_events.push(evt);
         }
       }
     }
     if (typeof venue.etix_id !== 'undefined') {
       for (const id of venue.etix_id) {
         const events = await etix(id, duration);
-        console.log(venue.name);
         for (const evt of events) {
-          console.log(evt.activity_Time);
-          console.log(evt.activity_StartDate);
-          console.log(evt.activity_EndDate);
-          console.log(evt.activity_API);
-          console.log(evt.activity_API_ID);
-          console.log(evt.artists);
+          evt.venue_ID = venue.venue_id;
+          main_events.push(evt);
         }
       }
     }
     if (typeof venue.eventbrite_id !== 'undefined') {
       for (const id of venue.eventbrite_id) {
         const events = await eventbrite(id, duration);
-        console.log(venue.name);
         for (const evt of events) {
-          console.log(evt.activity_Time);
-          console.log(evt.activity_StartDate);
-          console.log(evt.activity_EndDate);
-          console.log(evt.activity_API);
-          console.log(evt.activity_API_ID);
-          console.log(evt.artists);
+          evt.venue_ID = venue.venue_id;
+          main_events.push(evt);
         }
       }
     }
   }
+  for (const evt of main_events) {
+    const newActivity = {
+      'activity_VenueID': evt.venue_ID,
+      'activity_Time': evt.activity_Time,
+      'activity_StartDate': evt.activity_StartDate,
+      'activity_EndDate': evt.activity_EndDate,
+      'activity_API': evt.activity_API,
+      'activity_API_ID': evt.activity_API_ID,
+    }
+    newActivity.activity_Artists = await artist_lookup(evt.artists);
+    console.log(util.inspect(newActivity, true, 7, true));
+  }
+
 }
 
 main();
