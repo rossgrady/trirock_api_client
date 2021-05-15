@@ -13,8 +13,10 @@ function sleep(ms) {
 }
 
 function str_escape(string_to_escape) {
-  let escaped_string = string_to_escape.replace("'", "\\'");
-  escaped_string = escaped_string.replace(";", "\\;");
+  const reg1 = /'/g
+  const reg2 = /;/g
+  let escaped_string = string_to_escape.replace(reg1, "\\'");
+  escaped_string = escaped_string.replace(reg2, "\\;");
   return escaped_string;
 }
 
