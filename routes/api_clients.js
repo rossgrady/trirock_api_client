@@ -4,15 +4,28 @@ const util = require('util');
 
 const conf = require('../config');
 const { venues } = require('../venues');
+const { getPool, query, end } = require('../db');
+
 const duration = 1814400000; // 3 weeks
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function artist_lookup(artists) {
-  const returnarr = [];
+async function dblookup(namestring, dbpool) {
+  const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + namestring + "%'";
+  const rows = await query(dbpool, querystring);
+  console.log(util.inspect(rows, true, 7, true));
+  return rows[0];
+}
+
+async function artist_lookup(artists, dbpool) {
+  const returnobj = {
+    'returnarr': [],
+    'origarr': [],
+  };
   for (artist of artists) {
+    returnobj.origarr.push(artist);
     const reg1 = /an evening with/ig;
     const reg2 = /\(\d+.*\)/ig;
     const reg3 = /[vinyl]* album release [party|show]*/i;
@@ -29,17 +42,28 @@ async function artist_lookup(artists) {
     name1 = name1.replace(reg5, ', ');
     name1 = name1.replace(reg6, ', ');
     const parts = name1.split(',');
+    const candidates = {
+      'url': artist.url,
+      'names': [],
+    };
     for (part of parts) {
       const candidate = part.trim();
       if (candidate !== '') {
-        returnarr.push(candidate);
+        const dbartist = await dblookup(candidate, dbpool);
+        const candobj = {
+          'origname': candidate,
+          'dbname': dbartist.actor_Name,
+          'id': dbartist.actor_ID,
+        };
+        candidates.names.push(candobj);
       }
     }
+    returnobj.returnarr.push(candidates);
   }
-  return returnarr;
+  return returnobj;
 }
 
-async function etix(venueID, timeWindow) {
+async function etix(venueID, timeWindow, dbpool) {
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
   const config = {
     headers: {apiKey: conf.etix_api_key},
@@ -57,6 +81,7 @@ async function etix(venueID, timeWindow) {
           endDate = dayjs(activity.startTime);
         }
         const startDate = dayjs(activity.startTime);
+        const rawArtists = [];
         const event = {
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
@@ -71,14 +96,18 @@ async function etix(venueID, timeWindow) {
               "name": performer.name,
               "url": performer.linkURL,
             }
-            event.artists.push(artist);
+            rawArtists.push(artist);
           }
         }
         const artist = {
           "name": activity.name,
           "url": "",
         }
-        event.artists.push(artist);
+        rawArtists.push(artist);
+        const cookedArtists = await artist_lookup(rawArtists, dbpool);
+        for (artist of cookedArtists) {
+          event.artists.push(artist);
+        }
         returnarr.push(event);
       }
     }
@@ -88,7 +117,7 @@ async function etix(venueID, timeWindow) {
   }
 }
 
-async function eventbrite(venueID, timeWindow) {
+async function eventbrite(venueID, timeWindow, dbpool) {
   const ebrite_url_prefix = "https://www.eventbriteapi.com/v3/venues/";
   const ebrite_url_suffix = "/events/?status=live";
   const ebrite_url = ebrite_url_prefix + venueID + ebrite_url_suffix;
@@ -99,23 +128,28 @@ async function eventbrite(venueID, timeWindow) {
   try {
     const response = await axios.get(ebrite_url, config);
     const events = [];
-    response.data.events.forEach( (event) => {
+    response.data.events.forEach( async (event) => {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startDate = dayjs(event.start.local);
+        const rawArtists = [
+          {
+            "name": event.name.text,
+            "url": "",
+          },
+        ];
         const eventObj = {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
-          "artists": [
-            {
-              "name": event.name.text,
-              "url": "",
-            },
-          ],
+          "artists": [],
         };
+        const cookedArtists = await artist_lookup(rawArtists, dbpool);
+        for (artist of cookedArtists) {
+          event.artists.push(artist);
+        }
         events.push(eventObj);
       }
     })
@@ -125,7 +159,7 @@ async function eventbrite(venueID, timeWindow) {
   }
 }
 
-async function ticketmaster(venueID, timeWindow) {
+async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
   const ticketmaster_url_suffix = "&size=40&sort=date,asc&endDateTime=" + endDate;
@@ -136,20 +170,25 @@ async function ticketmaster(venueID, timeWindow) {
     await sleep(300);
     const events = [];
     if (typeof response.data._embedded !== 'undefined') {
-      response.data._embedded.events.forEach( (event) => {
+      response.data._embedded.events.forEach( async (event) => {
         if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
+          const rawArtists = [                
+            {
+            "name": event.name,
+            "url": "",
+            },
+          ];
+          const cookedArtists = await artist_lookup(rawArtists, dbpool);
           const thisEvent = {
             "activity_Time": event.dates.start.localTime,
             "activity_StartDate": event.dates.start.localDate,
             "activity_EndDate": event.dates.start.localDate,
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
-            "artists": [
-                {
-                    "name": event.name,
-                    "url": "",
-                }
-            ]
+            "artists": [],
+          }
+          for (artist of cookedArtists) {
+            event.artists.push(artist);
           }
           events.push(thisEvent);
         }
@@ -162,11 +201,12 @@ async function ticketmaster(venueID, timeWindow) {
 }
 
 async function main() {
+  const dbpool = await getPool();
   const main_events = [];
   for (const venue of venues) {
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
-        const events = await ticketmaster(id, duration);
+        const events = await ticketmaster(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
           main_events.push(evt);
@@ -175,7 +215,7 @@ async function main() {
     }
     if (typeof venue.etix_id !== 'undefined') {
       for (const id of venue.etix_id) {
-        const events = await etix(id, duration);
+        const events = await etix(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
           main_events.push(evt);
@@ -184,7 +224,7 @@ async function main() {
     }
     if (typeof venue.eventbrite_id !== 'undefined') {
       for (const id of venue.eventbrite_id) {
-        const events = await eventbrite(id, duration);
+        const events = await eventbrite(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
           main_events.push(evt);
@@ -201,7 +241,6 @@ async function main() {
       'activity_API': evt.activity_API,
       'activity_API_ID': evt.activity_API_ID,
     }
-    newActivity.activity_Artists = await artist_lookup(evt.artists);
     console.log(util.inspect(newActivity, true, 7, true));
   }
 
