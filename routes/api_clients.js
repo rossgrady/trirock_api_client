@@ -60,13 +60,29 @@ async function artist_lookup(artists, dbpool) {
       if (candidate !== '') {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
-          const candobj = {
-            'origname': candidate,
-            'dbname': '',
-            'id': '',
-            'best': false,
-          };
-          candidates.names.push(candobj);
+          const spaceparts = candidate.split(' ');
+          for (const spacepart of spaceparts) {
+            const lastditch = await dblookup(spacepart, dbpool);
+            if (typeof lastditch === 'undefined' || lastditch.length === 0) {
+              const candobj = {
+                'origname': spacepart,
+                'dbname': '',
+                'id': '',
+                'best': false,
+              };
+              candidates.names.push(candobj);
+            } else {
+              for (const artobj of lastditch) {
+                const candobj = {
+                  'origname': spacepart,
+                  'dbname': artobj.actor_Name,
+                  'id': artobj.actor_ID,
+                  'best': false,
+                };
+                candidates.names.push(candobj);
+              }
+            }
+          }
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
@@ -284,6 +300,7 @@ async function main() {
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
+  end(dbpool);
 }
 
 main();
