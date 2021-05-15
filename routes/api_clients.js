@@ -1,6 +1,7 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
 const util = require('util');
+const sqlstring = require('sqlstring');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -13,7 +14,8 @@ function sleep(ms) {
 }
 
 async function dblookup(namestring, dbpool) {
-  const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + namestring + "%'";
+  const escaped_string = sqlstring.escape(namestring);
+  const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
   const rows = await query(dbpool, querystring);
   if (typeof rows !== 'undefined') {
     return rows;
