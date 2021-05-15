@@ -106,6 +106,7 @@ async function artist_lookup(artists, dbpool) {
 }
 
 async function etix(venueID, timeWindow, dbpool) {
+  console.log('entering etix routine for ' + venueID);
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
   const config = {
     headers: {apiKey: conf.etix_api_key},
@@ -156,6 +157,7 @@ async function etix(venueID, timeWindow, dbpool) {
         returnarr.push(event);
       }
     }
+    console.log('leaving etix routine for ' + venueID);
     return returnarr;
   } catch (error) {
     console.error(error);
@@ -163,6 +165,7 @@ async function etix(venueID, timeWindow, dbpool) {
 }
 
 async function eventbrite(venueID, timeWindow, dbpool) {
+  console.log('entering eventbrite routine for' + venueID);
   const ebrite_url_prefix = "https://www.eventbriteapi.com/v3/venues/";
   const ebrite_url_suffix = "/events/?status=live";
   const ebrite_url = ebrite_url_prefix + venueID + ebrite_url_suffix;
@@ -199,7 +202,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         }
         events.push(eventObj);
       }
-    })
+    });
+    console.log('leaving eventbrite routine for '+ venueID);
     return events;
   } catch (error) {
     console.error(error);
@@ -207,6 +211,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
 }
 
 async function ticketmaster(venueID, timeWindow, dbpool) {
+  console.log('entering ticketmaster routine for ' + venueID);
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
   const ticketmaster_url_suffix = "&size=40&sort=date,asc&endDateTime=" + endDate;
@@ -241,8 +246,9 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           }
           events.push(thisEvent);
         }
-      })
+      });
     }
+    console.log('leaving ticketmaster routine for '+ venueID);
     return events;
   } catch (error) {
     console.error(error);
