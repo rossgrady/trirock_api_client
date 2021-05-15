@@ -132,8 +132,8 @@ async function etix(venueID, timeWindow, dbpool) {
         }
         rawArtists.push(artist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artist of cookedArtists.returnarr) {
-          event.artists.push(artist);
+        for (artiste of cookedArtists.returnarr) {
+          event.artists.push(artiste);
         }
         returnarr.push(event);
       }
@@ -174,8 +174,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "artists": [],
         };
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artist of cookedArtists. returnarr) {
-          eventObj.artists.push(artist);
+        for (artiste of cookedArtists. returnarr) {
+          eventObj.artists.push(artiste);
         }
         events.push(eventObj);
       }
@@ -214,8 +214,8 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "activity_API_ID": event.id,
             "artists": [],
           }
-          for (artist of cookedArtists.returnarr) {
-            thisEvent.artists.push(artist);
+          for (artiste of cookedArtists.returnarr) {
+            thisEvent.artists.push(artiste);
           }
           events.push(thisEvent);
         }
