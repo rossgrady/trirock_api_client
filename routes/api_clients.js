@@ -23,7 +23,9 @@ function str_escape(string_to_escape) {
 async function dblookup(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
+  console.log(querystring);
   const rows = await query(dbpool, querystring);
+  console.log(util.inspect(rows, true, 7, true));
   if (typeof rows !== 'undefined') {
     return rows;
   } else {
@@ -63,28 +65,32 @@ async function artist_lookup(artists, dbpool) {
       const candidate = part.trim();
       if (candidate !== '') {
         const dbartist = await dblookup(candidate, dbpool);
-        const candobj = {
-          'origname': candidate,
-          'dbname': '',
-          'id': '',
-          'best': false,
-        };
         if (dbartist.length === 1) {
-          candobj.dbname = dbartist.actor_Name;
-          candobj.id = dbartist.actor_ID;
-          candobj.best = true;
+          const candobj = {
+            'origname': candidate,
+            'dbname': dbartist[0].actor_Name,
+            'id': dbartist[0].actor_ID,
+            'best': true,
+          };
           candidates.names.push(candobj);
         } else if (dbartist.length > 1) {
           // ooooh fun
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
-              candobj.dbname = artobj.actor_Name;
-              candobj.id = artobj.actor_ID;
-              candobj.best = true;
+              const candobj = {
+                'origname': candidate,
+                'dbname': artobj.actor_Name,
+                'id': artobj.actor_ID,
+                'best': true,
+              };
               candidates.names.push(candobj);
             } else {
-              candobj.dbname = artobj.actor_Name;
-              candobj.id = artobj.actor_ID;
+              const candobj = {
+                'origname': candidate,
+                'dbname': artobj.actor_Name,
+                'id': artobj.actor_ID,
+                'best': false,
+              };
               candidates.names.push(candobj);
             }
           }
