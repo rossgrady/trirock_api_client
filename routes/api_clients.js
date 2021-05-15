@@ -164,7 +164,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         };
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
         for (artist of cookedArtists. returnarr) {
-          event.artists.push(artist);
+          eventObj.artists.push(artist);
         }
         events.push(eventObj);
       }
@@ -204,7 +204,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "artists": [],
           }
           for (artist of cookedArtists.returnarr) {
-            event.artists.push(artist);
+            thisEvent.artists.push(artist);
           }
           events.push(thisEvent);
         }
