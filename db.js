@@ -3,7 +3,7 @@ const conf = require('./config');
 
 async function getPool(){
   const pool  = await mysql.createPool({
-        connectionLimit : 5,
+        connectionLimit : 10,
         waitForConnections: true,
         queueLimit: 0,
         host     : conf.db_host,
