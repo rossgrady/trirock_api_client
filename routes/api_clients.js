@@ -52,9 +52,13 @@ async function artist_lookup(artists, dbpool) {
         const dbartist = await dblookup(candidate, dbpool);
         const candobj = {
           'origname': candidate,
-          'dbname': dbartist.actor_Name,
-          'id': dbartist.actor_ID,
+          'dbname': '',
+          'id': '',
         };
+        if (typeof dbartist.actor_Name !== 'undefined') {
+          candobj.dbname = dbartist.actor_Name;
+          candobj.id = dbartist.actor_ID;
+        }
         candidates.names.push(candobj);
       }
     }
