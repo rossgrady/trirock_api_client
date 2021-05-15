@@ -259,8 +259,10 @@ async function main() {
   const dbpool = await getPool();
   const main_events = [];
   for (const venue of venues) {
+    console.log(venue.name);
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
+        console.log('calling ticketmaster routine for ' + venue.name);
         const events = await ticketmaster(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
@@ -270,6 +272,7 @@ async function main() {
     }
     if (typeof venue.etix_id !== 'undefined') {
       for (const id of venue.etix_id) {
+        console.log('calling etix routine for ' + venue.name);
         const events = await etix(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
@@ -279,6 +282,7 @@ async function main() {
     }
     if (typeof venue.eventbrite_id !== 'undefined') {
       for (const id of venue.eventbrite_id) {
+        console.log('calling eventbrite routine for ' + venue.name);
         const events = await eventbrite(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
