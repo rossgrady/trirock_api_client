@@ -33,12 +33,8 @@ async function dblookup(namestring, dbpool) {
 }
 
 async function artist_lookup(artists, dbpool) {
-  const returnobj = {
-    'returnarr': [],
-    'origarr': [],
-  };
+  const returnarr = [];
   for (artist of artists) {
-    returnobj.origarr.push(artist);
     const reg1 = /an evening with/ig;
     const reg2 = /\(\d+.*\)/ig;
     const reg3 = /[vinyl]* album release [party|show]*/i;
@@ -95,9 +91,9 @@ async function artist_lookup(artists, dbpool) {
         }
       }
     }
-    returnobj.returnarr.push(candidates);
+    returnarr.push(candidates);
   }
-  return returnobj;
+  return returnarr;
 }
 
 async function etix(venueID, timeWindow, dbpool) {
@@ -125,6 +121,7 @@ async function etix(venueID, timeWindow, dbpool) {
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
           "activity_API": "etix",
           "activity_API_ID": activity.id,
+          "orig_artists": [],
           "artists": [],
         }
         if (typeof activity.performers[0] !== 'undefined') {
@@ -133,6 +130,7 @@ async function etix(venueID, timeWindow, dbpool) {
               "name": performer.name,
               "url": performer.linkURL,
             }
+            event.orig_artists.push(artist);
             rawArtists.push(artist);
           }
         }
@@ -140,9 +138,10 @@ async function etix(venueID, timeWindow, dbpool) {
           "name": activity.name,
           "url": "",
         }
+        event.orig_artists.push(artist);
         rawArtists.push(artist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artiste of cookedArtists.returnarr) {
+        for (artiste of cookedArtists) {
           event.artists.push(artiste);
         }
         returnarr.push(event);
@@ -169,22 +168,24 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startDate = dayjs(event.start.local);
-        const rawArtists = [
-          {
+        const rawArtist = {
             "name": event.name.text,
             "url": "",
-          },
-        ];
+          };
+        const rawArtists = [];
         const eventObj = {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
+          "orig_artists": [],
           "artists": [],
         };
+        eventObj.orig_artists.push(rawArtist);
+        rawArtists.push(rawArtist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artiste of cookedArtists. returnarr) {
+        for (artiste of cookedArtists) {
           eventObj.artists.push(artiste);
         }
         events.push(eventObj);
@@ -209,13 +210,11 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
     if (typeof response.data._embedded !== 'undefined') {
       response.data._embedded.events.forEach( async (event) => {
         if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
-          const rawArtists = [                
-            {
+          const rawArtist = {
             "name": event.name,
             "url": "",
-            },
-          ];
-          const cookedArtists = await artist_lookup(rawArtists, dbpool);
+            };
+          const rawArtists = [];
           const thisEvent = {
             "activity_Time": event.dates.start.localTime,
             "activity_StartDate": event.dates.start.localDate,
@@ -223,8 +222,12 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
             "artists": [],
+            "orig_artists": [],
           }
-          for (artiste of cookedArtists.returnarr) {
+          rawArtists.push(rawArtist);
+          thisEvent.orig_artists.push(rawArtist);
+          const cookedArtists = await artist_lookup(rawArtists, dbpool);
+          for (artiste of cookedArtists) {
             thisEvent.artists.push(artiste);
           }
           events.push(thisEvent);
@@ -278,6 +281,7 @@ async function main() {
       'activity_API': evt.activity_API,
       'activity_API_ID': evt.activity_API_ID,
       'artists': evt.artists,
+      'orig_artists': evt.orig_artists,
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
