@@ -175,7 +175,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   try {
     const response = await axios.get(ebrite_url, config);
     const events = [];
-    response.data.events.forEach( async (event) => {
+    for (const event of response.data.events) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startDate = dayjs(event.start.local);
@@ -201,7 +201,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         }
         events.push(eventObj);
       }
-    });
+    }
     console.log('leaving eventbrite routine for '+ venueID);
     return events;
   } catch (error) {
@@ -221,7 +221,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
     await sleep(300);
     const events = [];
     if (typeof response.data._embedded !== 'undefined') {
-      response.data._embedded.events.forEach( async (event) => {
+      for (const event of response.data._embedded.events) {
         if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
           const rawArtist = {
             "name": event.name,
@@ -245,7 +245,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           }
           events.push(thisEvent);
         }
-      });
+      }
     }
     console.log('leaving ticketmaster routine for '+ venueID);
     return events;
