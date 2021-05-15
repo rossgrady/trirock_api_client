@@ -49,29 +49,17 @@ async function artist_lookup(artists, dbpool) {
     const reg8 = /\W$/;
     const reg9 = /^(A |An |The )/i;
     const reg10 = /and friends/gi;
-    console.log(artist.name);
     let name1 = artist.name.replace(reg1,'');
-    console.log(name1);
     name1 = name1.replace(reg10,'');
-    console.log(name1);
     name1 = name1.replace(reg8,'');
-    console.log(name1);
     name1 = name1.replace(reg9,'');
-    console.log(name1);
     name1 = name1.replace(reg2,'');
-    console.log(name1);
     name1 = name1.replace(reg3,'');
-    console.log(name1);
     name1 = name1.replace(reg4,', ');
-    console.log(name1);
     name1 = name1.replace(' w/', ', ');
-    console.log(name1);
     name1 = name1.replace(reg7, ', ');
-    console.log(name1);
     name1 = name1.replace(reg5, ', ');
-    console.log(name1);
     name1 = name1.replace(reg6, ', ');
-    console.log(name1);
     const parts = name1.split(',');
     const candidates = {
       'url': artist.url,
@@ -79,7 +67,6 @@ async function artist_lookup(artists, dbpool) {
     };
     for (const part of parts) {
       const candidate = part.trim();
-      console.log(candidate);
       if (candidate !== '') {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
