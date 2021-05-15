@@ -265,6 +265,7 @@ async function main() {
       'activity_EndDate': evt.activity_EndDate,
       'activity_API': evt.activity_API,
       'activity_API_ID': evt.activity_API_ID,
+      'artists': evt.artists,
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
