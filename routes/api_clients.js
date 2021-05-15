@@ -55,7 +55,7 @@ async function artist_lookup(artists, dbpool) {
           'dbname': '',
           'id': '',
         };
-        if (typeof dbartist.actor_Name !== 'undefined') {
+        if (dbartist.length > 0) {
           candobj.dbname = dbartist.actor_Name;
           candobj.id = dbartist.actor_ID;
         }
