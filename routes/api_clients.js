@@ -23,9 +23,7 @@ function str_escape(string_to_escape) {
 async function dblookup(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
-  console.log(querystring);
   const rows = await query(dbpool, querystring);
-  console.log(util.inspect(rows, true, 7, true));
   if (typeof rows !== 'undefined') {
     return rows;
   } else {
@@ -99,7 +97,6 @@ async function artist_lookup(artists, dbpool) {
     }
     returnobj.returnarr.push(candidates);
   }
-  console.log(util.inspect(returnobj, true, 7, true));
   return returnobj;
 }
 
@@ -284,7 +281,6 @@ async function main() {
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
-
 }
 
 main();
