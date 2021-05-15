@@ -300,6 +300,7 @@ async function main() {
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
+  return 0;
 }
 
 main();
