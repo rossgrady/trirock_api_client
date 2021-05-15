@@ -47,7 +47,7 @@ async function artist_lookup(artists, dbpool) {
     const reg6 = / \//ig;
     const reg7 = / with /ig;
     const reg8 = /\W$/;
-    const reg9 = /^A |An |The /i;
+    const reg9 = /^(A |An |The )/i;
     const reg10 = /and friends/gi;
     console.log(artist.name);
     let name1 = artist.name.replace(reg1,'');
