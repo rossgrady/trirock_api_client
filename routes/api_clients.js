@@ -111,7 +111,6 @@ async function etix(venueID, timeWindow, dbpool) {
   const config = {
     headers: {apiKey: conf.etix_api_key},
   };
-
   try {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
@@ -266,7 +265,7 @@ async function main() {
         const events = await ticketmaster(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
-          main_events.push(evt);
+          console.log(util.inspect(evt, true, 7, true));
         }
       }
     }
@@ -276,7 +275,7 @@ async function main() {
         const events = await etix(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
-          main_events.push(evt);
+          console.log(util.inspect(evt, true, 7, true));
         }
       }
     }
@@ -286,23 +285,10 @@ async function main() {
         const events = await eventbrite(id, duration, dbpool);
         for (const evt of events) {
           evt.venue_ID = venue.venue_id;
-          main_events.push(evt);
+          console.log(util.inspect(evt, true, 7, true));
         }
       }
     }
-  }
-  for (const evt of main_events) {
-    const newActivity = {
-      'activity_VenueID': evt.venue_ID,
-      'activity_Time': evt.activity_Time,
-      'activity_StartDate': evt.activity_StartDate,
-      'activity_EndDate': evt.activity_EndDate,
-      'activity_API': evt.activity_API,
-      'activity_API_ID': evt.activity_API_ID,
-      'artists': evt.artists,
-      'orig_artists': evt.orig_artists,
-    }
-    console.log(util.inspect(newActivity, true, 7, true));
   }
   return 0;
 }
