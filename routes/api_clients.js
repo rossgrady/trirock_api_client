@@ -83,28 +83,13 @@ async function artist_lookup(artists, dbpool) {
       if (candidate !== '') {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
-          const spaceparts = candidate.split(' ');
-          const newcandidate = spaceparts[0].substr(0,1) + "% " + spaceparts[spaceparts.length -1];
-          const lastditch = await dblookup(newcandidate, dbpool);
-          if (typeof lastditch === 'undefined' || lastditch.length === 0) {
-            const candobj = {
-              'origname': newcandidate,
-              'dbname': '',
-              'id': '',
-              'best': false,
-            };
-            candidates.names.push(candobj);
-          } else {
-            for (const artobj of lastditch) {
-              const candobj = {
-                'origname': newcandidate,
-                'dbname': artobj.actor_Name,
-                'id': artobj.actor_ID,
-                'best': false,
-              };
-              candidates.names.push(candobj);
-            }
-          }
+          const candobj = {
+            'origname': candidate,
+            'dbname': '',
+            'id': '',
+            'best': false,
+          };
+          candidates.names.push(candobj);
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
