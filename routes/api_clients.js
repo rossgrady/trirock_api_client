@@ -294,7 +294,6 @@ async function main() {
     }
     console.log(util.inspect(newActivity, true, 7, true));
   }
-  end(dbpool);
 }
 
 main();
