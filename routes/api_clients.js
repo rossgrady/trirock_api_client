@@ -21,9 +21,7 @@ function str_escape(string_to_escape) {
 }
 
 async function dblookup(namestring, dbpool) {
-  console.log(namestring);
   const escaped_string = str_escape(namestring);
-  console.log(escaped_string);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
   const rows = await query(dbpool, querystring);
   if (typeof rows !== 'undefined') {
