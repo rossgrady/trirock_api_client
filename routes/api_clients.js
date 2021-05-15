@@ -55,20 +55,19 @@ async function artist_lookup(artists, dbpool) {
       'url': artist.url,
       'names': [],
     };
-    for (part of parts) {
+    for (const part of parts) {
       const candidate = part.trim();
       if (candidate !== '') {
         const dbartist = await dblookup(candidate, dbpool);
-        if (dbartist.length === 1) {
+        if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const candobj = {
             'origname': candidate,
-            'dbname': dbartist[0].actor_Name,
-            'id': dbartist[0].actor_ID,
-            'best': true,
+            'dbname': '',
+            'id': '',
+            'best': false,
           };
           candidates.names.push(candobj);
-        } else if (dbartist.length > 1) {
-          // ooooh fun
+        } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
               const candobj = {
