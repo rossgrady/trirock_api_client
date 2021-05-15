@@ -23,12 +23,16 @@ function str_escape(string_to_escape) {
 async function dblookup(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
-  const rows = await query(dbpool, querystring);
-  if (typeof rows !== 'undefined') {
-    return rows;
-  } else {
-    const nullarr = [];
-    return nullarr;
+  try {
+    const rows = await query(dbpool, querystring);
+    if (typeof rows !== 'undefined') {
+      return rows;
+    } else {
+      const nullarr = [];
+      return nullarr;
+    }
+  } catch (error) {
+    console.error(error);
   }
 }
 
