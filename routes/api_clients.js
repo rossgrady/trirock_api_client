@@ -42,7 +42,9 @@ async function artist_lookup(artists, dbpool) {
     const reg5 = / & /ig;
     const reg6 = / \//ig;
     const reg7 = / with /ig;
+    const reg8 = /\W$/;
     let name1 = artist.name.replace(reg1,'');
+    name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg2,'');
     name1 = name1.replace(reg3,'');
     name1 = name1.replace(reg4,', ');
@@ -61,7 +63,7 @@ async function artist_lookup(artists, dbpool) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const spaceparts = candidate.split(' ');
-          const newcandidate = spaceparts[0].substr(0,1) + "%" + spaceparts[spaceparts.length -1];
+          const newcandidate = spaceparts[0].substr(0,1) + "% " + spaceparts[spaceparts.length -1];
           const lastditch = await dblookup(newcandidate, dbpool);
           if (typeof lastditch === 'undefined' || lastditch.length === 0) {
             const candobj = {
