@@ -15,8 +15,12 @@ function sleep(ms) {
 async function dblookup(namestring, dbpool) {
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + namestring + "%'";
   const rows = await query(dbpool, querystring);
-  console.log(util.inspect(rows, true, 7, true));
-  return rows[0];
+  if (typeof rows !== 'undefined') {
+    return rows;
+  } else {
+    const nullarr = [];
+    return nullarr;
+  }
 }
 
 async function artist_lookup(artists, dbpool) {
@@ -55,9 +59,17 @@ async function artist_lookup(artists, dbpool) {
           'dbname': '',
           'id': '',
         };
-        if (dbartist.length > 0) {
+        if (dbartist.length === 1) {
           candobj.dbname = dbartist.actor_Name;
           candobj.id = dbartist.actor_ID;
+        } else if (dbartist.length > 1) {
+          // ooooh fun
+          for (artobj of dbartist) {
+            if (artobj.actor_Name === candidate) {
+              candobj.dbname = artobj.actor_Name;
+              candobj.id = artobj.actor_ID;
+            }
+          }
         }
         candidates.names.push(candobj);
       }
