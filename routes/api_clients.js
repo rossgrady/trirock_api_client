@@ -67,24 +67,33 @@ async function artist_lookup(artists, dbpool) {
           'origname': candidate,
           'dbname': '',
           'id': '',
+          'best': false,
         };
         if (dbartist.length === 1) {
           candobj.dbname = dbartist.actor_Name;
           candobj.id = dbartist.actor_ID;
+          candobj.best = true;
+          candidates.names.push(candobj);
         } else if (dbartist.length > 1) {
           // ooooh fun
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
               candobj.dbname = artobj.actor_Name;
               candobj.id = artobj.actor_ID;
+              candobj.best = true;
+              candidates.names.push(candobj);
+            } else {
+              candobj.dbname = artobj.actor_Name;
+              candobj.id = artobj.actor_ID;
+              candidates.names.push(candobj);
             }
           }
         }
-        candidates.names.push(candobj);
       }
     }
     returnobj.returnarr.push(candidates);
   }
+  console.log(util.inspect(returnobj, true, 7, true));
   return returnobj;
 }
 
