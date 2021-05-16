@@ -84,7 +84,7 @@ async function artist_lookup(artists, dbpool) {
     };
     for (const part of parts) {
       const candidate = part.trim();
-      if (candidate !== '') {
+      if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const candobj = {
@@ -118,6 +118,15 @@ async function artist_lookup(artists, dbpool) {
             }
           }
         }
+      } else if (candidate.length > 0){
+        const candobj = {
+          'origname': candidate,
+          'dbname': '',
+          'id': '',
+          'best': false,
+          'blurb_snippet': blurb_snippet,
+        };
+        candidates.names.push(candobj);
       }
     }
     returnarr.push(candidates);
