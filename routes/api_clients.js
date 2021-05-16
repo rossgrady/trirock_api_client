@@ -50,8 +50,10 @@ async function artist_lookup(artists, dbpool) {
     const reg9 = /^(A |An |The )/i;
     const reg10 = /and friends/gi;
     const reg11 = /special guest(s)*/gi;
+    const reg12 = /\s{1}\w{1}\s{1}/g;
     let name1 = artist.name.replace(reg1,'');
     name1 = name1.replace(reg10,'');
+    name1 = name1.replace(reg12, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg9,'');
     name1 = name1.replace(reg2,'');
