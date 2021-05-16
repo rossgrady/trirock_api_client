@@ -131,11 +131,11 @@ async function artist_lookup(artists, dbpool) {
         falses.push(candobj);
       }
       if (trues.length > 0) {
-        for (const tru in trues) {
+        for (const tru of trues) {
           candidates.names.push(tru);
         }
       } else {
-        for (const fals in falses) {
+        for (const fals of falses) {
           candidates.names.push(fals);
         }
       }
