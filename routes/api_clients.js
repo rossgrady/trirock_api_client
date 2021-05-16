@@ -39,6 +39,7 @@ async function dblookup(namestring, dbpool) {
 async function artist_lookup(artists, dbpool) {
   const returnarr = [];
   for (artist of artists) {
+    let blurb_snippet = '';
     const reg1 = /an evening with/ig;
     const reg2 = / \(.*\)$/i;
     const reg3 = /(vinyl)* album release (party|show)*/i;
@@ -54,6 +55,7 @@ async function artist_lookup(artists, dbpool) {
     const reg13 = /featuring/gi;
     const reg14 = /:/g;
     const reg15 = / more(\W)?$/i;
+    const reg16 = /(?<blurb>in the record shop)/i;
     let name1 = artist.name.replace(reg1,'');
     name1 = name1.replace(reg10,' ');
     name1 = name1.replace(reg12, ', ');
@@ -70,6 +72,11 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg6, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg14,', ');
+    const found = name1.match(reg16);
+    if (found !== null) {
+      blurb_snippet = found.groups.blurb;
+      name1 = name1.replace(reg16, '');
+    }
     const parts = name1.split(',');
     const candidates = {
       'url': artist.url,
@@ -85,6 +92,7 @@ async function artist_lookup(artists, dbpool) {
             'dbname': '',
             'id': '',
             'best': false,
+            'blurb_snippet': blurb_snippet,
           };
           candidates.names.push(candobj);
         } else if (dbartist.length >= 1) {
@@ -95,6 +103,7 @@ async function artist_lookup(artists, dbpool) {
                 'dbname': artobj.actor_Name,
                 'id': artobj.actor_ID,
                 'best': true,
+                'blurb_snippet': blurb_snippet,
               };
               candidates.names.push(candobj);
             } else {
@@ -103,6 +112,7 @@ async function artist_lookup(artists, dbpool) {
                 'dbname': artobj.actor_Name,
                 'id': artobj.actor_ID,
                 'best': false,
+                'blurb_snippet': blurb_snippet,
               };
               candidates.names.push(candobj);
             }
