@@ -4,7 +4,7 @@ const util = require('util');
 
 const conf = require('../config');
 const { venues } = require('../venues');
-const { getPool, query, end } = require('../db');
+const db = require('../db');
 
 const duration = 1814400000; // 3 weeks
 
@@ -24,7 +24,7 @@ async function dblookup(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
   try {
-    const rows = await query(dbpool, querystring);
+    const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
       return rows;
     } else {
@@ -106,7 +106,6 @@ async function artist_lookup(artists, dbpool) {
 }
 
 async function etix(venueID, timeWindow, dbpool) {
-  console.log('entering etix routine for ' + venueID);
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
   const config = {
     headers: {apiKey: conf.etix_api_key},
@@ -125,6 +124,7 @@ async function etix(venueID, timeWindow, dbpool) {
         const startDate = dayjs(activity.startTime);
         const rawArtists = [];
         const event = {
+          "activity_Timestamp": startDate.unix(),
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
@@ -156,7 +156,6 @@ async function etix(venueID, timeWindow, dbpool) {
         returnarr.push(event);
       }
     }
-    console.log('leaving etix routine for ' + venueID);
     return returnarr;
   } catch (error) {
     console.error(error);
@@ -164,7 +163,6 @@ async function etix(venueID, timeWindow, dbpool) {
 }
 
 async function eventbrite(venueID, timeWindow, dbpool) {
-  console.log('entering eventbrite routine for' + venueID);
   const ebrite_url_prefix = "https://www.eventbriteapi.com/v3/venues/";
   const ebrite_url_suffix = "/events/?status=live";
   const ebrite_url = ebrite_url_prefix + venueID + ebrite_url_suffix;
@@ -187,6 +185,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         const eventObj = {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
+          "activity_Timestamp": startDate.unix(),
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
@@ -202,7 +201,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         events.push(eventObj);
       }
     }
-    console.log('leaving eventbrite routine for '+ venueID);
     return events;
   } catch (error) {
     console.error(error);
@@ -210,7 +208,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
 }
 
 async function ticketmaster(venueID, timeWindow, dbpool) {
-  console.log('entering ticketmaster routine for ' + venueID);
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
   const ticketmaster_url_suffix = "&size=40&sort=date,asc&endDateTime=" + endDate;
@@ -228,9 +225,14 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
+          // need to construct a dayjs object from event.dates.start.localTime + event.dates.start.localDate
+          //   activity_Time: '19:00:00',
+          // activity_StartDate: '2021-06-03',
+          const startDate = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+".000-04:00");
           const thisEvent = {
             "activity_Time": event.dates.start.localTime,
             "activity_StartDate": event.dates.start.localDate,
+            "activity_Timestamp": startDate.unix(),
             "activity_EndDate": event.dates.start.localDate,
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
@@ -247,7 +249,6 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
         }
       }
     }
-    console.log('leaving ticketmaster routine for '+ venueID);
     return events;
   } catch (error) {
     console.error(error);
@@ -255,42 +256,52 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
 }
 
 async function main() {
-  const dbpool = await getPool();
+  const dbpool = await db.getPool();
   const main_events = [];
+  // datastructure that's indexable by venue -> date
   for (const venue of venues) {
-    console.log(venue.name);
+    main_events[venue.venue_id] = {
+      'name': venue.name,
+      'events': [],
+    }
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
-        console.log('calling ticketmaster routine for ' + venue.name);
         const events = await ticketmaster(id, duration, dbpool);
         for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
+            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          }
           evt.venue_ID = venue.venue_id;
-          console.log(util.inspect(evt, true, 7, true));
+          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
         }
       }
     }
     if (typeof venue.etix_id !== 'undefined') {
       for (const id of venue.etix_id) {
-        console.log('calling etix routine for ' + venue.name);
         const events = await etix(id, duration, dbpool);
         for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
+            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          }
           evt.venue_ID = venue.venue_id;
-          console.log(util.inspect(evt, true, 7, true));
+          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
         }
       }
     }
     if (typeof venue.eventbrite_id !== 'undefined') {
       for (const id of venue.eventbrite_id) {
-        console.log('calling eventbrite routine for ' + venue.name);
         const events = await eventbrite(id, duration, dbpool);
         for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
+            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          }
           evt.venue_ID = venue.venue_id;
-          console.log(util.inspect(evt, true, 7, true));
+          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
         }
       }
     }
   }
-  return 0;
+  console.log(util.inspect(main_events, true, 8, true));
 }
 
 main();
