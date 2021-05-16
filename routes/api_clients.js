@@ -122,9 +122,10 @@ async function etix(venueID, timeWindow, dbpool) {
           endDate = dayjs(activity.startTime);
         }
         const startDate = dayjs(activity.startTime);
+        const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
         const event = {
-          "activity_Timestamp": startDate.unix(),
+          "activity_Timestamp": timestamp.unix(),
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
@@ -177,6 +178,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startDate = dayjs(event.start.local);
+        const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
             "url": "",
@@ -185,7 +187,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         const eventObj = {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
-          "activity_Timestamp": startDate.unix(),
+          "activity_Timestamp": timestamp.unix(),
           "activity_Time": startDate.format('HH:mm:ss'),
           "activity_StartDate": startDate.format('YYYY-MM-DD'),
           "activity_EndDate": endDate.format('YYYY-MM-DD'),
@@ -225,14 +227,11 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
-          // need to construct a dayjs object from event.dates.start.localTime + event.dates.start.localDate
-          //   activity_Time: '19:00:00',
-          // activity_StartDate: '2021-06-03',
-          const startDate = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+".000-04:00");
+          const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const thisEvent = {
             "activity_Time": event.dates.start.localTime,
             "activity_StartDate": event.dates.start.localDate,
-            "activity_Timestamp": startDate.unix(),
+            "activity_Timestamp": timestamp.unix(),
             "activity_EndDate": event.dates.start.localDate,
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
