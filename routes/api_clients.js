@@ -307,10 +307,10 @@ async function main() {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[evtday].length === 1) {
         console.log('single event at this venue on this day: \n');
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 3, true));
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 6, true));
       } else {
         console.log('two or more events at this venue on this day: \n');
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 3, true));
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 6, true));
       }
     }
   }
