@@ -238,7 +238,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   }
 }
 
-
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
@@ -255,12 +254,6 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "name": event.name,
             "url": "",
             };
-          if (typeof event.classifications !== 'undefined'){
-            console.log(util.inspect(event.classifications, true, 7, true));
-            console.log(util.inspect(event.classifications[0], true, 7, true));
-            console.log(util.inspect(event.classifications[0].segment, true, 7, true));
-            console.log(util.inspect(event.classifications[0].segment.name, true, 7, true));
-          }
           const rawArtists = [];
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const thisEvent = {
@@ -338,9 +331,11 @@ async function main() {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[evtday].length === 1) {
         console.log('single event at this venue on this day: \n');
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 6, true));
+        // YAYYY nothing to struggle with here
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
       } else {
         console.log('two or more events at this venue on this day: \n');
+        // noooo so much struggle about to happen here
         console.log(util.inspect(main_events[venueid].events[evtday], true, 6, true));
       }
     }
