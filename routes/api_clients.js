@@ -99,7 +99,7 @@ async function artist_lookup(artists, dbpool) {
           falses.push(candobj);
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
-            if (artobj.actor_Name === candidate) {
+            if (artobj.actor_Name.toLowerCase() === candidate.toLowerCase()) {
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
