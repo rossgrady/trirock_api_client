@@ -332,7 +332,7 @@ async function main() {
       if (main_events[venueid].events[evtday].length === 1) {
         console.log('single event at this venue on this day: \n');
         // YAYYY nothing to struggle with here
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
+        // console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
       } else {
         console.log('two or more events at this venue on this day: \n');
         // noooo so much struggle about to happen here
