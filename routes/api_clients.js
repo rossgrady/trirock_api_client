@@ -256,6 +256,9 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           console.log(util.inspect(event.classifications, true, 7, true));
+          console.log(util.inspect(event.classifications[0], true, 7, true));
+          console.log(util.inspect(events.classifications[0].segment, true, 7, true));
+          console.log(util.inspect(events.classifications[0].segment.name, true, 7, true));
           const rawArtists = [];
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const thisEvent = {
