@@ -238,20 +238,19 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   }
 }
 
+
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
   const ticketmaster_url_suffix = "&size=40&sort=date,asc&endDateTime=" + endDate;
   const ticketmaster_url = ticketmaster_url_prefix + venueID + ticketmaster_url_suffix;
-
   try {
     const response = await axios.get(ticketmaster_url);
     await sleep(300);
     const events = [];
     if (typeof response.data._embedded !== 'undefined') {
       for (const event of response.data._embedded.events) {
-        console.log(util.inspect(event, true, 7, true));
-        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
+        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled' && event.classifications[0].segment.name === "Music") {
           const rawArtist = {
             "name": event.name,
             "url": "",
