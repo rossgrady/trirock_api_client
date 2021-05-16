@@ -134,6 +134,9 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
+      if (venueID === "8396") {
+        console.log(util.inspect(activity, true, 7, true));
+      }
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale") {
         let endDate;
         if (typeof activity.endTime !== 'undefined' && activity.endTime !== '') {
