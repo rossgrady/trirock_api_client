@@ -41,20 +41,21 @@ async function artist_lookup(artists, dbpool) {
   for (artist of artists) {
     const reg1 = /an evening with/ig;
     const reg2 = /\(\d+.*\)/ig;
-    const reg3 = /[vinyl]* album release [party|show]*/i;
+    const reg3 = /(vinyl)* album release (party|show)*/i;
     const reg4 = / and /ig;
     const reg5 = / & /ig;
-    const reg6 = / \//ig;
+    const reg6 = /\//ig;
     const reg7 = / with /ig;
     const reg8 = /\W$/;
     const reg9 = /^(A |An |The )/i;
     const reg10 = /and friends/gi;
     const reg11 = /special guest(s)*/gi;
-    const reg12 = /\s{1}\w{1}\s{1}/g;
+    const reg12 = /\s{1}[b-zB-z]{1}\s{1}/g;
+    const reg13 = /featuring/gi;
     let name1 = artist.name.replace(reg1,'');
     name1 = name1.replace(reg10,'');
     name1 = name1.replace(reg12, ', ');
-    name1 = name1.replace(reg8,'');
+    name1 = name1.replace(reg13, ', ');    
     name1 = name1.replace(reg9,'');
     name1 = name1.replace(reg2,'');
     name1 = name1.replace(reg3,'');
@@ -64,6 +65,7 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg11,'');
     name1 = name1.replace(reg5, ', ');
     name1 = name1.replace(reg6, ', ');
+    name1 = name1.replace(reg8,'');
     const parts = name1.split(',');
     const candidates = {
       'url': artist.url,
