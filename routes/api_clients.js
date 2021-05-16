@@ -329,14 +329,42 @@ async function main() {
   }
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
-      if (main_events[venueid].events[evtday].length === 1) {
-        console.log('single event at this venue on this day: \n');
-        // YAYYY nothing to struggle with here
-        // console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
+      if (main_events[venueid].events[evtday].length === 2) {
+        if (main_events[venueid].events[evtday][0].activity_API === main_events[venueid].events[evtday][1].activity_API) {
+          // now we gotta test for same artists or different artists & then do some things
+          console.log('2 on this day, API is the same, WIP\n');
+          console.log(util.inspect(main_events[venueid].events[evtday]));
+        } else {
+          console.log('2 on this day, different APIs, heres what we start with:\n');
+          console.log(util.inspect(main_events[venueid].events[evtday]));
+          // different APIs flow
+          let target_event;
+          let source_event;
+          if (main_events[venueid].events[evtday][0].activity_API_ID > main_events[venueid].events[evtday][1].activity_API_ID) {
+            target_event = 0;
+            source_event = 1;
+          } else {
+            target_event = 1;
+            source_event = 0;
+          }
+          for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
+            let found = 0;
+            for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
+              if (source_artist.origname === target_artist.origname) {
+                found = 1;
+              }
+            }
+            if (found === 0) {
+              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
+            }
+          }
+          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
+          console.log('2 on this day, different APIs, heres what we wound up with:\n');
+          console.log(util.inspect(main_events[venueid].events[evtday]));
+        }
       } else {
-        console.log('two or more events at this venue on this day: \n');
-        // noooo so much struggle about to happen here
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 6, true));
+        console.log('either 1 or 3 on this day, leaving alone either way\n')
+        console.log(util.inspect(main_events[venueid].events[evtday]));
       }
     }
   }
