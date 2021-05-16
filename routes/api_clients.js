@@ -114,9 +114,6 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
-      if(venueID === '12088') {
-        console.log(util.inspect(activity, true, 8, true));
-      }
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale") {
         let endDate;
         if (typeof activity.endTime !== 'undefined' && activity.endTime !== '') {
@@ -178,9 +175,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const response = await axios.get(ebrite_url, config);
     const events = [];
     for (const event of response.data.events) {
-      if(venueID === '33823692') {
-        console.log(util.inspect(event, true, 8, true));
-      }
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startDate = dayjs(event.start.local);
@@ -263,7 +257,6 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
 async function main() {
   const dbpool = await db.getPool();
   const main_events = [];
-  // datastructure that's indexable by venue -> date
   for (const venue of venues) {
     main_events[venue.venue_id] = {
       'name': venue.name,
@@ -306,7 +299,17 @@ async function main() {
       }
     }
   }
-  console.log(util.inspect(main_events, true, 8, true));
+  for (const venueid in main_events) {
+    for (const evtday in main_events[venueid].events) {
+      if (main_events[venueid].events[evtday].length === 1) {
+        console.log('single event at this venue on this day: \n');
+        console.log(util.inspect(main_events[venueid].events[evtday]));
+      } else {
+        console.log('two or more events at this venue on this day: \n');
+        console.log(util.inspect(main_events[venueid].events[evtday]));
+      }
+    }
+  }
 }
 
 main();
