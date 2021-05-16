@@ -250,11 +250,12 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
     const events = [];
     if (typeof response.data._embedded !== 'undefined') {
       for (const event of response.data._embedded.events) {
-        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled' && event.classifications[0].segment.name === "Music") {
+        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
           const rawArtist = {
             "name": event.name,
             "url": "",
             };
+          console.log(util.inspect(event.classifications, true, 7, true));
           const rawArtists = [];
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const thisEvent = {
