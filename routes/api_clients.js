@@ -250,7 +250,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
     const events = [];
     if (typeof response.data._embedded !== 'undefined') {
       for (const event of response.data._embedded.events) {
-        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled') {
+        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled' && typeof event.classifications !== 'undefined' && event.classifications[0].segment.name === 'Music') {
           const rawArtist = {
             "name": event.name,
             "url": "",
