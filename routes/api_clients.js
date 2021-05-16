@@ -333,10 +333,10 @@ async function main() {
         if (main_events[venueid].events[evtday][0].activity_API === main_events[venueid].events[evtday][1].activity_API) {
           // now we gotta test for same artists or different artists & then do some things
           console.log('2 on this day, API is the same, WIP\n');
-          console.log(util.inspect(main_events[venueid].events[evtday]));
+          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
         } else {
           console.log('2 on this day, different APIs, heres what we start with:\n');
-          console.log(util.inspect(main_events[venueid].events[evtday]));
+          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
           // different APIs flow
           let target_event;
           let source_event;
@@ -360,11 +360,11 @@ async function main() {
           }
           const removed = main_events[venueid].events[evtday].splice(source_event, 1);
           console.log('2 on this day, different APIs, heres what we wound up with:\n');
-          console.log(util.inspect(main_events[venueid].events[evtday]));
+          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
         }
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
-        console.log(util.inspect(main_events[venueid].events[evtday]));
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
       }
     }
   }
