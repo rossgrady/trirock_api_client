@@ -84,6 +84,8 @@ async function artist_lookup(artists, dbpool) {
     };
     for (const part of parts) {
       const candidate = part.trim();
+      const falses = [];
+      const trues = [];
       if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
@@ -94,7 +96,7 @@ async function artist_lookup(artists, dbpool) {
             'best': false,
             'blurb_snippet': blurb_snippet,
           };
-          candidates.names.push(candobj);
+          falses.push(candobj);
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             if (artobj.actor_Name === candidate) {
@@ -105,7 +107,7 @@ async function artist_lookup(artists, dbpool) {
                 'best': true,
                 'blurb_snippet': blurb_snippet,
               };
-              candidates.names.push(candobj);
+              trues.push(candobj);
             } else {
               const candobj = {
                 'origname': candidate,
@@ -114,7 +116,7 @@ async function artist_lookup(artists, dbpool) {
                 'best': false,
                 'blurb_snippet': blurb_snippet,
               };
-              candidates.names.push(candobj);
+              falses.push(candobj);
             }
           }
         }
@@ -126,7 +128,16 @@ async function artist_lookup(artists, dbpool) {
           'best': false,
           'blurb_snippet': blurb_snippet,
         };
-        candidates.names.push(candobj);
+        falses.push(candobj);
+      }
+      if (trues.length > 0) {
+        for (const tru in trues) {
+          candidates.names.push(tru);
+        }
+      } else {
+        for (const fals in falses) {
+          candidates.names.push(fals);
+        }
       }
     }
     returnarr.push(candidates);
