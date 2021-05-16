@@ -40,7 +40,7 @@ async function artist_lookup(artists, dbpool) {
   const returnarr = [];
   for (artist of artists) {
     const reg1 = /an evening with/ig;
-    const reg2 = /\(\d+.*\)/ig;
+    const reg2 = / \(.*\)$/i;
     const reg3 = /(vinyl)* album release (party|show)*/i;
     const reg4 = / and /ig;
     const reg5 = / & /ig;
@@ -55,13 +55,13 @@ async function artist_lookup(artists, dbpool) {
     const reg14 = /:/g;
     const reg15 = / more(\W)?$/i;
     let name1 = artist.name.replace(reg1,'');
-    name1 = name1.replace(reg10,'');
+    name1 = name1.replace(reg10,' ');
     name1 = name1.replace(reg12, ', ');
     name1 = name1.replace(reg13, ', ');
     name1 = name1.replace(reg15, '');
     name1 = name1.replace(reg9,'');
     name1 = name1.replace(reg2,'');
-    name1 = name1.replace(reg3,'');
+    name1 = name1.replace(reg3,' ');
     name1 = name1.replace(reg4,', ');
     name1 = name1.replace(' w/', ', ');
     name1 = name1.replace(reg7, ', ');
