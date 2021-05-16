@@ -114,7 +114,7 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
-      if(venueID === '188') {
+      if(venueID === '12088') {
         console.log(util.inspect(activity, true, 8, true));
       }
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale") {
@@ -178,7 +178,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const response = await axios.get(ebrite_url, config);
     const events = [];
     for (const event of response.data.events) {
-      if(venueID === '188') {
+      if(venueID === '33823692') {
         console.log(util.inspect(event, true, 8, true));
       }
       if(typeof event.status !== 'undefined' && event.status === 'live') {
