@@ -56,6 +56,7 @@ async function artist_lookup(artists, dbpool) {
     const reg14 = /:/g;
     const reg15 = / more(\W)?$/i;
     const reg16 = /(?<blurb>in the record shop)/i;
+    const reg17 = / \+ /gi;
     let name1 = artist.name.replace(reg1,'');
     name1 = name1.replace(reg10,' ');
     name1 = name1.replace(reg12, ', ');
@@ -69,6 +70,7 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg7, ', ');
     name1 = name1.replace(reg11,'');
     name1 = name1.replace(reg5, ', ');
+    name1 = name1.replace(reg17, ', ');
     name1 = name1.replace(reg6, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg14,', ');
