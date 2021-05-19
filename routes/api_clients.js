@@ -162,7 +162,7 @@ async function etix(venueID, timeWindow, dbpool) {
           endDate = dayjs(activity.startTime);
         }
         const startTime = dayjs(activity.startTime);
-        const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
         const event = {
           "activity_Timestamp": timestamp.unix(),
