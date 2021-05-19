@@ -161,14 +161,13 @@ async function etix(venueID, timeWindow, dbpool) {
         } else {
           endDate = dayjs(activity.startTime);
         }
-        const startDate = dayjs(activity.startTime);
+        const startTime = dayjs(activity.startTime);
         const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
         const event = {
           "activity_Timestamp": timestamp.unix(),
-          "activity_Time": startDate.format('HH:mm:ss'),
-          "activity_StartDate": startDate.format('YYYY-MM-DD'),
-          "activity_EndDate": endDate.format('YYYY-MM-DD'),
+          "activity_StartTime": startTime,
+          "activity_EndDate": endDate,
           "activity_API": "etix",
           "activity_API_ID": activity.id,
           "orig_artists": [],
@@ -217,8 +216,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     for (const event of response.data.events) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
-        const startDate = dayjs(event.start.local);
-        const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const startTime = dayjs(event.start.local);
+        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
             "url": "",
@@ -228,9 +227,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
           "activity_Timestamp": timestamp.unix(),
-          "activity_Time": startDate.format('HH:mm:ss'),
-          "activity_StartDate": startDate.format('YYYY-MM-DD'),
-          "activity_EndDate": endDate.format('YYYY-MM-DD'),
+          "activity_StartTime": startTime,
+          "activity_EndDate": endDate,
           "orig_artists": [],
           "artists": [],
         };
@@ -267,11 +265,11 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             };
           const rawArtists = [];
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
+          const startTime = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+"-0500");
           const thisEvent = {
-            "activity_Time": event.dates.start.localTime,
-            "activity_StartDate": event.dates.start.localDate,
+            "activity_StartTime": startTime,
             "activity_Timestamp": timestamp.unix(),
-            "activity_EndDate": event.dates.start.localDate,
+            "activity_EndDate": startTime,
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
             "artists": [],
@@ -341,38 +339,49 @@ async function main() {
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[evtday].length === 2) {
+        console.log('2 on this day, heres what we start with:\n');
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
+        let api_same = 0;
+        let identical = 1;
+        let target_event = 1;
+        let source_event = 0;
         if (main_events[venueid].events[evtday][0].activity_API === main_events[venueid].events[evtday][1].activity_API) {
-          // now we gotta test for same artists or different artists & then do some things
-          console.log('2 on this day, API is the same, WIP\n');
-          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
-        } else {
-          console.log('2 on this day, different APIs, heres what we start with:\n');
-          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
-          // different APIs flow
-          let target_event;
-          let source_event;
-          if (main_events[venueid].events[evtday][0].activity_API_ID > main_events[venueid].events[evtday][1].activity_API_ID) {
-            target_event = 0;
-            source_event = 1;
-          } else {
-            target_event = 1;
-            source_event = 0;
-          }
-          for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
-            let found = 0;
-            for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
-              if (source_artist.origname === target_artist.origname) {
-                found = 1;
-              }
-            }
-            if (found === 0) {
-              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
-            }
-          }
-          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
-          console.log('2 on this day, different APIs, heres what we wound up with:\n');
-          console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
+          api_same = 1;
+        };
+        if (main_events[venueid].events[evtday][0].activity_API_ID > main_events[venueid].events[evtday][1].activity_API_ID) {
+          target_event = 0;
+          source_event = 1;
         }
+        for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
+          let found = 0;
+          for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
+            if (source_artist.origname === target_artist.origname) {
+              found = 1;
+            }
+          }
+          if (found === 0) {
+            if (api_same === 0) {
+              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
+            } else {
+              identical = 0;
+            }
+          }
+        }
+        if (identical === 1 && api_same === 1) {
+          // merge, delete, add blurb with the 2 times
+          let blurb = "Two shows: ";
+          if (main_events[venueid].events[evtday][0].activity_StartTime.isAfter(main_events[venueid].events[evtday][1].activity_StartTime)) {
+            blurb += main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma');
+          } else {
+            blurb += main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma');
+          }
+          main_events[venueid].events[evtday][target_event].activity_Blurb = blurb;
+          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
+        } else if (api_same === 0) {
+          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
+        }
+        console.log('2 on this day, heres what we wound up with:\n');
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
         console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
@@ -380,5 +389,12 @@ async function main() {
     }
   }
 }
+
+/*
+          "activity_Time": startDate.format('HH:mm:ss'),
+          "activity_StartDate": startDate.format('YYYY-MM-DD'),
+          "activity_EndDate": endDate.format('YYYY-MM-DD'),
+*/
+
 
 main();
