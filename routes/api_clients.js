@@ -364,7 +364,7 @@ async function main() {
           }
           if (found === 0) {
             if (api_same === 0) {
-              main_events[venueid].events[evtday][target_event].artists.names.push(source_artist);
+              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
             } else {
               console.log('lists were not identical, setting identical = 0');
               identical = 0;
