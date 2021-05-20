@@ -355,9 +355,9 @@ async function main() {
           target_event = 0;
           source_event = 1;
         }
-        for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
+        for (const source_artist of main_events[venueid].events[evtday][source_event].artists.names) {
           let found = 0;
-          for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
+          for (const target_artist of main_events[venueid].events[evtday][target_event].artists.names) {
             if (source_artist.origname === target_artist.origname) {
               found = 1;
               console.log('asserting that ' + source_artist.origname + ' and ' + target_artist.origname + ' are the same');
@@ -365,7 +365,7 @@ async function main() {
           }
           if (found === 0) {
             if (api_same === 0) {
-              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
+              main_events[venueid].events[evtday][target_event].artists.names.push(source_artist);
             } else {
               console.log('lists were not identical, setting identical = 0');
               identical = 0;
