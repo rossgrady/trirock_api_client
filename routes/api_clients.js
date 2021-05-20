@@ -80,10 +80,6 @@ async function artist_lookup(artists, dbpool) {
       name1 = name1.replace(reg16, '');
     }
     const parts = name1.split(',');
-    const candidates = {
-      'url': artist.url,
-      'names': [],
-    };
     for (const part of parts) {
       const candidate = part.trim();
       const falses = [];
@@ -97,6 +93,7 @@ async function artist_lookup(artists, dbpool) {
             'id': '',
             'best': false,
             'blurb_snippet': blurb_snippet,
+            'url': artist.url,
           };
           falses.push(candobj);
         } else if (dbartist.length >= 1) {
@@ -108,6 +105,7 @@ async function artist_lookup(artists, dbpool) {
                 'id': artobj.actor_ID,
                 'best': true,
                 'blurb_snippet': blurb_snippet,
+                'url': artist.url,
               };
               trues.push(candobj);
             } else {
@@ -117,6 +115,7 @@ async function artist_lookup(artists, dbpool) {
                 'id': artobj.actor_ID,
                 'best': false,
                 'blurb_snippet': blurb_snippet,
+                'url': artist.url,
               };
               falses.push(candobj);
             }
@@ -129,20 +128,20 @@ async function artist_lookup(artists, dbpool) {
           'id': '',
           'best': false,
           'blurb_snippet': blurb_snippet,
+          'url': artist.url,
         };
         falses.push(candobj);
       }
       if (trues.length > 0) {
         for (const tru of trues) {
-          candidates.names.push(tru);
+          returnarr.push(tru);
         }
       } else {
         for (const fals of falses) {
-          candidates.names.push(fals);
+          returnarr.push(fals);
         }
       }
     }
-    returnarr.push(candidates);
   }
   return returnarr;
 }
@@ -355,9 +354,9 @@ async function main() {
           target_event = 0;
           source_event = 1;
         }
-        for (const source_artist of main_events[venueid].events[evtday][source_event].artists.names) {
+        for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
           let found = 0;
-          for (const target_artist of main_events[venueid].events[evtday][target_event].artists.names) {
+          for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
             if (source_artist.origname === target_artist.origname) {
               found = 1;
               console.log('asserting that ' + source_artist.origname + ' and ' + target_artist.origname + ' are the same');
