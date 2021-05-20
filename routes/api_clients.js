@@ -388,7 +388,7 @@ async function main() {
         console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
       }
     }
   }
