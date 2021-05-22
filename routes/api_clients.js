@@ -42,7 +42,7 @@ async function dblookup(namestring, dbpool) {
 
 function find_URLs(testchunk) {
   if(typeof testchunk !== 'undefined' && testchunk !== '') {
-    const urlregex = /(?<grp1>(?<grp2>(?<grp3>[A-Za-z]{3,9}:(?<grp4>?:\/\/)?)(?<grp5>?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?<grp6>?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)(?<grp7>(?<grp8>?:\/[\+~%\/\.\w\-_]*)?\??(?<grp9>?:[\-\+=&;%@\.\w_]*)#?(?<grp10>?:[\.\!\/\\\w]*))?)/gi;
+    const urlregex = /(?<grp1>(?<grp2>(?<grp3>[A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)(?<grp7>(?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
     const matches = testchunk.matchAll(urlregex);
     for (const match of matches) {
       console.log(util.inspect(match, true, 7, true));
