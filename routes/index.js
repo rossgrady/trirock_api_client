@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const { main } = require('./api_clients');
+const util = require('util');
+
 const duration = 1814400000; // 3 weeks
 
 router.get('/', async function(req, res, next) {
@@ -12,6 +14,7 @@ router.get('/', async function(req, res, next) {
 
 router.get('/events', async function(req, res, next) {
   const events = await main();
+  console.error(util.inspect(events, true, 7, true));
   res.render('events', events);
 });
 
