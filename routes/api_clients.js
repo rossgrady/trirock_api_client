@@ -2,6 +2,8 @@ const axios = require('axios');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+const duration = require('dayjs/plugin/duration');
+dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const util = require('util');
@@ -164,14 +166,14 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
-      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts") {
+      const startTime = dayjs(activity.startTime);
+      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs.duration(2, 'M'))) {
         let endDate;
         if (typeof activity.endTime !== 'undefined' && activity.endTime !== '') {
           endDate = dayjs(activity.endTime);
         } else {
           endDate = dayjs(activity.startTime);
         }
-        const startTime = dayjs(activity.startTime);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
         const event = {
@@ -224,9 +226,10 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const response = await axios.get(ebrite_url, config);
     const events = [];
     for (const event of response.data.events) {
-      if(typeof event.status !== 'undefined' && event.status === 'live') {
+      const startTime = dayjs(event.start.utc);
+      if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs.duration(2, 'M'))) {
         const endDate = dayjs(event.end.utc);
-        const startTime = dayjs(event.start.utc);
+
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
