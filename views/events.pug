@@ -4,7 +4,7 @@ block content
   .container
     .row 
       .col-xs-12
-        each venue, i in events
-          if venue.name
-            p #{venue.name}
-            p #{venue.events}
+        each val in events
+          li= val
+        else
+          li There are no values
