@@ -408,10 +408,12 @@ async function main() {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
       }
       for (const final_event of main_events[venueid].events[evtday]){
-        const startDate = final_event.activity_StartTime.tz("America/New_York");
-        const endDate = final_event.activity_EndDate.tz("America/New_York");
+        const startDate = final_event.activity_StartTime.tz("America/New_York").format('YYYY-MM-DD');
+        const endDate = final_event.activity_EndDate.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = final_event.activity_StartTime.tz("America/New_York").format('HH:mm:ss');
         console.log("activity_StartDate: " + startDate);
         console.log("activity_EndDate: " + endDate);
+        console.log('activity_Time: ' + activityTime);
         console.log("activity_API: " + final_event.activity_API);
         console.log("activity_API_ID: " + final_event.activity_API_ID);
         console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
