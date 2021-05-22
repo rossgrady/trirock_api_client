@@ -106,7 +106,6 @@ async function artist_lookup(artists, dbpool) {
           for (artobj of dbartist) {
             const articlereg = / \[(The|A|An)\]$/;
             const compname = artobj.actor_Name.replace(articlereg,'');
-            console.log('comparing ' + compname + " to " + candidate);
             if (compname.toLowerCase() === candidate.toLowerCase()) {
               const candobj = {
                 'origname': candidate,
@@ -168,6 +167,7 @@ async function etix(venueID, timeWindow, dbpool) {
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
+        console.log(util.inspect(activity, true, 7, true));
         const event = {
           "activity_Timestamp": timestamp.unix(),
           "activity_StartTime": startTime,
@@ -219,6 +219,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       const startTime = dayjs(event.start.utc);
       if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        console.log(util.inspect(event, true, 7, true));
         const rawArtist = {
             "name": event.name.text,
             "url": "",
@@ -264,6 +265,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
+          console.log(util.inspect(event, true, 7, true));
           const startTime = dayjs(event.dates.start.dateTime);
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
           const thisEvent = {
