@@ -14,8 +14,11 @@ router.get('/', async function(req, res, next) {
 
 router.get('/events', async function(req, res, next) {
   const events = await main();
+  const renderObj = {
+    events: events,
+  }
   console.log(util.inspect(events, true, 7, true));
-  res.render('events', events);
+  res.render('events', renderObj);
 });
 
 module.exports = router;
