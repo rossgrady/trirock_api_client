@@ -4,8 +4,7 @@ block content
   .container
     .row 
       .col-xs-12
-        each venue, i in events
+        each venue of events
           p #{venue.name}
-          each day, j in venue.events 
-            each show, k in day
-              p #{show.activity_startdate}
+          each day of venue.events 
+            p #{day}
