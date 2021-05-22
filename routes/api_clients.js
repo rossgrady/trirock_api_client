@@ -166,7 +166,7 @@ async function etix(venueID, timeWindow, dbpool) {
         } else {
           endDate = dayjs(activity.startTime);
         }
-        console.log(activity.name + " start time: " + activity.startTime);
+        console.log(activity.name + " etix start time: " + activity.startTime);
         const startTime = dayjs(activity.startTime);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
@@ -223,7 +223,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startTime = dayjs(event.start.local);
-        console.log(event.name.text + " start time: " + event.start.local);
+        console.log(event.name.text + " eventbrite start time: " + event.start.local);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
