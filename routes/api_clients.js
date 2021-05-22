@@ -45,6 +45,7 @@ function find_URLs(testchunk) {
     const urlregex = /(?<grp1>(?<grp2>(?<grp3>[A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)(?<grp7>(?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
     const httpregex = /^http[s]*:\/\//;
     const matches = testchunk.matchAll(urlregex);
+    const urlsarray = [];
     for (const match of matches) {
       const testurl = match.groups.grp2.replace(httpregex,'');
       const hostarray = [
@@ -61,11 +62,10 @@ function find_URLs(testchunk) {
         'apple.com',
       ];
       if(!hostarray.includes(testurl.toLowerCase())) {
-        console.log(match.groups.grp1);
+        urlsarray.push(match.groups.grp1);
       }
     }
   }
-  const urlsarray = [];
   return urlsarray;
 }
 
