@@ -43,10 +43,26 @@ async function dblookup(namestring, dbpool) {
 function find_URLs(testchunk) {
   if(typeof testchunk !== 'undefined' && testchunk !== '') {
     const urlregex = /(?<grp1>(?<grp2>(?<grp3>[A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)(?<grp7>(?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+    const httpregex = /^http[s]*:\/\//;
     const matches = testchunk.matchAll(urlregex);
     for (const match of matches) {
-      console.log(match.groups.grp1);
-      console.log(match.groups.grp2);
+      const testurl = match.groups.grp2.replace(httpregex,'');
+      const hostarray = [
+        'open.spotify.com',
+        'www.facebook.com',
+        'www.instagram.com',
+        'www.youtube.com',
+        'catscradle.com',
+        'facebook.com',
+        'instagram.com',
+        'soundcloud.com',
+        'spotify.com',
+        'youtube.com',
+        'apple.com',
+      ];
+      if(!hostarray.includes(testurl.toLowerCase()){
+        console.log(match.groups.grp1);
+      }
     }
   }
   const urlsarray = [];
