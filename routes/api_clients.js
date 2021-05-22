@@ -197,11 +197,15 @@ async function etix(venueID, timeWindow, dbpool) {
       const startTime = dayjs(activity.startTime);
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const rawArtists = [];
         const urls = find_URLs(activity.description);
         const event = {
           "activity_Timestamp": timestamp.unix(),
-          "activity_StartTime": startTime,
+          "activity_startDate": startDate,
+          "activity_Time": activityTime,
+          "activity_endDate": startDate,
           "activity_API": "etix",
           "activity_API_ID": activity.id,
           "orig_artists": [],
@@ -253,6 +257,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       const startTime = dayjs(event.start.utc);
       if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const rawArtist = {
             "name": event.name.text,
             "url": "",
@@ -263,7 +269,9 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
           "activity_Timestamp": timestamp.unix(),
-          "activity_StartTime": startTime,
+          "activity_startDate": startDate,
+          "activity_Time": activityTime,
+          "activity_endDate": startDate,
           "orig_artists": [],
           "artists": [],
           "urls": urls,
@@ -303,9 +311,13 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           const rawArtists = [];
           const urls = find_URLs(event.info);
           const startTime = dayjs(event.dates.start.dateTime);
+          const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+          const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
           const thisEvent = {
-            "activity_StartTime": startTime,
+            "activity_startDate": startDate,
+            "activity_Time": activityTime,
+            "activity_endDate": startDate,
             "activity_Timestamp": timestamp.unix(),
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
@@ -434,21 +446,9 @@ async function main() {
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
       }
-      for (const final_event of main_events[venueid].events[evtday]){
-        const startDate = final_event.activity_StartTime.tz("America/New_York").format('YYYY-MM-DD');
-        const activityTime = final_event.activity_StartTime.tz("America/New_York").format('HH:mm:ss');
-        console.log("activity_StartDate: " + startDate);
-        console.log("activity_EndDate: " + startDate);
-        console.log('activity_Time: ' + activityTime);
-        console.log("activity_API: " + final_event.activity_API);
-        console.log("activity_API_ID: " + final_event.activity_API_ID);
-        console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
-        console.log("orig_artists: " + util.inspect(final_event.orig_artists, true, 4, true));
-        console.log("venue_ID: " + venueid);
-        console.log("urls: " + util.inspect(final_event.urls, true, 4, true));
-      }
     }
   }
+  return main_events;
 }
 
-main();
+module.exports = { main };
