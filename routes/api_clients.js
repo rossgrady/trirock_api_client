@@ -445,6 +445,7 @@ async function main() {
         console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
         console.log("orig_artists: " + util.inspect(final_event.orig_artists, true, 4, true));
         console.log("venue_ID: " + venueid);
+        console.log("urls: " + util.inspect(final_event.urls, true, 4, true));
       }
     }
   }
