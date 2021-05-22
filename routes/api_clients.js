@@ -1,5 +1,9 @@
 const axios = require('axios');
 const dayjs = require('dayjs');
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+dayjs.extend(utc);
+dayjs.extend(timezone);
 const util = require('util');
 
 const conf = require('../config');
@@ -388,8 +392,6 @@ async function main() {
           }
         }
         if (identical === 1 && api_same === 1) {
-          // merge, delete, add blurb with the 2 times
-          // doublecheck that Jenny Besetztz & HNDCLW show
           let blurb = "Two shows: ";
           if (main_events[venueid].events[evtday][0].activity_StartTime.isAfter(main_events[venueid].events[evtday][1].activity_StartTime)) {
             blurb += main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma');
@@ -406,9 +408,10 @@ async function main() {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
       }
       for (const final_event of main_events[venueid].events[evtday]){
-        console.log("activity_StartTime: " + final_event.activity_StartTime);
-        console.log("activity_Timestamp: " + final_event.activity_Timestamp);
-        console.log("activity_EndDate: " + final_event.activity_EndDate);
+        const startDate = final_event.activity_StartTime.tz("America/New_York");
+        const endDate = final_event.activity_EndDate.tz("America/New_York");
+        console.log("activity_StartDate: " + startDate);
+        console.log("activity_EndDate: " + endDate);
         console.log("activity_API: " + final_event.activity_API);
         console.log("activity_API_ID: " + final_event.activity_API_ID);
         console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
