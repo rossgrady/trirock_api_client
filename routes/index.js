@@ -14,7 +14,7 @@ router.get('/', async function(req, res, next) {
 
 router.get('/events', async function(req, res, next) {
   const events = await main();
-  console.error(util.inspect(events, true, 7, true));
+  console.log(util.inspect(events, true, 7, true));
   res.render('events', events);
 });
 

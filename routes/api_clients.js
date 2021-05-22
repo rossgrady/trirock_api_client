@@ -407,7 +407,6 @@ async function main() {
         let source_event = 0;
         if (main_events[venueid].events[evtday][0].activity_API === main_events[venueid].events[evtday][1].activity_API) {
           api_same = 1;
-          console.log('apis are the same');
         };
         if (main_events[venueid].events[evtday][0].activity_API_ID > main_events[venueid].events[evtday][1].activity_API_ID) {
           target_event = 0;
@@ -418,14 +417,12 @@ async function main() {
           for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
             if (source_artist.origname === target_artist.origname) {
               found = 1;
-              console.log('asserting that ' + source_artist.origname + ' and ' + target_artist.origname + ' are the same');
             }
           }
           if (found === 0) {
             if (api_same === 0) {
               main_events[venueid].events[evtday][target_event].artists.push(source_artist);
             } else {
-              console.log('lists were not identical, setting identical = 0');
               identical = 0;
             }
           }
@@ -442,9 +439,7 @@ async function main() {
         } else if (api_same === 0) {
           const removed = main_events[venueid].events[evtday].splice(source_event, 1);
         }
-        console.log('2 on this day, heres what we wound up with:\n');
       } else {
-        console.log('either 1 or 3 on this day, leaving alone either way\n')
       }
     }
   }
