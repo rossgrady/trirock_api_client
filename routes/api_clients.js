@@ -285,7 +285,9 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             for (const performer of event._embedded.attractions) {
               const artist = {
                 "name": performer.name,
-                "url": performer.externalLinks.homepage.url,
+              }
+              if (typeof performer.externalLinks !== 'undefined' && typeof performer.externalLinks.homepage !== 'undefined') {
+                artist.url = performer.externalLinks.homepage.url;
               }
               thisEvent.orig_artists.push(artist);
               rawArtists.push(artist);
