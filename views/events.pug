@@ -4,7 +4,9 @@ block content
   .container
     .row 
       .col-xs-12
-        each venue of events
+        each venue, i in events
           p #{venue.name}
-          each day of venue.events 
-            p #{day}
+          each eventarr, timestamp in venue.events 
+            if eventarr
+              each event, j in eventarr
+                p #{event.activity_Time}
