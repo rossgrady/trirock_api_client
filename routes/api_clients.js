@@ -40,6 +40,15 @@ async function dblookup(namestring, dbpool) {
   }
 }
 
+function find_URLs(testchunk) {
+  const urlregex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+  const returnparts = testchunk.matchAll(urlregex);
+  console.log(util.inspect(returnparts, true, 7, true));
+  const urlsarray = [];
+  
+  return urlsarray;
+}
+
 async function artist_lookup(artists, dbpool) {
   const returnarr = [];
   for (artist of artists) {
@@ -154,6 +163,8 @@ async function artist_lookup(artists, dbpool) {
   return returnarr;
 }
 
+// it's just description
+
 async function etix(venueID, timeWindow, dbpool) {
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
   const config = {
@@ -167,7 +178,7 @@ async function etix(venueID, timeWindow, dbpool) {
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
-        console.log(util.inspect(activity, true, 7, true));
+        const urls = find_URLs(activity.description);
         const event = {
           "activity_Timestamp": timestamp.unix(),
           "activity_StartTime": startTime,
@@ -175,6 +186,7 @@ async function etix(venueID, timeWindow, dbpool) {
           "activity_API_ID": activity.id,
           "orig_artists": [],
           "artists": [],
+          "urls": urls,
         }
         if (typeof activity.performers[0] !== 'undefined') {
           for (const performer of activity.performers) {
@@ -205,6 +217,8 @@ async function etix(venueID, timeWindow, dbpool) {
   }
 }
 
+// it's description.text
+
 async function eventbrite(venueID, timeWindow, dbpool) {
   const ebrite_url_prefix = "https://www.eventbriteapi.com/v3/venues/";
   const ebrite_url_suffix = "/events/?status=live";
@@ -219,12 +233,12 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       const startTime = dayjs(event.start.utc);
       if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-        console.log(util.inspect(event, true, 7, true));
         const rawArtist = {
             "name": event.name.text,
             "url": "",
           };
         const rawArtists = [];
+        const urls = find_URLs(event.description.text);
         const eventObj = {
           "activity_API": "eventbrite",
           "activity_API_ID": event.id,
@@ -232,6 +246,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "activity_StartTime": startTime,
           "orig_artists": [],
           "artists": [],
+          "urls": urls,
         };
         eventObj.orig_artists.push(rawArtist);
         rawArtists.push(rawArtist);
@@ -248,6 +263,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   }
 }
 
+// looks like it's just info
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
@@ -265,7 +281,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
-          console.log(util.inspect(event, true, 7, true));
+          const urls = find_URLs(event.info);
           const startTime = dayjs(event.dates.start.dateTime);
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
           const thisEvent = {
@@ -275,6 +291,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "activity_API_ID": event.id,
             "artists": [],
             "orig_artists": [],
+            "urls": urls,
           }
           if (typeof event._embedded.attractions !== 'undefined' && typeof event._embedded.attractions[0] !== 'undefined') {
             for (const performer of event._embedded.attractions) {
@@ -282,7 +299,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
                 "name": performer.name,
               }
               if (typeof performer.externalLinks !== 'undefined' && typeof performer.externalLinks.homepage !== 'undefined') {
-                artist.url = performer.externalLinks.homepage.url;
+                artist.url = performer.externalLinks.homepage[0].url;
               }
               thisEvent.orig_artists.push(artist);
               rawArtists.push(artist);
