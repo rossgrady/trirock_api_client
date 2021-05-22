@@ -5,6 +5,7 @@ block content
     .row 
       .col-xs-12
         each val in events
-          li= val.name
+          if val 
+            p= val.name
         else
           li There are no values
