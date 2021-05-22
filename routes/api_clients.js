@@ -402,22 +402,17 @@ async function main() {
           const removed = main_events[venueid].events[evtday].splice(source_event, 1);
         }
         console.log('2 on this day, heres what we wound up with:\n');
-        console.log("activity_StartTime: " + main_events[venueid].events[evtday].activity_StartTime);
-        console.log("activity_Timestamp: " + main_events[venueid].events[evtday].activity_Timestamp);
-        console.log("activity_EndDate: " + main_events[venueid].events[evtday].activity_EndDate);
-        console.log("activity_API: " + main_events[venueid].events[evtday].activity_API);
-        console.log("activity_API_ID: " + main_events[venueid].events[evtday].activity_API_ID);
-        console.log("artists: " + util.inspect(main_events[venueid].events[evtday].artists, true, 4, true));
-        console.log("orig_artists: " + util.inspect(main_events[venueid].events[evtday].orig_artists, true, 4, true));
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
-        console.log("activity_StartTime: " + main_events[venueid].events[evtday].activity_StartTime);
-        console.log("activity_Timestamp: " + main_events[venueid].events[evtday].activity_Timestamp);
-        console.log("activity_EndDate: " + main_events[venueid].events[evtday].activity_EndDate);
-        console.log("activity_API: " + main_events[venueid].events[evtday].activity_API);
-        console.log("activity_API_ID: " + main_events[venueid].events[evtday].activity_API_ID);
-        console.log("artists: " + util.inspect(main_events[venueid].events[evtday].artists, true, 4, true));
-        console.log("orig_artists: " + util.inspect(main_events[venueid].events[evtday].orig_artists, true, 4, true));
+      }
+      for (const final_event of main_events[venueid].events[evtday]){
+        console.log("activity_StartTime: " + final_event.activity_StartTime);
+        console.log("activity_Timestamp: " + final_event.activity_Timestamp);
+        console.log("activity_EndDate: " + final_event.activity_EndDate);
+        console.log("activity_API: " + final_event.activity_API);
+        console.log("activity_API_ID: " + final_event.activity_API_ID);
+        console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
+        console.log("orig_artists: " + util.inspect(final_event.orig_artists, true, 4, true));
       }
     }
   }
