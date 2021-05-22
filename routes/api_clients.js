@@ -100,7 +100,9 @@ async function artist_lookup(artists, dbpool) {
           falses.push(candobj);
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
-            if (artobj.actor_Name.toLowerCase() === candidate.toLowerCase()) {
+            const articlereg = / \[The|A|An\]$/;
+            const compname = artobj.actor_Name.replace(articlereg,'');
+            if (compname.toLowerCase() === candidate.toLowerCase()) {
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
@@ -164,7 +166,7 @@ async function etix(venueID, timeWindow, dbpool) {
         } else {
           endDate = dayjs(activity.startTime);
         }
-        console.log("start time: " + activity.startTime);
+        console.log(activity.name + " start time: " + activity.startTime);
         const startTime = dayjs(activity.startTime);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
@@ -221,7 +223,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startTime = dayjs(event.start.local);
-        console.log("start time: " + event.start.local);
+        console.log(event.name.text + " start time: " + event.start.local);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
@@ -269,7 +271,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
-          console.log("start time: " + event.dates.start.localTime);
+          console.log(event.name + " start time: " + event.dates.start.localTime);
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const startTime = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+"-0500");
           const thisEvent = {
