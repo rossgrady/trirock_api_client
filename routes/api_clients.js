@@ -224,8 +224,8 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const events = [];
     for (const event of response.data.events) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
-        const endDate = dayjs(event.end.local);
-        const startTime = dayjs(event.start.local);
+        const endDate = dayjs(event.end.utc);
+        const startTime = dayjs(event.start.utc);
         console.log(event.name.text + " eventbrite start time: " + event.start.local);
         if(event.id == "155959979497") {
           console.log(util.inspect(event, true, 7, true));
@@ -277,7 +277,8 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
-          console.log(event.name + " start time: " + event.dates.start.localTime);
+          console.log(util.inspect(event, true, 7, true));
+          console.log(event.name + " ticketmaster start time: " + event.dates.start.localTime);
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const startTime = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+"-0500");
           const thisEvent = {
