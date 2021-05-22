@@ -60,7 +60,7 @@ function find_URLs(testchunk) {
         'youtube.com',
         'apple.com',
       ];
-      if(!hostarray.includes(testurl.toLowerCase()){
+      if(!hostarray.includes(testurl.toLowerCase())) {
         console.log(match.groups.grp1);
       }
     }
