@@ -2,8 +2,8 @@ const axios = require('axios');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
-const duration = require('dayjs/plugin/duration');
-dayjs.extend(duration);
+const day_duration = require('dayjs/plugin/duration');
+dayjs.extend(day_duration);
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const util = require('util');
