@@ -166,18 +166,11 @@ async function etix(venueID, timeWindow, dbpool) {
     for (const activity of response.data.venues[0].activities) {
       const startTime = dayjs(activity.startTime);
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(2, 'M'))) {
-        let endDate;
-        if (typeof activity.endTime !== 'undefined' && activity.endTime !== '') {
-          endDate = dayjs(activity.endTime);
-        } else {
-          endDate = dayjs(activity.startTime);
-        }
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
         const event = {
           "activity_Timestamp": timestamp.unix(),
           "activity_StartTime": startTime,
-          "activity_EndDate": endDate,
           "activity_API": "etix",
           "activity_API_ID": activity.id,
           "orig_artists": [],
@@ -225,7 +218,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     for (const event of response.data.events) {
       const startTime = dayjs(event.start.utc);
       if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
-        const endDate = dayjs(event.end.utc);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
@@ -237,7 +229,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "activity_API_ID": event.id,
           "activity_Timestamp": timestamp.unix(),
           "activity_StartTime": startTime,
-          "activity_EndDate": endDate,
           "orig_artists": [],
           "artists": [],
         };
@@ -255,7 +246,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     console.error(error);
   }
 }
-
 
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
@@ -279,7 +269,6 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           const thisEvent = {
             "activity_StartTime": startTime,
             "activity_Timestamp": timestamp.unix(),
-            "activity_EndDate": startTime,
             "activity_API": "ticketmaster",
             "activity_API_ID": event.id,
             "artists": [],
@@ -408,10 +397,9 @@ async function main() {
       }
       for (const final_event of main_events[venueid].events[evtday]){
         const startDate = final_event.activity_StartTime.tz("America/New_York").format('YYYY-MM-DD');
-        const endDate = final_event.activity_EndDate.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = final_event.activity_StartTime.tz("America/New_York").format('HH:mm:ss');
         console.log("activity_StartDate: " + startDate);
-        console.log("activity_EndDate: " + endDate);
+        console.log("activity_EndDate: " + startDate);
         console.log('activity_Time: ' + activityTime);
         console.log("activity_API: " + final_event.activity_API);
         console.log("activity_API_ID: " + final_event.activity_API_ID);
