@@ -418,6 +418,7 @@ async function main() {
         console.log("activity_API_ID: " + final_event.activity_API_ID);
         console.log("artists: " + util.inspect(final_event.artists, true, 4, true));
         console.log("orig_artists: " + util.inspect(final_event.orig_artists, true, 4, true));
+        console.log("venue_ID: " + venueid);
       }
     }
   }
