@@ -287,7 +287,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
                 "name": performer.name,
                 "url": performer.externalLinks.homepage.url,
               }
-              event.orig_artists.push(artist);
+              thisEvent.orig_artists.push(artist);
               rawArtists.push(artist);
             }
           }
