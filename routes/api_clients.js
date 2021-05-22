@@ -365,11 +365,11 @@ async function main() {
       for (const id of venue.ticketmaster_id) {
         const events = await ticketmaster(id, duration, dbpool);
         for (const evt of events) {
-          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
-            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
           evt.venue_ID = venue.venue_id;
-          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }
     }
@@ -377,11 +377,11 @@ async function main() {
       for (const id of venue.etix_id) {
         const events = await etix(id, duration, dbpool);
         for (const evt of events) {
-          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
-            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
           evt.venue_ID = venue.venue_id;
-          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }
     }
@@ -389,39 +389,39 @@ async function main() {
       for (const id of venue.eventbrite_id) {
         const events = await eventbrite(id, duration, dbpool);
         for (const evt of events) {
-          if (typeof main_events[venue.venue_id].events[evt.activity_Timestamp] === 'undefined') {
-            main_events[venue.venue_id].events[evt.activity_Timestamp] = [];
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
           evt.venue_ID = venue.venue_id;
-          main_events[venue.venue_id].events[evt.activity_Timestamp].push(evt);
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }
     }
   }
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
-      if (main_events[venueid].events[evtday].length === 2) {
+      if (main_events[venueid].events[`${evtday}`].length === 2) {
         let api_same = 0;
         let identical = 1;
         let target_event = 1;
         let source_event = 0;
-        if (main_events[venueid].events[evtday][0].activity_API === main_events[venueid].events[evtday][1].activity_API) {
+        if (main_events[venueid].events[`${evtday}`][0].activity_API === main_events[venueid].events[`${evtday}`][1].activity_API) {
           api_same = 1;
         };
-        if (main_events[venueid].events[evtday][0].activity_API_ID > main_events[venueid].events[evtday][1].activity_API_ID) {
+        if (main_events[venueid].events[`${evtday}`][0].activity_API_ID > main_events[venueid].events[`${evtday}`][1].activity_API_ID) {
           target_event = 0;
           source_event = 1;
         }
-        for (const source_artist of main_events[venueid].events[evtday][source_event].artists) {
+        for (const source_artist of main_events[venueid].events[`${evtday}`][source_event].artists) {
           let found = 0;
-          for (const target_artist of main_events[venueid].events[evtday][target_event].artists) {
+          for (const target_artist of main_events[venueid].events[`${evtday}`][target_event].artists) {
             if (source_artist.origname === target_artist.origname) {
               found = 1;
             }
           }
           if (found === 0) {
             if (api_same === 0) {
-              main_events[venueid].events[evtday][target_event].artists.push(source_artist);
+              main_events[venueid].events[`${evtday}`][target_event].artists.push(source_artist);
             } else {
               identical = 0;
             }
@@ -429,15 +429,15 @@ async function main() {
         }
         if (identical === 1 && api_same === 1) {
           let blurb = "Two shows: ";
-          if (main_events[venueid].events[evtday][0].activity_StartTime.isAfter(main_events[venueid].events[evtday][1].activity_StartTime)) {
-            blurb += main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma');
+          if (main_events[venueid].events[`${evtday}`][0].activity_StartTime.isAfter(main_events[venueid].events[`${evtday}`][1].activity_StartTime)) {
+            blurb += main_events[venueid].events[`${evtday}`][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][0].activity_StartTime.format('h:mma');
           } else {
-            blurb += main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma');
+            blurb += main_events[venueid].events[`${evtday}`][0].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][1].activity_StartTime.format('h:mma');
           }
-          main_events[venueid].events[evtday][target_event].activity_Blurb = blurb;
-          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
+          main_events[venueid].events[`${evtday}`][target_event].activity_Blurb = blurb;
+          const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
         } else if (api_same === 0) {
-          const removed = main_events[venueid].events[evtday].splice(source_event, 1);
+          const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
         }
       } else {
       }
