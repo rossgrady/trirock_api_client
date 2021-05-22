@@ -166,10 +166,6 @@ async function etix(venueID, timeWindow, dbpool) {
         } else {
           endDate = dayjs(activity.startTime);
         }
-        console.log(activity.name + " etix start time: " + activity.startTime);
-        if(activity.id == "4794630") {
-          console.log(util.inspect(activity, true, 7, true));
-        }
         const startTime = dayjs(activity.startTime);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
@@ -226,10 +222,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.utc);
         const startTime = dayjs(event.start.utc);
-        console.log(event.name.text + " eventbrite start time: " + event.start.local);
-        if(event.id == "155959979497") {
-          console.log(util.inspect(event, true, 7, true));
-        }
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
@@ -260,6 +252,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   }
 }
 
+
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
@@ -277,10 +270,8 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
-          console.log(util.inspect(event, true, 7, true));
-          console.log(event.name + " ticketmaster start time: " + event.dates.start.localTime);
-          const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
-          const startTime = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+"-0500");
+          const startTime = dayjs(event.dates.start.dateTime);
+          const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
           const thisEvent = {
             "activity_StartTime": startTime,
             "activity_Timestamp": timestamp.unix(),
@@ -289,6 +280,16 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "activity_API_ID": event.id,
             "artists": [],
             "orig_artists": [],
+          }
+          if (typeof event._embedded.attractions[0] !== 'undefined') {
+            for (const performer of event._embedded.attractions) {
+              const artist = {
+                "name": performer.name,
+                "url": performer.externalLinks.homepage.url,
+              }
+              event.orig_artists.push(artist);
+              rawArtists.push(artist);
+            }
           }
           rawArtists.push(rawArtist);
           thisEvent.orig_artists.push(rawArtist);
@@ -354,8 +355,6 @@ async function main() {
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[evtday].length === 2) {
-        console.log('2 on this day, heres what we start with:\n');
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
         let api_same = 0;
         let identical = 1;
         let target_event = 1;
@@ -400,19 +399,13 @@ async function main() {
           const removed = main_events[venueid].events[evtday].splice(source_event, 1);
         }
         console.log('2 on this day, heres what we wound up with:\n');
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 4, true));
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
+        console.log(util.inspect(main_events[venueid].events[evtday], true, 4, true));
       }
     }
   }
 }
-
-/*
-          "activity_Time": startDate.format('HH:mm:ss'),
-          "activity_StartDate": startDate.format('YYYY-MM-DD'),
-          "activity_EndDate": endDate.format('YYYY-MM-DD'),
-*/
-
 
 main();
