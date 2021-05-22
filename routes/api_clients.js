@@ -41,11 +41,14 @@ async function dblookup(namestring, dbpool) {
 }
 
 function find_URLs(testchunk) {
-  const urlregex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
-  const returnparts = testchunk.matchAll(urlregex);
-  console.log(util.inspect(returnparts, true, 7, true));
+  if(typeof testchunk !== 'undefined' && testchunk !== '') {
+    const urlregex = /((([A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)((?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
+    const matches = testchunk.matchAll(urlregex);
+    for (const match of matches) {
+      console.log(util.inspect(match, true, 7, true));
+    }
+  }
   const urlsarray = [];
-  
   return urlsarray;
 }
 
