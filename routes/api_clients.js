@@ -100,7 +100,7 @@ async function artist_lookup(artists, dbpool) {
           falses.push(candobj);
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
-            const articlereg = / \[The|A|An\]$/;
+            const articlereg = /( \[The|A|An\])$/;
             const compname = artobj.actor_Name.replace(articlereg,'');
             console.log('comparing ' + compname + " to " + candidate);
             if (compname.toLowerCase() === candidate.toLowerCase()) {
