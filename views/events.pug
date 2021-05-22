@@ -7,6 +7,6 @@ block content
         each venue, i in events
           p #{venue.name}
           each eventarr, timestamp in venue.events 
-            if eventarr
+            if venue.events[timestamp].length > 0
               each event, j in eventarr
                 p #{event.activity_Time}
