@@ -281,7 +281,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "artists": [],
             "orig_artists": [],
           }
-          if (typeof event._embedded.attractions[0] !== 'undefined') {
+          if (typeof event._embedded.attractions !== 'undefined' && typeof event._embedded.attractions[0] !== 'undefined') {
             for (const performer of event._embedded.attractions) {
               const artist = {
                 "name": performer.name,
