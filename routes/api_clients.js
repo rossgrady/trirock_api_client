@@ -57,6 +57,7 @@ async function artist_lookup(artists, dbpool) {
     const reg15 = / more(\W)?$/i;
     const reg16 = /(?<blurb>in the record shop)/i;
     const reg17 = / \+ /gi;
+    const reg18 = / - /gi;
     let name1 = artist.name.replace(reg1,'');
     name1 = name1.replace(reg10,' ');
     name1 = name1.replace(reg12, ', ');
@@ -71,6 +72,7 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg11,'');
     name1 = name1.replace(reg5, ', ');
     name1 = name1.replace(reg17, ', ');
+    name1 = name1.replace(reg18, ', ');
     name1 = name1.replace(reg6, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg14,', ');
@@ -162,6 +164,7 @@ async function etix(venueID, timeWindow, dbpool) {
         } else {
           endDate = dayjs(activity.startTime);
         }
+        console.log("start time: " + activity.startTime);
         const startTime = dayjs(activity.startTime);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtists = [];
@@ -218,6 +221,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
       if(typeof event.status !== 'undefined' && event.status === 'live') {
         const endDate = dayjs(event.end.local);
         const startTime = dayjs(event.start.local);
+        console.log("start time: " + event.start.local);
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const rawArtist = {
             "name": event.name.text,
@@ -265,6 +269,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "url": "",
             };
           const rawArtists = [];
+          console.log("start time: " + event.dates.start.localTime);
           const timestamp = dayjs(event.dates.start.localDate+"T12:00:00.000Z");
           const startTime = dayjs(event.dates.start.localDate+"T"+event.dates.start.localTime+"-0500");
           const thisEvent = {
@@ -373,6 +378,7 @@ async function main() {
         }
         if (identical === 1 && api_same === 1) {
           // merge, delete, add blurb with the 2 times
+          // doublecheck that Jenny Besetztz & HNDCLW show
           let blurb = "Two shows: ";
           if (main_events[venueid].events[evtday][0].activity_StartTime.isAfter(main_events[venueid].events[evtday][1].activity_StartTime)) {
             blurb += main_events[venueid].events[evtday][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[evtday][0].activity_StartTime.format('h:mma');
@@ -388,7 +394,6 @@ async function main() {
         console.log(util.inspect(main_events[venueid].events[evtday], true, 5, true));
       } else {
         console.log('either 1 or 3 on this day, leaving alone either way\n')
-        console.log(util.inspect(main_events[venueid].events[evtday], true, 2, true));
       }
     }
   }
