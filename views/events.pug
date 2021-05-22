@@ -7,5 +7,9 @@ block content
         each val in events
           if val 
             p= val.name
+            if val.events 
+              each event, index in val.events 
+                if index 
+                  p= index
         else
           li There are no values
