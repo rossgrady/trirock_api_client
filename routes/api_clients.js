@@ -45,7 +45,8 @@ function find_URLs(testchunk) {
     const urlregex = /(?<grp1>(?<grp2>(?<grp3>[A-Za-z]{3,9}:(?:\/\/)?)(?:[\-;:&=\+\$,\w]+@)?[A-Za-z0-9\.\-]+|(?:www\.|[\-;:&=\+\$,\w]+@)[A-Za-z0-9\.\-]+)(?<grp7>(?:\/[\+~%\/\.\w\-_]*)?\??(?:[\-\+=&;%@\.\w_]*)#?(?:[\.\!\/\\\w]*))?)/gi;
     const matches = testchunk.matchAll(urlregex);
     for (const match of matches) {
-      console.log(util.inspect(match, true, 7, true));
+      console.log(match.groups.grp1);
+      console.log(match.groups.grp2);
     }
   }
   const urlsarray = [];
