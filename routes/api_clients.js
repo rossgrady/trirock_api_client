@@ -102,8 +102,8 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg13, ', ');
     name1 = name1.replace(reg15, '');
     name1 = name1.replace(reg9,'');
-    name1 = name1.replace(reg2,'');
     name1 = name1.replace(reg3,' ');
+    name1 = name1.replace(reg2,'');
     name1 = name1.replace(reg4,', ');
     name1 = name1.replace(' w/', ', ');
     name1 = name1.replace(reg7, ', ');
