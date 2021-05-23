@@ -15,15 +15,18 @@ block content
             if val 
               tr
                 td
-                  span.text-nowrap= val.activity_startDate
-                  br
-                  span.text-nowrap= val.activity_Time
-                  br
-                  span.text-nowrap= val.venue_Name
-                  br
-                  for orig_artist in val.orig_artists 
-                    span= orig_artist.name
-                    br
+                  .form-check
+                    input(type="checkbox" class="form-check-input" id="keep")
+                    label(class="form-check-label" for="keep")
+                      span.text-nowrap= val.activity_startDate
+                      br
+                      span.text-nowrap= val.activity_Time
+                      br
+                      span.text-nowrap= val.venue_Name
+                      br
+                      for orig_artist in val.orig_artists 
+                        span= orig_artist.name
+                        br
                 td
                   for artist in val.artists 
                     if artist.best 
