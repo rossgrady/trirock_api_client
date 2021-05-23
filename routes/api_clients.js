@@ -370,6 +370,7 @@ async function main() {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
           evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
           main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }
@@ -381,7 +382,8 @@ async function main() {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
-          evt.venue_ID = venue.venue_id;
+          evt.venue_ID = venue.venue_id;          
+          evt.venue_Name = venue.name;
           main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }
@@ -394,6 +396,7 @@ async function main() {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
           }
           evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
           main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
         }
       }

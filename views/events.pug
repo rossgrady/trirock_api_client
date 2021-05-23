@@ -7,6 +7,9 @@ block content
         each val in events
           if val 
             p= val.activity_startDate
-            p= val.venue_ID
+            p= val.venue_Name
+            p= val.activity_Time
+            for orig_artist in val.orig_artists 
+              p= orig_artist.name
         else
           li There are no values
