@@ -9,19 +9,17 @@ block content
             td= val.activity_startDate + '  ' + val.activity_Time
             td= val.venue_Name
             td
-              .row
-                for orig_artist in val.orig_artists 
-                  .col= orig_artist.name
+              for orig_artist in val.orig_artists 
+                p= orig_artist.name
             td
-              .row
-                for artist in val.artists 
-                  if artist.best 
-                    .col=artist.dbname + ' == FOUND'
-                  else if artist.dbname !== ''
-                    .col=artist.dbname 
-                  else 
-                    .col=artist.origname 
+              for artist in val.artists 
+                if artist.best 
+                  p.text-success= artist.dbname
+                else if artist.dbname !== ''
+                  p.text-info= artist.dbname 
+                else 
+                  p= artist.origname 
             td
               if val.urls.length > 0
                 for url in val.urls 
-                  p=url
+                  p= url
