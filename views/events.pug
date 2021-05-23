@@ -2,27 +2,30 @@ extends layout
 
 block content
   .container
-    table.table.table-striped.table-sm.table-bordered.table-responsive
-      each val in events
-        if val 
-          tr
-            td
-              p.text-nowrap= val.activity_startDate
-              p.text-nowrap= val.activity_Time
-            td= val.venue_Name
-            td
-              for orig_artist in val.orig_artists 
-                p= orig_artist.name
-            td
-              for artist in val.artists 
-                if artist.best 
-                  p.text-success= artist.dbname
-                else if artist.dbname !== ''
-                  p.text-info= artist.dbname 
-                else 
-                  p= artist.origname 
-            td= val.activity_Blurb
-            td
-              if val.urls.length > 0
-                for url in val.urls 
-                  p.text-break= url
+    form
+      table.table.table-striped.table-sm.table-bordered.table-responsive
+        each val in events
+          if val 
+            tr
+              td
+                p.text-nowrap= val.activity_startDate
+                p.text-nowrap= val.activity_Time
+              td= val.venue_Name
+              td
+                for orig_artist in val.orig_artists 
+                  p= orig_artist.name
+              td
+                for artist in val.artists 
+                  if artist.best 
+                    .form-check
+                      input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                      label(class="form-check-label" for="exampleCheck1")= artist.dbname
+                  else if artist.dbname !== ''
+                    p.text-info= artist.dbname 
+                  else 
+                    input(type='text' id='newartist')= artist.origname 
+              td= val.activity_Blurb
+              td
+                if val.urls.length > 0
+                  for url in val.urls 
+                    p.text-break= url
