@@ -2,25 +2,25 @@ extends layout
 
 block content
   .container
-    table.table.table-striped
-      each val in events
-        if val 
-          tr
-            td= val.activity_startDate + '  ' + val.activity_Time
-            td= val.venue_Name
-            td
+    each val in events
+      if val 
+        .row
+          .col= val.activity_startDate + '  ' + val.activity_Time
+          .col= val.venue_Name
+          .col
+            .row
               for orig_artist in val.orig_artists 
-                p= orig_artist.name
-            td
+              .col= orig_artist.name
+          .col
+            .row
               for artist in val.artists 
                 if artist.best 
-                  p=artist.dbname + ' == FOUND'
+                  .col=artist.dbname + ' == FOUND'
                 else if artist.dbname !== ''
-                  p=artist.dbname 
+                  .col=artist.dbname 
                 else 
-                  p=artist.origname 
-            td 
-              if val.urls.length > 0
-                for url in val.urls 
-                  p= url 
-
+                  .col=artist.origname 
+          .col
+            if val.urls.length > 0
+              for url in val.urls 
+                p= url 
