@@ -48,7 +48,7 @@ block content
                         .col-sm-8
                           input(class='form-control-sm' type='text' id='newartist_url')
                 td
-                  input(class='form-control-sm' type='textarea' id='blurb')= val.activity_Blurb
+                  textarea(class='form-control-sm' id='blurb' rows='3')= val.activity_Blurb
                 td
                   if val.urls.length > 0
                     for url in val.urls 
