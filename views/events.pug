@@ -15,7 +15,9 @@ block content
               for artist in val.artists 
                 if artist.best 
                   p=artist.dbname + ' == FOUND'
-                else
+                else if artist.dbname !== ''
+                  p=artist.dbname 
+                else 
                   p=artist.origname 
             td 
               if val.urls.length > 0
