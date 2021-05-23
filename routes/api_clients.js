@@ -74,7 +74,7 @@ async function artist_lookup(artists, dbpool) {
   for (artist of artists) {
     let blurb_snippet = '';
     const reg1 = /an evening with/ig;
-    const reg2 = / \(.*\)/i;
+    const reg2 = / \(.*\)/gi;
     const reg3 = /(vinyl)* album release (party|show)*/i;
     const reg4 = / and /ig;
     const reg5 = / & /ig;
@@ -92,6 +92,11 @@ async function artist_lookup(artists, dbpool) {
     const reg17 = / \+ /gi;
     const reg18 = / - /gi;
     let name1 = artist.name.replace(reg1,'');
+    const found = name1.match(reg16);
+    if (found !== null) {
+      blurb_snippet = found.groups.blurb;
+      name1 = name1.replace(reg16, '');
+    }
     name1 = name1.replace(reg10,' ');
     name1 = name1.replace(reg12, ', ');
     name1 = name1.replace(reg13, ', ');
@@ -109,11 +114,6 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg6, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg14,', ');
-    const found = name1.match(reg16);
-    if (found !== null) {
-      blurb_snippet = found.groups.blurb;
-      name1 = name1.replace(reg16, '');
-    }
     const parts = name1.split(',');
     for (const part of parts) {
       const candidate = part.trim();
