@@ -2,25 +2,26 @@ extends layout
 
 block content
   .container
-    each val in events
-      if val 
-        .row.row-cols-auto
-          .col= val.activity_startDate + '  ' + val.activity_Time
-          .col= val.venue_Name
-          .col
-            .row
-              for orig_artist in val.orig_artists 
-                .col= orig_artist.name
-          .col
-            .row
-              for artist in val.artists 
-                if artist.best 
-                  .col=artist.dbname + ' == FOUND'
-                else if artist.dbname !== ''
-                  .col=artist.dbname 
-                else 
-                  .col=artist.origname 
-          .col
-            if val.urls.length > 0
-              for url in val.urls 
-                p= url 
+    .table.table-striped
+      each val in events
+        if val 
+          tr
+            td= val.activity_startDate + '  ' + val.activity_Time
+            td= val.venue_Name
+            td
+              .row
+                for orig_artist in val.orig_artists 
+                  .col= orig_artist.name
+            td
+              .row
+                for artist in val.artists 
+                  if artist.best 
+                    .col=artist.dbname + ' == FOUND'
+                  else if artist.dbname !== ''
+                    .col=artist.dbname 
+                  else 
+                    .col=artist.origname 
+            td
+              if val.urls.length > 0
+                for url in val.urls 
+                  p= url 
