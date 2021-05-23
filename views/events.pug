@@ -2,14 +2,13 @@ extends layout
 
 block content
   .container
-    each val in events
+    table.table.table-striped
+      each val in events
         if val 
-          .row 
-            .col
-              p= val.activity_startDate + '  ' + val.activity_Time
-            .col
-              p= val.venue_Name
-            .col
+          tr
+            td= val.activity_startDate + '  ' + val.activity_Time
+            td= val.venue_Name
+            td
               for orig_artist in val.orig_artists 
                 p= orig_artist.name
     else
