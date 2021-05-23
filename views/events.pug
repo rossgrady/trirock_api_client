@@ -29,8 +29,9 @@ block content
                           li= orig_artist.name
                 td
                   ul.list-unstyled
-                    for artist in val.artists 
-                      li
+                    each artist, index in val.artists 
+                      - let even = index % 2 === 0
+                      li(class=even ? 'bg-light' : 'bg-body')
                         if artist.best 
                           .form-check
                             input(type="checkbox" class="form-check-input" id="exampleCheck1")
