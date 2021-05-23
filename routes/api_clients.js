@@ -201,7 +201,7 @@ async function etix(venueID, timeWindow, dbpool) {
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const rawArtists = [];
         const urls = find_URLs(activity.description);
-        const event = {
+        const eventObj = {
           "activity_Timestamp": timestamp.unix(),
           "activity_startDate": startDate,
           "activity_Time": activityTime,
@@ -219,7 +219,7 @@ async function etix(venueID, timeWindow, dbpool) {
               "name": performer.name,
               "url": performer.linkURL,
             }
-            event.orig_artists.push(artist);
+            eventObj.orig_artists.push(artist);
             rawArtists.push(artist);
           }
         }
@@ -227,16 +227,16 @@ async function etix(venueID, timeWindow, dbpool) {
           "name": activity.name,
           "url": "",
         }
-        event.orig_artists.push(artist);
+        eventObj.orig_artists.push(artist);
         rawArtists.push(artist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artiste of cookedArtists) {
-          event.artists.push(artiste);
+        for (const artiste of cookedArtists) {
+          eventObj.artists.push(artiste);
           if (typeof artiste.blurb_snippet !== 'undefined') {
-            thisEvent.activity_Blurb += artiste.blurb_snippet;
+            eventObj.activity_Blurb += artiste.blurb_snippet;
           }
         }
-        returnarr.push(event);
+        returnarr.push(eventObj);
       }
     }
     return returnarr;
@@ -256,22 +256,22 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   };
   try {
     const response = await axios.get(ebrite_url, config);
-    const events = [];
-    for (const event of response.data.events) {
-      const startTime = dayjs(event.start.utc);
-      if(typeof event.status !== 'undefined' && event.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
+    const returnarr = [];
+    for (const activity of response.data.events) {
+      const startTime = dayjs(activity.start.utc);
+      if(typeof activity.status !== 'undefined' && activity.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const rawArtist = {
-            "name": event.name.text,
+            "name": activity.name.text,
             "url": "",
           };
         const rawArtists = [];
-        const urls = find_URLs(event.description.text);
+        const urls = find_URLs(activity.description.text);
         const eventObj = {
           "activity_API": "eventbrite",
-          "activity_API_ID": event.id,
+          "activity_API_ID": activity.id,
           "activity_Timestamp": timestamp.unix(),
           "activity_startDate": startDate,
           "activity_Time": activityTime,
@@ -284,16 +284,16 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         eventObj.orig_artists.push(rawArtist);
         rawArtists.push(rawArtist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (artiste of cookedArtists) {
+        for (const artiste of cookedArtists) {
           eventObj.artists.push(artiste);
           if (typeof artiste.blurb_snippet !== 'undefined') {
-            thisEvent.activity_Blurb += artiste.blurb_snippet;
+            eventObj.activity_Blurb += artiste.blurb_snippet;
           }
         }
-        events.push(eventObj);
+        returnarr.push(eventObj);
       }
     }
-    return events;
+    return returnarr;
   } catch (error) {
     console.error(error);
   }
@@ -308,58 +308,58 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
   try {
     const response = await axios.get(ticketmaster_url);
     await sleep(300);
-    const events = [];
+    const returnarr = [];
     if (typeof response.data._embedded !== 'undefined') {
-      for (const event of response.data._embedded.events) {
-        if (typeof event.dates.status.code !== 'undefined' && event.dates.status.code !== 'cancelled' && typeof event.classifications !== 'undefined' && event.classifications[0].segment.name === 'Music') {
+      for (const activity of response.data._embedded.events) {
+        if (typeof activity.dates.status.code !== 'undefined' && activity.dates.status.code !== 'cancelled' && typeof activity.classifications !== 'undefined' && activity.classifications[0].segment.name === 'Music') {
           const rawArtist = {
-            "name": event.name,
+            "name": activity.name,
             "url": "",
             };
           const rawArtists = [];
-          const urls = find_URLs(event.info);
-          const startTime = dayjs(event.dates.start.dateTime);
+          const urls = find_URLs(activity.info);
+          const startTime = dayjs(activity.dates.start.dateTime);
           const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
           const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-          const thisEvent = {
+          const eventObj = {
             "activity_startDate": startDate,
             "activity_Time": activityTime,
             "activity_endDate": startDate,
             "activity_Timestamp": timestamp.unix(),
             "activity_API": "ticketmaster",
-            "activity_API_ID": event.id,
+            "activity_API_ID": activity.id,
             "artists": [],
             "orig_artists": [],
             "urls": urls,
             "activity_Blurb": '',
           }
-          if (typeof event._embedded.attractions !== 'undefined' && typeof event._embedded.attractions[0] !== 'undefined') {
-            for (const performer of event._embedded.attractions) {
+          if (typeof activity._embedded.attractions !== 'undefined' && typeof activity._embedded.attractions[0] !== 'undefined') {
+            for (const performer of activity._embedded.attractions) {
               const artist = {
                 "name": performer.name,
               }
               if (typeof performer.externalLinks !== 'undefined' && typeof performer.externalLinks.homepage !== 'undefined') {
                 artist.url = performer.externalLinks.homepage[0].url;
               }
-              thisEvent.orig_artists.push(artist);
+              eventObj.orig_artists.push(artist);
               rawArtists.push(artist);
             }
           }
           rawArtists.push(rawArtist);
-          thisEvent.orig_artists.push(rawArtist);
+          eventObj.orig_artists.push(rawArtist);
           const cookedArtists = await artist_lookup(rawArtists, dbpool);
-          for (artiste of cookedArtists) {
-            thisEvent.artists.push(artiste);
+          for (const artiste of cookedArtists) {
+            eventObj.artists.push(artiste);
             if (typeof artiste.blurb_snippet !== 'undefined') {
-              thisEvent.activity_Blurb += artiste.blurb_snippet;
+              eventObj.activity_Blurb += artiste.blurb_snippet;
             }
           }
-          events.push(thisEvent);
+          returnarr.push(eventObj);
         }
       }
     }
-    return events;
+    return returnarr;
   } catch (error) {
     console.error(error);
   }
