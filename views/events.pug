@@ -6,7 +6,9 @@ block content
       each val in events
         if val 
           tr
-            td= val.activity_startDate + '  ' + val.activity_Time
+            td
+              p.text-nowrap= val.activity_startDate
+              p.text-nowrap= val.activity_Time
             td= val.venue_Name
             td
               for orig_artist in val.orig_artists 
