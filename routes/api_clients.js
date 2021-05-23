@@ -74,7 +74,7 @@ async function artist_lookup(artists, dbpool) {
   for (artist of artists) {
     let blurb_snippet = '';
     const reg1 = /an evening with/ig;
-    const reg2 = / \(.*\)$/i;
+    const reg2 = / \(.*\)/i;
     const reg3 = /(vinyl)* album release (party|show)*/i;
     const reg4 = / and /ig;
     const reg5 = / & /ig;
