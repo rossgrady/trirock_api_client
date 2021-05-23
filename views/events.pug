@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container
-    table.table.table-striped
+    table.table.table-striped.table-sm.table-bordered
       each val in events
         if val 
           tr
@@ -24,4 +24,4 @@ block content
             td
               if val.urls.length > 0
                 for url in val.urls 
-                  p= url 
+                  p=url
