@@ -6,10 +6,10 @@ block content
       table.table.table-striped.table-sm.table-bordered.table-responsive
         thead
           tr
-            td.w-25
-            td.w-25
-            td.w-25
-            td.w-25
+            td.w-25 Info
+            td.w-25 Artists
+            td.w-25 Blurb
+            td.w-25 URLs
         tbody
           each val in events
             if val 
@@ -22,7 +22,7 @@ block content
                   span.text-nowrap= val.venue_Name
                   br
                   for orig_artist in val.orig_artists 
-                    span.text-nowrap= orig_artist.name
+                    span= orig_artist.name
                 td
                   for artist in val.artists 
                     if artist.best 
@@ -46,7 +46,8 @@ block content
                         label(for='newartist_url' class='col-sm-2 col-form-label') Artist URL
                         .col-sm-10
                           input(class='form-control-sm' type='text' id='newartist_url')
-                td= val.activity_Blurb
+                td
+                  input(class='form-control-sm' type='text' id='blurb' value=val.activity_Blurb)
                 td
                   if val.urls.length > 0
                     for url in val.urls 
