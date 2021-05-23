@@ -6,10 +6,7 @@ block content
       .col-xs-12
         each val in events
           if val 
-            p= val.name
-            if val.events 
-              each event, index in val.events 
-                if index 
-                  p= index
+            p= val.activity_startDate
+            p= val.venue_ID
         else
           li There are no values

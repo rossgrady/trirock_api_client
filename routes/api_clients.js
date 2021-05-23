@@ -356,6 +356,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
 async function main() {
   const dbpool = await db.getPool();
   const main_events = [];
+  const return_events = [];
   for (const venue of venues) {
     main_events[venue.venue_id] = {
       'name': venue.name,
@@ -436,14 +437,22 @@ async function main() {
           }
           main_events[venueid].events[`${evtday}`][target_event].activity_Blurb = blurb;
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
+          return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else if (api_same === 0) {
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
+          return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
+        } else {
+          return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
+          return_events.push(main_events[venueid].events[`${evtday}`][source_event]);
         }
       } else {
+        for (eventobj of main_events[venueid].events[`${evtday}`]){
+          return_events.push(eventobj);
+        }
       }
     }
   }
-  return main_events;
+  return return_events;
 }
 
 module.exports = { main };
