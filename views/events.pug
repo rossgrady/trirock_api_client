@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container
-    table.table.table-striped.table-sm.table-bordered
+    table.table.table-striped.table-sm.table-bordered.table-responsive
       each val in events
         if val 
           tr
@@ -19,6 +19,7 @@ block content
                   p.text-info= artist.dbname 
                 else 
                   p= artist.origname 
+            td= val.activity_Blurb
             td
               if val.urls.length > 0
                 for url in val.urls 

@@ -211,6 +211,7 @@ async function etix(venueID, timeWindow, dbpool) {
           "orig_artists": [],
           "artists": [],
           "urls": urls,
+          "activity_Blurb": '',
         }
         if (typeof activity.performers[0] !== 'undefined') {
           for (const performer of activity.performers) {
@@ -231,6 +232,9 @@ async function etix(venueID, timeWindow, dbpool) {
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
         for (artiste of cookedArtists) {
           event.artists.push(artiste);
+          if (typeof artiste.blurb_snippet !== 'undefined') {
+            thisEvent.activity_Blurb += artiste.blurb_snippet;
+          }
         }
         returnarr.push(event);
       }
@@ -275,12 +279,16 @@ async function eventbrite(venueID, timeWindow, dbpool) {
           "orig_artists": [],
           "artists": [],
           "urls": urls,
+          "activity_Blurb": '',
         };
         eventObj.orig_artists.push(rawArtist);
         rawArtists.push(rawArtist);
         const cookedArtists = await artist_lookup(rawArtists, dbpool);
         for (artiste of cookedArtists) {
           eventObj.artists.push(artiste);
+          if (typeof artiste.blurb_snippet !== 'undefined') {
+            thisEvent.activity_Blurb += artiste.blurb_snippet;
+          }
         }
         events.push(eventObj);
       }
@@ -324,6 +332,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
             "artists": [],
             "orig_artists": [],
             "urls": urls,
+            "activity_Blurb": '',
           }
           if (typeof event._embedded.attractions !== 'undefined' && typeof event._embedded.attractions[0] !== 'undefined') {
             for (const performer of event._embedded.attractions) {
@@ -342,6 +351,9 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           const cookedArtists = await artist_lookup(rawArtists, dbpool);
           for (artiste of cookedArtists) {
             thisEvent.artists.push(artiste);
+            if (typeof artiste.blurb_snippet !== 'undefined') {
+              thisEvent.activity_Blurb += artiste.blurb_snippet;
+            }
           }
           events.push(thisEvent);
         }
