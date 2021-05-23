@@ -233,7 +233,7 @@ async function etix(venueID, timeWindow, dbpool) {
         for (const artiste of cookedArtists) {
           eventObj.artists.push(artiste);
           if (typeof artiste.blurb_snippet !== 'undefined') {
-            eventObj.activity_Blurb += artiste.blurb_snippet;
+            eventObj.activity_Blurb = artiste.blurb_snippet;
           }
         }
         returnarr.push(eventObj);
@@ -287,7 +287,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         for (const artiste of cookedArtists) {
           eventObj.artists.push(artiste);
           if (typeof artiste.blurb_snippet !== 'undefined') {
-            eventObj.activity_Blurb += artiste.blurb_snippet;
+            eventObj.activity_Blurb = artiste.blurb_snippet;
           }
         }
         returnarr.push(eventObj);
@@ -352,7 +352,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           for (const artiste of cookedArtists) {
             eventObj.artists.push(artiste);
             if (typeof artiste.blurb_snippet !== 'undefined') {
-              eventObj.activity_Blurb += artiste.blurb_snippet;
+              eventObj.activity_Blurb = artiste.blurb_snippet;
             }
           }
           returnarr.push(eventObj);
