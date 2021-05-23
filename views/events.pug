@@ -11,12 +11,12 @@ block content
             td.w-25 Blurb
             td.w-25 URLs
         tbody
-          each val in events
+          each val, evtidx in events
             if val 
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id="keep" checked)
+                    input(type="checkbox" class="form-check-input" id=`keep[${evtidx}]` checked)
                     label(class="form-check-label" for="keep")
                       span.text-nowrap= val.activity_startDate
                       br
