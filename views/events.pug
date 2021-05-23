@@ -19,11 +19,24 @@ block content
                   if artist.best 
                     .form-check
                       input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                      label(class="form-check-label" for="exampleCheck1")= artist.dbname
+                      label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
                   else if artist.dbname !== ''
-                    p.text-info= artist.dbname 
+                    .form-check
+                      input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                      label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
                   else 
-                    input(type='text' id='newartist' value=artist.origname)
+                    .row
+                      label(for='newartistname' class='col-sm-2 col-form-label') Artist Name
+                      .col-sm-10
+                        input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
+                    .row
+                      label(for='newartist_twitter' class='col-sm-2 col-form-label') Artist Twitter
+                      .col-sm-10
+                        input(class='form-control-sm' type='text' id='newartist_twitter')
+                    .row
+                      label(for='newartist_url' class='col-sm-2 col-form-label') Artist URL
+                      .col-sm-10
+                        input(class='form-control-sm' type='text' id='newartist_url')
               td= val.activity_Blurb
               td
                 if val.urls.length > 0
