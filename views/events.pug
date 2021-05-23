@@ -11,15 +11,14 @@ block content
             td
               for orig_artist in val.orig_artists 
                 p= orig_artist.name
-            if val.urls.length > 0
-              td 
-                for url in val.urls 
-                  p= url 
             td
               for artist in val.artists 
                 if artist.best 
                   p=artist.dbname + ' == FOUND'
                 else
                   p=artist.origname 
-
+            td 
+              if val.urls.length > 0
+                for url in val.urls 
+                  p= url 
 
