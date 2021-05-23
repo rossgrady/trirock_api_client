@@ -4,7 +4,7 @@ block content
   .container
     each val in events
       if val 
-        .row
+        .row.row-cols-auto
           .col= val.activity_startDate + '  ' + val.activity_Time
           .col= val.venue_Name
           .col
