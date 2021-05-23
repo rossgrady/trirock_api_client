@@ -24,40 +24,42 @@ block content
                       br
                       span.text-nowrap= val.venue_Name
                       br
-                      for orig_artist in val.orig_artists 
-                        span= orig_artist.name
-                        br
+                      ul
+                        for orig_artist in val.orig_artists 
+                          li= orig_artist.name
                 td
-                  for artist in val.artists 
-                    if artist.best 
-                      .form-check
-                        input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                        label(class="form-check-label text-success" for="exampleCheck1" checked)= artist.dbname
-                    else if artist.dbname !== ''
-                      .form-check
-                        input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                        label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
-                    else 
-                      .row
-                        label(class="form-check-label col-sm-4" for="addone") add 
-                        .col-sm-8
-                          input(type="checkbox" class="form-check-input" id="addone")
-                      .row
-                        label(for='newartistname' class='col-sm-4 col-form-label') Artist Name
-                        .col-sm-8
-                          input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
-                      .row
-                        label(for='newartist_twitter' class='col-sm-4 col-form-label') Artist Twitter
-                        .col-sm-8
-                          input(class='form-control-sm' type='text' id='newartist_twitter')
-                      .row
-                        label(for='newartist_url' class='col-sm-4 col-form-label') Artist URL
-                        .col-sm-8
-                          input(class='form-control-sm' type='text' id='newartist_url')
+                  ul
+                    for artist in val.artists 
+                      li
+                        if artist.best 
+                          .form-check
+                            input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                            label(class="form-check-label text-success" for="exampleCheck1" checked)= artist.dbname
+                        else if artist.dbname !== ''
+                          .form-check
+                            input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                            label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
+                        else 
+                          .row
+                            label(class="form-check-label col-sm-4" for="addone") add 
+                            .col-sm-8
+                              input(type="checkbox" class="form-check-input" id="addone")
+                          li.row
+                            label(for='newartistname' class='col-sm-4 col-form-label') Artist Name
+                            .col-sm-8
+                              input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
+                          .row
+                            label(for='newartist_twitter' class='col-sm-4 col-form-label') Artist Twitter
+                            .col-sm-8
+                              input(class='form-control-sm' type='text' id='newartist_twitter')
+                          .row
+                            label(for='newartist_url' class='col-sm-4 col-form-label') Artist URL
+                            .col-sm-8
+                              input(class='form-control-sm' type='text' id='newartist_url')
                 td
                   textarea(class='form-control-sm' id='blurb' rows='3')= val.activity_Blurb
                 td
                   if val.urls.length > 0
-                    for url in val.urls 
-                      span.text-break= url
-                      br
+                    ul
+                      for url in val.urls 
+                        li.text-break= url
