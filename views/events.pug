@@ -36,11 +36,11 @@ block content
                           .form-check
                             input(type="checkbox" class="form-check-input" id="exampleCheck1" checked)
                             label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
-                        else if artist.dbname !== ''
-                          .form-check
-                            input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                            label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
-                        else 
+                        else
+                          if artist.dbname !== ''
+                            .form-check
+                              input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                              label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
                           .row
                             label(class="form-check-label col-sm-4" for="addone") add 
                             .col-sm-8
