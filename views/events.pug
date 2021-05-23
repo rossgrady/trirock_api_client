@@ -25,15 +25,15 @@ block content
                       input(type="checkbox" class="form-check-input" id="exampleCheck1")
                       label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
                   else 
-                    .row
+                    .row.mb-3
                       label(for='newartistname' class='col-sm-2 col-form-label') Artist Name
                       .col-sm-10
                         input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
-                    .row
+                    .row.mb-3
                       label(for='newartist_twitter' class='col-sm-2 col-form-label') Artist Twitter
                       .col-sm-10
                         input(class='form-control-sm' type='text' id='newartist_twitter')
-                    .row
+                    .row.mb-3
                       label(for='newartist_url' class='col-sm-2 col-form-label') Artist URL
                       .col-sm-10
                         input(class='form-control-sm' type='text' id='newartist_url')
