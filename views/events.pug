@@ -1,44 +1,53 @@
 extends layout
 
 block content
-  .container
+  .container-fluid
     form
       table.table.table-striped.table-sm.table-bordered.table-responsive
-        each val in events
-          if val 
-            tr
-              td
-                p.text-nowrap= val.activity_startDate
-                p.text-nowrap= val.activity_Time
-              td= val.venue_Name
-              td
-                for orig_artist in val.orig_artists 
-                  p= orig_artist.name
-              td
-                for artist in val.artists 
-                  if artist.best 
-                    .form-check
-                      input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                      label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
-                  else if artist.dbname !== ''
-                    .form-check
-                      input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                      label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
-                  else 
-                    .row.mb-3
-                      label(for='newartistname' class='col-sm-2 col-form-label') Artist Name
-                      .col-sm-10
-                        input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
-                    .row.mb-3
-                      label(for='newartist_twitter' class='col-sm-2 col-form-label') Artist Twitter
-                      .col-sm-10
-                        input(class='form-control-sm' type='text' id='newartist_twitter')
-                    .row.mb-3
-                      label(for='newartist_url' class='col-sm-2 col-form-label') Artist URL
-                      .col-sm-10
-                        input(class='form-control-sm' type='text' id='newartist_url')
-              td= val.activity_Blurb
-              td
-                if val.urls.length > 0
-                  for url in val.urls 
-                    p.text-break= url
+        thead
+          tr
+            td.w-25
+            td.w-25
+            td.w-25
+            td.w-25
+        tbody
+          each val in events
+            if val 
+              tr
+                td
+                  span.text-nowrap= val.activity_startDate
+                  br
+                  span.text-nowrap= val.activity_Time
+                  br
+                  span.text-nowrap= val.venue_Name
+                  br
+                  for orig_artist in val.orig_artists 
+                    span.text-nowrap= orig_artist.name
+                td
+                  for artist in val.artists 
+                    if artist.best 
+                      .form-check
+                        input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                        label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
+                    else if artist.dbname !== ''
+                      .form-check
+                        input(type="checkbox" class="form-check-input" id="exampleCheck1")
+                        label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
+                    else 
+                      .row.mb-3
+                        label(for='newartistname' class='col-sm-2 col-form-label') Artist Name
+                        .col-sm-10
+                          input(class='form-control-sm' type='text' id='newartistname' value=artist.origname)
+                      .row.mb-3
+                        label(for='newartist_twitter' class='col-sm-2 col-form-label') Artist Twitter
+                        .col-sm-10
+                          input(class='form-control-sm' type='text' id='newartist_twitter')
+                      .row.mb-3
+                        label(for='newartist_url' class='col-sm-2 col-form-label') Artist URL
+                        .col-sm-10
+                          input(class='form-control-sm' type='text' id='newartist_url')
+                td= val.activity_Blurb
+                td
+                  if val.urls.length > 0
+                    for url in val.urls 
+                      p.text-break= url
