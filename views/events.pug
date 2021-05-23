@@ -31,11 +31,11 @@ block content
                   ul.list-unstyled
                     each artist, index in val.artists 
                       - let even = index % 2 === 0
-                      li(class=even ? 'bg-light' : 'bg-body')
+                      li(class=even ? 'bg-light' : 'bg-transparent')
                         if artist.best 
                           .form-check
-                            input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                            label(class="form-check-label text-success" for="exampleCheck1" checked)= artist.dbname
+                            input(type="checkbox" class="form-check-input" id="exampleCheck1" checked)
+                            label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
                         else if artist.dbname !== ''
                           .form-check
                             input(type="checkbox" class="form-check-input" id="exampleCheck1")
