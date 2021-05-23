@@ -16,7 +16,7 @@ block content
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id="keep")
+                    input(type="checkbox" class="form-check-input" id="keep" checked)
                     label(class="form-check-label" for="keep")
                       span.text-nowrap= val.activity_startDate
                       br
@@ -32,12 +32,15 @@ block content
                     if artist.best 
                       .form-check
                         input(type="checkbox" class="form-check-input" id="exampleCheck1")
-                        label(class="form-check-label text-success" for="exampleCheck1")= artist.dbname
+                        label(class="form-check-label text-success" for="exampleCheck1" checked)= artist.dbname
                     else if artist.dbname !== ''
                       .form-check
                         input(type="checkbox" class="form-check-input" id="exampleCheck1")
                         label(class="form-check-label text-info" for="exampleCheck1")= artist.dbname
                     else 
+                      .row
+                        input(type="checkbox" class="form-check-input" id="addone")
+                        label(class="form-check-label" for="addone") add 
                       .row
                         label(for='newartistname' class='col-sm-4 col-form-label') Artist Name
                         .col-sm-8
