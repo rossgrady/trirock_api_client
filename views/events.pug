@@ -24,11 +24,11 @@ block content
                       br
                       span.text-nowrap= val.venue_Name
                       br
-                      ul
+                      ul.list-unstyled
                         for orig_artist in val.orig_artists 
                           li= orig_artist.name
                 td
-                  ul
+                  ul.list-unstyled
                     for artist in val.artists 
                       li
                         if artist.best 
@@ -60,6 +60,6 @@ block content
                   textarea(class='form-control-sm' id='blurb' rows='3')= val.activity_Blurb
                 td
                   if val.urls.length > 0
-                    ul
+                    ul.list-unstyled
                       for url in val.urls 
                         li.text-break= url
