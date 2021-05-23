@@ -23,7 +23,7 @@ block content
                   else if artist.dbname !== ''
                     p.text-info= artist.dbname 
                   else 
-                    input(type='text' id='newartist')= artist.origname 
+                    input(type='text' id='newartist' value=artist.origname)
               td= val.activity_Blurb
               td
                 if val.urls.length > 0
