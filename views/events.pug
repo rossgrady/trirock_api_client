@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container-fluid
-    form(method='post', action='/events-add', role='form', enctype='application/x-www-form-urlencoded')
+    form(method='post', action='/events-add', role='form')
       table.table.table-striped.table-sm.table-bordered.table-responsive
         thead
           tr
@@ -16,7 +16,7 @@ block content
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id=`keep[${evtidx}]` checked)
+                    input(type="checkbox" class="form-check-input" id=`keep[${evtidx}]` name=`keep[${evtidx}]` checked)
                     label(class="form-check-label" for="keep")
                       span.text-nowrap= val.activity_startDate
                       br
@@ -34,49 +34,49 @@ block content
                       li(class=even ? 'bg-light' : 'bg-transparent')
                         if artist.best 
                           .form-check
-                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` value=artist.id checked)
+                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` name=`artistid[${evtidx}][${index}]` value=artist.id checked)
                             label(class="form-check-label text-success" for=`artistid[${evtidx}][${index}]`)= artist.dbname
                         else if artist.dbname !== ''
                           .form-check
-                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` value=artist.id)
+                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` name=`artistid[${evtidx}][${index}]` value=artist.id)
                             label(class="form-check-label text-info" for=`artistid[${evtidx}][${index}]`)= artist.dbname
                         else
                           .row
                             label(class="form-check-label col-sm-4" for=`addone[${evtidx}][${index}]`) add 
                             .col-sm-8
-                              input(type="checkbox" class="form-check-input" id=`addone[${evtidx}][${index}]`)
+                              input(type="checkbox" class="form-check-input" id=`addone[${evtidx}][${index}]` name=`addone[${evtidx}][${index}]`)
                           .row
                             label(for=`newartistname[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist Name
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartistname[${evtidx}][${index}]` value=artist.origname)
+                              input(class='form-control-sm' type='text' id=`newartistname[${evtidx}][${index}]` name=`newartistname[${evtidx}][${index}]` value=artist.origname)
                           .row
                             label(for=`newartist_twitter[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist Twitter
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartist_twitter[${evtidx}][${index}]`)
+                              input(class='form-control-sm' type='text' id=`newartist_twitter[${evtidx}][${index}]` name=`newartist_twitter[${evtidx}][${index}]`)
                           .row
                             label(for=`newartist_url[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist URL
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartist_url[${evtidx}][${index}]`)
+                              input(class='form-control-sm' type='text' id=`newartist_url[${evtidx}][${index}]` name=`newartist_url[${evtidx}][${index}]`)
                     - let even = val.artists.length % 2 === 0
                     li(class=even ? 'bg-light' : 'bg-transparent')
                       .row
                         label(class="form-check-label col-sm-4" for=`addone[${evtidx}]`) add 
                         .col-sm-8
-                          input(type="checkbox" class="form-check-input" id=`addone[${evtidx}]`)
+                          input(type="checkbox" class="form-check-input" id=`addone[${evtidx}]` name=`addone[${evtidx}]`)
                       .row
                         label(for=`newartistname[${evtidx}]` class='col-sm-4 col-form-label') Artist Name
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartistname[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`newartistname[${evtidx}]` name=`newartistname[${evtidx}]`)
                       .row
                         label(for=`newartist_twitter[${evtidx}]` class='col-sm-4 col-form-label') Artist Twitter
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartist_twitter[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`newartist_twitter[${evtidx}]` name=`newartist_twitter[${evtidx}]`)
                       .row
                         label(for=`newartist_url[${evtidx}]` class='col-sm-4 col-form-label') Artist URL
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartist_url[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`newartist_url[${evtidx}]` name=`newartist_url[${evtidx}]`)
                 td
-                  textarea(class='form-control-sm' id=`blurb[${evtidx}]` rows='3')= val.activity_Blurb
+                  textarea(class='form-control-sm' id=`blurb[${evtidx}]` name=`blurb[${evtidx}]` rows='3')= val.activity_Blurb
                 td
                   if val.urls.length > 0
                     ul.list-unstyled

@@ -7,7 +7,6 @@
   },
   "dependencies": {
     "axios": "^0.21.1",
-    "body-parser": "^1.19.0",
     "cookie-parser": "^1.4.4",
     "dayjs": "^1.10.4",
     "debug": "^4.3.1",
