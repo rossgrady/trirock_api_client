@@ -470,4 +470,20 @@ async function main() {
   return return_events;
 }
 
-module.exports = { main };
+async function events_add(bodyObj) {
+  const returnarr = [];
+  for (const idx in bodyObj.activity_API_ID) {
+    const evtObj = {
+      "activity_startDate": activity_startDate[idx],
+      "activity_Time": activity_Time[idx],
+      "activity_endDate": activity_startDate[idx],
+      "activity_API_ID": activity_API_ID[idx],
+      "activity_venueID": activity_venueID[idx],
+      "activity_Blurb": blurb[idx],
+    }
+    returnarr.push(evtObj);
+  }
+  return returnarr;
+}
+
+module.exports = { main, events_add };
