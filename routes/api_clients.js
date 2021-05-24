@@ -474,17 +474,15 @@ async function events_add(bodyObj) {
   const returnarr = [];
   for (const idx in bodyObj.activity_API_ID) {
     console.log(idx);
-    if (typeof activity_startDate[idx] !== 'undefined'){
-      const evtObj = {
-        "activity_startDate": activity_startDate[idx],
-        "activity_Time": activity_Time[idx],
-        "activity_endDate": activity_startDate[idx],
-        "activity_API_ID": activity_API_ID[idx],
-        "activity_venueID": activity_venueID[idx],
-        "activity_Blurb": blurb[idx],
-      }
-      returnarr.push(evtObj);
+    const evtObj = {
+      "activity_startDate": bodyObj.activity_startDate[idx],
+      "activity_Time": bodyObj.activity_Time[idx],
+      "activity_endDate": bodyObj.activity_startDate[idx],
+      "activity_API_ID": bodyObj.activity_API_ID[idx],
+      "activity_venueID": bodyObj.activity_venueID[idx],
+      "activity_Blurb": bodyObj.blurb[idx],
     }
+    returnarr.push(evtObj);
   }
   return returnarr;
 }
