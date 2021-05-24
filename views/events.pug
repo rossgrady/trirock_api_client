@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container-fluid
-    form
+    form(method='post', action='/events-add', role='form', enctype='application/x-www-form-urlencoded')
       table.table.table-striped.table-sm.table-bordered.table-responsive
         thead
           tr
@@ -82,3 +82,4 @@ block content
                     ul.list-unstyled
                       for url in val.urls 
                         li.text-break= url
+      button.btn.btn-default(type='submit') Submit
