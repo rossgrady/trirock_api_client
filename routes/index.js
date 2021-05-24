@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add() } = require('./api_clients');
+const { main, events_add } = require('./api_clients');
 const util = require('util');
 
 const duration = 1814400000; // 3 weeks
