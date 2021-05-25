@@ -13,15 +13,15 @@ block content
         tbody
           each val, evtidx in events
             if val 
-              input(type='hidden' name=`activity_API_ID[${evtidx}]` value=val.activity_API_ID)
-              input(type='hidden' name=`activity_startDate[${evtidx}]` value=val.activity_startDate)
-              input(type='hidden' name=`activity_Time[${evtidx}]` value=val.activity_Time)  
-              input(type='hidden' name=`activity_venueID[${evtidx}]` value=val.venue_ID)            
+              input(type='hidden' name=`activity_API_ID['${evtidx}']` value=val.activity_API_ID)
+              input(type='hidden' name=`activity_startDate['${evtidx}']` value=val.activity_startDate)
+              input(type='hidden' name=`activity_Time['${evtidx}']` value=val.activity_Time)  
+              input(type='hidden' name=`activity_venueID['${evtidx}']` value=val.venue_ID)            
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id=`keep[${evtidx}]` name=`keep[${evtidx}]` checked)
-                    label(class="form-check-label" for="keep")
+                    input(type="checkbox" class="form-check-input" id=`keep['${evtidx}']` name=`keep['${evtidx}']` checked)
+                    label(class="form-check-label" for=`keep['${evtidx}']`)
                       span.text-nowrap= val.activity_startDate
                       br
                       span.text-nowrap= val.activity_Time
