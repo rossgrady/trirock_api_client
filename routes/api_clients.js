@@ -484,32 +484,22 @@ async function events_add(bodyObj) {
       "artists": [],
       "newartists":[],
     }
-    // what are the vars?
-    // artistid[${evtidx}][${index}]
-    // addone[${evtidx}][${index}]
-    // newartistname[${evtidx}][${index}]
-    // newartist_twitter[${evtidx}][${index}]
-    // newartist_url[${evtidx}][${index}]
-    // addone2[${evtidx}]
-    // newartistname2[${evtidx}]
-    // newartist_twitter2[${evtidx}]
-    // newartist_url2[${evtidx}]
-    for (const artists_id of artistid[idx]){
+    for (const artists_id of bodyObj.artistid[idx]){
       evtObj.artists.push(artists_id);
     }
-    for (const newartists_idx in addone[idx]){
+    for (const newartists_idx in bodyObjaddone[idx]){
       const newartistObj = {
-        "newartist_name": newartistname[idx][newartists_idx],
-        "newartist_twitter": newartist_twitter[idx][newartists_idx],
-        "newartist_url": newartist_url[idx][newartists_idx],
+        "newartist_name": bodyObj.newartistname[idx][newartists_idx],
+        "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
+        "newartist_url": bodyObj.newartist_url[idx][newartists_idx],
       }
       evtObj.newartists.push(newartistObj);
     }
-    if (typeof addone2[idx] !== 'undefined' && addone2[idx] === 'on'){
+    if (typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
       const newartistObj = {
-        "newartist_name": newartistname2[idx],
-        "newartist_twitter": newartist_twitter2[idx],
-        "newartist_url": newartist_url2[idx],
+        "newartist_name": bodyObj.newartistname2[idx],
+        "newartist_twitter": bodyObj.newartist_twitter2[idx],
+        "newartist_url": bodyObj.newartist_url2[idx],
       }
       evtObj.newartists.push(newartistObj);
     }
