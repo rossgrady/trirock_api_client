@@ -484,16 +484,20 @@ async function events_add(bodyObj) {
       "artists": [],
       "newartists":[],
     }
-    for (const artists_id of bodyObj.artistid[idx]){
-      evtObj.artists.push(artists_id);
-    }
-    for (const newartists_idx in bodyObj.addone[idx]){
-      const newartistObj = {
-        "newartist_name": bodyObj.newartistname[idx][newartists_idx],
-        "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
-        "newartist_url": bodyObj.newartist_url[idx][newartists_idx],
+    if (typeof bodyObj.artistid[idx] !== 'undefined'){
+      for (const artists_id of bodyObj.artistid[idx]){
+        evtObj.artists.push(artists_id);
       }
-      evtObj.newartists.push(newartistObj);
+    }
+    if (typeof bodyObj.addone[idx] !== 'undefined') {
+      for (const newartists_idx in bodyObj.addone[idx]){
+        const newartistObj = {
+          "newartist_name": bodyObj.newartistname[idx][newartists_idx],
+          "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
+          "newartist_url": bodyObj.newartist_url[idx][newartists_idx],
+        }
+        evtObj.newartists.push(newartistObj);
+      }
     }
     if (typeof bodyObj.addone2 !== 'undefined' && typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
       const newartistObj = {
