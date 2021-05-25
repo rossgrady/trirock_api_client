@@ -307,7 +307,7 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
   const ticketmaster_url = ticketmaster_url_prefix + venueID + ticketmaster_url_suffix;
   try {
     const response = await axios.get(ticketmaster_url);
-    await sleep(300);
+    await sleep(500);
     const returnarr = [];
     if (typeof response.data._embedded !== 'undefined') {
       for (const activity of response.data._embedded.events) {
