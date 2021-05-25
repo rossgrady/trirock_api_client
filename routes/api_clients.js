@@ -495,7 +495,7 @@ async function events_add(bodyObj) {
       }
       evtObj.newartists.push(newartistObj);
     }
-    if (typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
+    if (typeof bodyObj.addone2 !== 'undefined' && typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
       const newartistObj = {
         "newartist_name": bodyObj.newartistname2[idx],
         "newartist_twitter": bodyObj.newartist_twitter2[idx],
