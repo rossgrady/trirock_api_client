@@ -481,8 +481,41 @@ async function events_add(bodyObj) {
       "activity_API_ID": bodyObj.activity_API_ID[idx],
       "activity_venueID": bodyObj.activity_venueID[idx],
       "activity_Blurb": bodyObj.blurb[idx],
+      "artists": [],
+      "newartists":[],
     }
-    returnarr.push(evtObj);
+    // what are the vars?
+    // artistid[${evtidx}][${index}]
+    // addone[${evtidx}][${index}]
+    // newartistname[${evtidx}][${index}]
+    // newartist_twitter[${evtidx}][${index}]
+    // newartist_url[${evtidx}][${index}]
+    // addone2[${evtidx}]
+    // newartistname2[${evtidx}]
+    // newartist_twitter2[${evtidx}]
+    // newartist_url2[${evtidx}]
+    for (const artists_id of artistid[idx]){
+      evtObj.artists.push(artists_id);
+    }
+    for (const newartists_idx in addone[idx]){
+      const newartistObj = {
+        "newartist_name": newartistname[idx][newartists_idx],
+        "newartist_twitter": newartist_twitter[idx][newartists_idx],
+        "newartist_url": newartist_url[idx][newartists_idx],
+      }
+      evtObj.newartists.push(newartistObj);
+    }
+    if (typeof addone2[idx] !== 'undefined' && addone2[idx] === 'on'){
+      const newartistObj = {
+        "newartist_name": newartistname2[idx],
+        "newartist_twitter": newartist_twitter2[idx],
+        "newartist_url": newartist_url2[idx],
+      }
+      evtObj.newartists.push(newartistObj);
+    }
+    if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep === 'on') {
+      returnarr.push(evtObj);
+    }
   }
   return returnarr;
 }
