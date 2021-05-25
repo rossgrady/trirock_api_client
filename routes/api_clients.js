@@ -507,7 +507,7 @@ async function events_add(bodyObj) {
       }
       evtObj.newartists.push(newartistObj);
     }
-    if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep === 'on') {
+    if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep[idx] === 'on') {
       console.log('keep is on so adding to return array');
       returnarr.push(evtObj);
     }
