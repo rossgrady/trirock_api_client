@@ -19,9 +19,11 @@ block content
               input(type='hidden' name=`${val.activity_API_ID}[activity_venueID]` value=val.venue_ID)            
               tr
                 td
-                  .form-check
-                    input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[keep]` name=`${val.activity_API_ID}[keep]` checked)
-                    label(class="form-check-label" for=`${val.activity_API_ID}[keep]`)
+                  .form-check.form-check-inline
+                    input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[keep][yes]` name=`${val.activity_API_ID}[keep]` value="yes" checked)
+                    label(class="form-check-label" for=`${val.activity_API_ID}[keep][yes]`) yes
+                    input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[keep][no]` name=`${val.activity_API_ID}[keep]` value="no")
+                    label(class="form-check-label" for=`${val.activity_API_ID}[keep][no]`) no
                       span.text-nowrap= val.activity_startDate
                       br
                       span.text-nowrap= val.activity_Time
@@ -46,9 +48,11 @@ block content
                             label(class="form-check-label text-info" for=`${val.activity_API_ID}[artistid][${index}]`)= artist.dbname
                         else
                           .row
-                            label(class="form-check-label col-sm-4" for=`${val.activity_API_ID}[addone][${index}]`) add 
-                            .col-sm-8
-                              input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[addone][${index}]` name=`${val.activity_API_ID}[addone][${index}]`)
+                            .form-check.form-check-inline
+                              label(class="form-check-label" for=`${val.activity_API_ID}[addone][${index}][add]`) add 
+                              input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[addone][${index}][add]` name=`${val.activity_API_ID}[addone][${index}]` value='add' checked)
+                              label(class="form-check-label" for=`${val.activity_API_ID}[addone][${index}][no]`) no 
+                              input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[addone][${index}][no]` name=`${val.activity_API_ID}[addone][${index}]` value='no')
                           .row
                             label(for=`${val.activity_API_ID}[newartistname][${index}]` class='col-sm-4 col-form-label') Artist Name
                             .col-sm-8
@@ -64,9 +68,11 @@ block content
                     - let even = val.artists.length % 2 === 0
                     li(class=even ? 'bg-light' : 'bg-transparent')
                       .row
-                        label(class="form-check-label col-sm-4" for=`${val.activity_API_ID}[addone2]`) add 
-                        .col-sm-8
-                          input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[addone2]` name=`${val.activity_API_ID}[addone2]`)
+                        .form-check.form-check-inline
+                          label(class="form-check-label" for=`${val.activity_API_ID}[addone2][add]`) add 
+                          input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[addone2][add]` name=`${val.activity_API_ID}[addone2]` value='add' checked)
+                          label(class="form-check-label" for=`${val.activity_API_ID}[addone2][no]`) no 
+                          input(type="radio" class="form-check-input" id=`${val.activity_API_ID}[addone][no]` name=`${val.activity_API_ID}[addone]` value='no')
                       .row
                         label(for=`${val.activity_API_ID}[newartistname2]` class='col-sm-4 col-form-label') Artist Name
                         .col-sm-8
