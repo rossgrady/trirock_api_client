@@ -487,7 +487,7 @@ async function events_add(bodyObj) {
     for (const artists_id of bodyObj.artistid[idx]){
       evtObj.artists.push(artists_id);
     }
-    for (const newartists_idx in bodyObjaddone[idx]){
+    for (const newartists_idx in bodyObj.addone[idx]){
       const newartistObj = {
         "newartist_name": bodyObj.newartistname[idx][newartists_idx],
         "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
