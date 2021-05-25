@@ -13,7 +13,7 @@ router.get('/', async function(req, res, next) {
 });
 
 router.post('/events-add', async function(req, res, next) {
-  const events = await events_add(req.body);
+  console.log(util.inspect(req.body, true, 8, true));
   const renderObj = {
     title: 'First Pass!',
   }

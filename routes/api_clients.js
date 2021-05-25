@@ -474,12 +474,6 @@ async function events_add(bodyObj) {
   const returnarr = [];
   console.log(util.inspect(bodyObj, true, 8, true));
   for (const idx in bodyObj.activity_API_ID) {
-    console.log(idx);
-    console.log('am i losing my mind');
-    console.log(bodyObj.activity_venueID[idx]);
-    console.log(util.inspect(bodyObj.artistid[idx], true, 4, true));
-    console.log(util.inspect(bodyObj.addone[idx], true, 4, true));    
-    console.log(util.inspect(bodyObj.newartistname[idx], true, 4, true));
     const evtObj = {
       "activity_startDate": bodyObj.activity_startDate[idx],
       "activity_Time": bodyObj.activity_Time[idx],

@@ -13,15 +13,15 @@ block content
         tbody
           each val, evtidx in events
             if val 
-              input(type='hidden' name=`activity_API_ID['${evtidx}']` value=val.activity_API_ID)
-              input(type='hidden' name=`activity_startDate['${evtidx}']` value=val.activity_startDate)
-              input(type='hidden' name=`activity_Time['${evtidx}']` value=val.activity_Time)  
-              input(type='hidden' name=`activity_venueID['${evtidx}']` value=val.venue_ID)            
+              input(type='hidden' name=`${val.activity_API_ID}[activity_API_ID]` value=val.activity_API_ID)
+              input(type='hidden' name=`${val.activity_API_ID}[activity_startDate]` value=val.activity_startDate)
+              input(type='hidden' name=`${val.activity_API_ID}[activity_Time]` value=val.activity_Time)  
+              input(type='hidden' name=`${val.activity_API_ID}[activity_venueID]` value=val.venue_ID)            
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id=`keep['${evtidx}']` name=`keep['${evtidx}']` checked)
-                    label(class="form-check-label" for=`keep['${evtidx}']`)
+                    input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[keep]` name=`${val.activity_API_ID}[keep]` checked)
+                    label(class="form-check-label" for=`${val.activity_API_ID}[keep]`)
                       span.text-nowrap= val.activity_startDate
                       br
                       span.text-nowrap= val.activity_Time
@@ -38,49 +38,49 @@ block content
                       li(class=even ? 'bg-light' : 'bg-transparent')
                         if artist.best 
                           .form-check
-                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` name=`artistid[${evtidx}][${index}]` value=artist.id checked)
-                            label(class="form-check-label text-success" for=`artistid[${evtidx}][${index}]`)= artist.dbname
+                            input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[artistid][${index}]` name=`${val.activity_API_ID}[artistid][${index}]` value=artist.id checked)
+                            label(class="form-check-label text-success" for=`${val.activity_API_ID}[artistid][${index}]`)= artist.dbname
                         else if artist.dbname !== ''
                           .form-check
-                            input(type="checkbox" class="form-check-input" id=`artistid[${evtidx}][${index}]` name=`artistid[${evtidx}][${index}]` value=artist.id)
-                            label(class="form-check-label text-info" for=`artistid[${evtidx}][${index}]`)= artist.dbname
+                            input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[artistid][${index}]` name=`${val.activity_API_ID}[artistid][${index}]` value=artist.id)
+                            label(class="form-check-label text-info" for=`${val.activity_API_ID}[artistid][${index}]`)= artist.dbname
                         else
                           .row
-                            label(class="form-check-label col-sm-4" for=`addone[${evtidx}][${index}]`) add 
+                            label(class="form-check-label col-sm-4" for=`${val.activity_API_ID}[addone][${index}]`) add 
                             .col-sm-8
-                              input(type="checkbox" class="form-check-input" id=`addone[${evtidx}][${index}]` name=`addone[${evtidx}][${index}]`)
+                              input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[addone][${index}]` name=`${val.activity_API_ID}[addone][${index}]`)
                           .row
-                            label(for=`newartistname[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist Name
+                            label(for=`${val.activity_API_ID}[newartistname][${index}]` class='col-sm-4 col-form-label') Artist Name
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartistname[${evtidx}][${index}]` name=`newartistname[${evtidx}][${index}]` value=artist.origname)
+                              input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartistname][${index}]` name=`${val.activity_API_ID}[newartistname][${index}]` value=artist.origname)
                           .row
-                            label(for=`newartist_twitter[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist Twitter
+                            label(for=`${val.activity_API_ID}[newartist_twitter][${index}]` class='col-sm-4 col-form-label') Artist Twitter
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartist_twitter[${evtidx}][${index}]` name=`newartist_twitter[${evtidx}][${index}]`)
+                              input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartist_twitter][${index}]` name=`${val.activity_API_ID}[newartist_twitter][${index}]`)
                           .row
-                            label(for=`newartist_url[${evtidx}][${index}]` class='col-sm-4 col-form-label') Artist URL
+                            label(for=`${val.activity_API_ID}[newartist_url][${index}]` class='col-sm-4 col-form-label') Artist URL
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`newartist_url[${evtidx}][${index}]` name=`newartist_url[${evtidx}][${index}]`)
+                              input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartist_url][${index}]` name=`${val.activity_API_ID}[newartist_url][${index}]`)
                     - let even = val.artists.length % 2 === 0
                     li(class=even ? 'bg-light' : 'bg-transparent')
                       .row
-                        label(class="form-check-label col-sm-4" for=`addone2[${evtidx}]`) add 
+                        label(class="form-check-label col-sm-4" for=`${val.activity_API_ID}[addone2]`) add 
                         .col-sm-8
-                          input(type="checkbox" class="form-check-input" id=`addone2[${evtidx}]` name=`addone2[${evtidx}]`)
+                          input(type="checkbox" class="form-check-input" id=`${val.activity_API_ID}[addone2]` name=`${val.activity_API_ID}[addone2]`)
                       .row
-                        label(for=`newartistname2[${evtidx}]` class='col-sm-4 col-form-label') Artist Name
+                        label(for=`${val.activity_API_ID}[newartistname2]` class='col-sm-4 col-form-label') Artist Name
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartistname2[${evtidx}]` name=`newartistname2[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartistname2]` name=`${val.activity_API_ID}[newartistname2]`)
                       .row
-                        label(for=`newartist_twitter2[${evtidx}]` class='col-sm-4 col-form-label') Artist Twitter
+                        label(for=`${val.activity_API_ID}[newartist_twitter2]` class='col-sm-4 col-form-label') Artist Twitter
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartist_twitter2[${evtidx}]` name=`newartist_twitter2[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartist_twitter2]` name=`${val.activity_API_ID}[newartist_twitter2]`)
                       .row
-                        label(for=`newartist_url2[${evtidx}]` class='col-sm-4 col-form-label') Artist URL
+                        label(for=`${val.activity_API_ID}[newartist_url2]` class='col-sm-4 col-form-label') Artist URL
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`newartist_url2[${evtidx}]` name=`newartist_url2[${evtidx}]`)
+                          input(class='form-control-sm' type='text' id=`${val.activity_API_ID}[newartist_url2]` name=`${val.activity_API_ID}[newartist_url2]`)
                 td
-                  textarea(class='form-control-sm' id=`blurb[${evtidx}]` name=`blurb[${evtidx}]` rows='3')= val.activity_Blurb
+                  textarea(class='form-control-sm' id=`${val.activity_API_ID}[blurb]` name=`${val.activity_API_ID}[blurb]` rows='3')= val.activity_Blurb
                 td
                   if val.urls.length > 0
                     ul.list-unstyled
