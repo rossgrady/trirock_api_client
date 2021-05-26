@@ -71,7 +71,7 @@ function find_URLs(testchunk) {
 }
 
 async function to_titlecase(candidate) {
-  console.log(candidate;)
+  console.log(candidate);
   if (namecase.checkName(candidate)) {
     console.log('namecasing ' + candidate);
     return namecase(candidate);
