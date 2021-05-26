@@ -1,5 +1,4 @@
 var db = require('../db');
-var ObjectID = require('mongodb').ObjectID;
 var bcrypt = require('bcrypt-nodejs');
 var tokenStorage = require('../utils/remember-me-token');
 var GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;

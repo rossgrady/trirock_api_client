@@ -1,5 +1,4 @@
 var rack = require('hat').rack();
-var ObjectID = require('mongodb').ObjectID;
 var db = require('../db');
 
 module.exports = {
