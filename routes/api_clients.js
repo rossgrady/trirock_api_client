@@ -71,9 +71,12 @@ function find_URLs(testchunk) {
 }
 
 async function to_titlecase(candidate) {
+  console.log(candidate;)
   if (namecase.checkName(candidate)) {
+    console.log('namecasing ' + candidate);
     return namecase(candidate);
   } else {
+    console.log('not namecasing ' + candidate);
     return candidate;
   }
 }
@@ -126,9 +129,11 @@ async function artist_lookup(artists, dbpool) {
     const parts = name1.split(',');
     for (const part of parts) {
       let candidate = part.trim();
+      console.log(candidate);
       const falses = [];
       const trues = [];
       candidate = to_titlecase(candidate);
+      console.log(candidate);
       if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
