@@ -424,6 +424,8 @@ async function main() {
       }
     }
   }
+  console.log('built main_events, now looping through it');
+  console.log(util.inspect(main_events, true, 8, true));
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[`${evtday}`].length === 2) {
