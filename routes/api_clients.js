@@ -455,10 +455,10 @@ async function main() {
         }
         if (identical === 1 && api_same === 1) {
           let blurb = "Two shows: ";
-          if (main_events[venueid].events[`${evtday}`][0].activity_StartTime.isAfter(main_events[venueid].events[`${evtday}`][1].activity_StartTime)) {
-            blurb += main_events[venueid].events[`${evtday}`][1].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][0].activity_StartTime.format('h:mma');
+          if (main_events[venueid].events[`${evtday}`][0].activity_Time.isAfter(main_events[venueid].events[`${evtday}`][1].activity_Time)) {
+            blurb += main_events[venueid].events[`${evtday}`][1].activity_Time.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][0].activity_Time.format('h:mma');
           } else {
-            blurb += main_events[venueid].events[`${evtday}`][0].activity_StartTime.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][1].activity_StartTime.format('h:mma');
+            blurb += main_events[venueid].events[`${evtday}`][0].activity_Time.format('h:mma') + " & " + main_events[venueid].events[`${evtday}`][1].activity_Time.format('h:mma');
           }
           main_events[venueid].events[`${evtday}`][target_event].activity_Blurb = blurb;
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
