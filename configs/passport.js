@@ -1,5 +1,5 @@
 var db = require('../db');
-var bcrypt = require('bcrypt-nodejs');
+var bcrypt = require('bcrypt');
 var tokenStorage = require('../utils/remember-me-token');
 var GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
 var TwoFAStartegy = require('passport-2fa-totp').Strategy;
