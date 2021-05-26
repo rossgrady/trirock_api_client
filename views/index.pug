@@ -18,9 +18,9 @@ block content
         .form-group
           label(for="code") Google Authenticator Code
           input(type="code" class="form-control" id="code" name="code")
-        .checkbox
-          label
-            input(type="checkbox" name="remember" value="1") Remember me
+        .form-check 
+          label(for="remember") Remember me
+          input(type="checkbox" class="form-check-input" name="remember" value="1") 
         .form-group
           a(href="/register") Create an account
           button(type="submit" class="btn btn-primary") Login
