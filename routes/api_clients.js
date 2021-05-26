@@ -5,6 +5,7 @@ const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
 const util = require('util');
+const namecase = require('namecase');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -69,6 +70,14 @@ function find_URLs(testchunk) {
   return urlsarray;
 }
 
+async function to_titlecase(candidate) {
+  if (nc.checkName(candidate)) {
+    return nc(candidate);
+  } else {
+    return candidate;
+  }
+}
+
 async function artist_lookup(artists, dbpool) {
   const returnarr = [];
   for (artist of artists) {
@@ -119,6 +128,7 @@ async function artist_lookup(artists, dbpool) {
       const candidate = part.trim();
       const falses = [];
       const trues = [];
+      candidate = to_titlecase(candidate);
       if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
