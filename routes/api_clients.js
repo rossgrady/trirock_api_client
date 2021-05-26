@@ -71,8 +71,8 @@ function find_URLs(testchunk) {
 }
 
 async function to_titlecase(candidate) {
-  if (nc.checkName(candidate)) {
-    return nc(candidate);
+  if (namecase.checkName(candidate)) {
+    return namecase(candidate);
   } else {
     return candidate;
   }
