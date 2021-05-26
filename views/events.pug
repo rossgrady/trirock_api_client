@@ -46,8 +46,8 @@ block content
                             label(class="form-check-label text-info" for=`events[${evtidx}][${index}][artistid]`)= artist.dbname
                         else
                           .row
-                            .form-check
-                              label(class="form-check-label" for=`events[${evtidx}][${index}][addone]`) add 
+                            label(class="form-check-label col-sm-4" for=`events[${evtidx}][${index}][addone]`)
+                            .col-sm-8 
                               input(type="checkbox" class="form-check-input" id=`events[${evtidx}][${index}][addone]` name=`events[${evtidx}][${index}][addone]` value='add' checked)
                           .row
                             label(for=`events[${evtidx}][${index}][newartistname]` class='col-sm-4 col-form-label') Artist Name
@@ -64,8 +64,8 @@ block content
                     - let even = val.artists.length % 2 === 0
                     li(class=even ? 'bg-light' : 'bg-transparent')
                       .row
-                        .form-check
-                          label(class="form-check-label" for=`events[${evtidx}][${val.artists.length}][addone]`)
+                        label(class="form-check-label col-sm-4" for=`events[${evtidx}][${val.artists.length}][addone]`)
+                        .col-sm-8
                           input(type="checkbox" class="form-check-input" id=`events[${evtidx}][${val.artists.length}][addone]` name=`events[${evtidx}][${val.artists.length}][addone]` value='add' checked)
                       .row
                         label(for=`events[${evtidx}][${val.artists.length}][newartistname]` class='col-sm-4 col-form-label') Artist Name
