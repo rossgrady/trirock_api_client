@@ -1,64 +1,66 @@
 var rack = require('hat').rack();
 var db = require('../db');
+const dbpool = await db.getPool();
 
 module.exports = {
-    consume: function (token, done) {
-        var tokens = db.get().collection('tokens'),
-            users = db.get().collection('users');
-            
-        tokens.findOne({ token: token }, function (err, token) {
-            if (err) {
-                return done(err);
+  consume: function (token, done) {
+    const querystring1 = "SELECT * from tokens WHERE token = " + token;
+    try {
+      const rows1 = await db.query(dbpool, querystring1);
+      if (typeof rows1 !== 'undefined') {
+        const querystring2 = "SELECT * from users where id = " + rows1[0].user;
+        try {
+          const rows2 = await db.query(dbpool, querystring2);
+          if (typeof rows2 !== 'undefined') {
+            const querystring3 = "DELETE from tokens WHERE token = " + token;
+            try {
+              const rows3 = await db.query(dbpool, querystring3);
+              return done(null, rows2[0].id);
+            } catch (error) {
+              console.error(error);
+              return done(error);
             }
-            
-            if (!token) {
-                return done(null, false);
-            }
-            
-            users.findOne(new ObjectID(token.user), function (err, user) {
-                if (err) {
-                    return done(err);
-                }
-                
-                tokens.remove(token, function (err) {
-                    if (err) {
-                        return done(err); 
-                    } else if (user === null) {
-                        return done(null, false);
-                    } else {
-                        return done(null, user);
-                    }    
-                });
-            });
-        });
-    },
-    
-    create: function (user, done) {
-        var token = rack(),
-            tokens = db.get().collection('tokens');
-        
-        tokens.insert({
-            token: token,
-            user: user._id
-        }, function (err) {
-            if (err) {
-                return done(err);
-            } else {
-                return done(null, token);
-            }
-        });
-    },
-    
-    logout: function (req, res, done) {
-        var token = req.cookies['remember_me'];
-        if (!token) {
-            return done();
+          } else {
+            return done(null, false)
+          }
+        } catch (error) {
+          console.error(error);
+          return done(error);
         }
-        
-        var tokens = db.get().collection('tokens');
-        tokens.remove({ token: token }, function () {
-            res.clearCookie('remember_me');
-            return done();    
-        });
+      } else {
+        return done(null, false);
+      }
+    } catch (error) {
+      console.error(error);
+      return done(error);
     }
+  },
+
+  create: function (user, done) {
+    var token = rack();
+    const querystring = "INSERT into tokens (token, user) VALUES (" + token + "," + user.id + ")";
+    try {
+      const rows = await db.query(dbpool, querystring);
+      return done(null, token);
+    } catch (error) {
+      console.error(error);
+      return done(error);
+    }
+  },
+  
+  logout: function (req, res, done) {
+    var token = req.cookies['remember_me'];
+    if (!token) {
+      return done();
+    }
+    const querystring = "DELETE from tokens WHERE token = " + token;
+    try {
+      const rows = await db.query(dbpool, querystring);
+      res.clearCookie('remember_me');
+      return done();
+    } catch (error) {
+      console.error(error);
+      return done(error);
+    }
+  }
 };
