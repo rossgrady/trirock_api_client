@@ -195,7 +195,7 @@ async function etix(venueID, timeWindow, dbpool) {
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
       const startTime = dayjs(activity.startTime);
-      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(2, 'M'))) {
+      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
@@ -259,7 +259,7 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const returnarr = [];
     for (const activity of response.data.events) {
       const startTime = dayjs(activity.start.utc);
-      if(typeof activity.status !== 'undefined' && activity.status === 'live' && startTime.isBefore(dayjs().add(2, 'M'))) {
+      if(typeof activity.status !== 'undefined' && activity.status === 'live' && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
