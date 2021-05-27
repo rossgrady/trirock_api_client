@@ -134,7 +134,7 @@ async function artist_lookup(artists, dbpool) {
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const fnd = candidate.match(reg9);
           if (fnd !== null) {
-            const article = fnd.groups.article;
+            const article = fnd.groups.article.trim();
             candidate = candidate.replace(reg9, '');
             candidate = candidate + " [" + article + "]";
           }
