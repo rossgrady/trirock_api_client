@@ -106,6 +106,8 @@ module.exports = async function (passport) {
             };
             try {
               const rows2 = await db.query(dbpool, querystring2);
+              console.log('think we inserted our user ' + util.inspect(rows2, true, 4, true));
+              console.log('about to return our user ' + util.inspect(user, true, 4, true));
               return done(null, user);
             } catch (error) {
               console.error(error);
