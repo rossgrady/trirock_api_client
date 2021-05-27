@@ -61,7 +61,9 @@ router.post('/register', passport.authenticate('register', {
 
 router.get('/setup-2fa', authenticated, function (req, res, next) {
     var errors = req.flash('setup-2fa-error');
+    console.log(errors);
     var qrInfo = GoogleAuthenticator.register(req.user.username);
+    console.log(util.inspect(qrInfo, true, 9, true));
     req.session.qr = qrInfo.secret;
     
     return res.render('setup-2fa', {
