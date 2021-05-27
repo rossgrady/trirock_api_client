@@ -487,43 +487,23 @@ async function main() {
 
 async function events_add(bodyObj) {
   const returnarr = [];
-  console.log('at the very top of events_add');
-  console.log(util.inspect(bodyObj, true, 4, true));
-  for (const idx in bodyObj.activity_API_ID) {
-    const evtObj = {
-      "activity_startDate": bodyObj.activity_startDate[idx],
-      "activity_Time": bodyObj.activity_Time[idx],
-      "activity_endDate": bodyObj.activity_startDate[idx],
-      "activity_API_ID": bodyObj.activity_API_ID[idx],
-      "activity_venueID": bodyObj.activity_venueID[idx],
-      "activity_Blurb": bodyObj.blurb[idx],
-      "artists": [],
-      "newartists":[],
-    }
-    if (typeof bodyObj.artistid[idx] !== 'undefined'){
-      for (const artists_id of bodyObj.artistid[idx]){
-        evtObj.artists.push(artists_id);
+  for (const activity of bodyObj.events) {
+    if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
+      const evtObj = {
+        "activity_startDate": activity.activity_startDate,
+        "activity_Time": activity.activity_Time,
+        "activity_endDate": activity.activity_startDate,
+        "activity_API_ID": activity.activity_API_ID,
+        "activity_venueID": activity.activity_venueID,
+        "activity_Blurb": activity.blurb,
+        "artists": activity.existing_artists,
+        "newartists": [],
       }
-    }
-    if (typeof bodyObj.addone[idx] !== 'undefined') {
-      for (const newartists_idx in bodyObj.addone[idx]){
-        const newartistObj = {
-          "newartist_name": bodyObj.newartistname[idx][newartists_idx],
-          "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
-          "newartist_url": bodyObj.newartist_url[idx][newartists_idx],
+      for (const artist of activity.new_artists) {
+        if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
+          evtObj.newartists.push(artist);
         }
-        evtObj.newartists.push(newartistObj);
       }
-    }
-    if (typeof bodyObj.addone2 !== 'undefined' && typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
-      const newartistObj = {
-        "newartist_name": bodyObj.newartistname2[idx],
-        "newartist_twitter": bodyObj.newartist_twitter2[idx],
-        "newartist_url": bodyObj.newartist_url2[idx],
-      }
-      evtObj.newartists.push(newartistObj);
-    }
-    if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep[idx] === 'on') {
       returnarr.push(evtObj);
     }
   }
