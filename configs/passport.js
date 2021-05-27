@@ -11,6 +11,8 @@ module.exports = async function (passport) {
   const INVALID_LOGIN = 'Invalid username or password';
   const dbpool = await db.getPool();
   passport.serializeUser(function (user, done) {
+    console.log("hey! I am back up in passport.serializeUser");
+    console.log(util.inspect(user, true, 2, true));
     return done(null, user.id);    
   });
   passport.deserializeUser( async function (id, done) {
