@@ -1,7 +1,7 @@
 var db = require('../db');
 var bcrypt = require('bcrypt');
 var tokenStorage = require('../utils/remember-me-token');
-var GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
+var GoogleAuthenticator = require('passport-2fa-totp').GoogleAuthenticator;
 var TwoFAStrategy = require('passport-2fa-totp').Strategy;
 var RememberMeStrategy = require('passport-remember-me').Strategy;
 
@@ -64,7 +64,7 @@ module.exports = function (passport) {
       }
   }));
     
-  passport.use('register', new TwoFAStartegy({
+  passport.use('register', new TwoFAStrategy({
     usernameField: 'username',
     passwordField: 'password',
     passReqToCallback: true,
