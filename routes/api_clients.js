@@ -487,6 +487,8 @@ async function main() {
 
 async function events_add(bodyObj) {
   const returnarr = [];
+  console.log('at the very top of events_add');
+  console.log(util.inspect(bodyObj, true, 4, true));
   for (const idx in bodyObj.activity_API_ID) {
     const evtObj = {
       "activity_startDate": bodyObj.activity_startDate[idx],
