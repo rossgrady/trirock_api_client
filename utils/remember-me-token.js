@@ -8,12 +8,12 @@ module.exports = {
     console.log(querystring1);
     try {
       const rows1 = await db.query(dbpool, querystring1);
-      if (typeof rows1 !== 'undefined') {
+      if (rows1.length > 0) {
         const querystring2 = "SELECT * from users where id = '" + rows1[0].user + "'";
         console.log(querystring2);
         try {
           const rows2 = await db.query(dbpool, querystring2);
-          if (typeof rows2 !== 'undefined') {
+          if (rows2.length > 0) {
             const querystring3 = "DELETE from tokens WHERE token = '" + token + "'";
             console.log(querystring3);
             try {

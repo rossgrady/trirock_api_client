@@ -17,7 +17,7 @@ module.exports = async function (passport) {
     console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
-      if (typeof rows !== 'undefined') {
+      if (rows.length > 0) {
         return done(null, rows[0])
       } else {
         return done(null, false);
@@ -39,7 +39,7 @@ module.exports = async function (passport) {
         console.log(querystring);
         try {
           const rows = await db.query(dbpool, querystring);
-          if (typeof rows !== 'undefined') {
+          if (rows.length > 0) {
             const result = await bcrypt.compare(password, rows[0].password);
             if (result === true) {
               return done(null, rows[0]);
@@ -90,8 +90,7 @@ module.exports = async function (passport) {
       console.log(querystring1);
       try {
         const rows1 = await db.query(dbpool, querystring1);
-        console.log(util.inspect(rows1, true, 5, true));
-        if (typeof rows1 !== 'undefined') {
+        if (if rows.length > 0) {
           return done(null, false, { message: 'username taken' });
         } else {
           bcrypt.hash(password, null, null, async function (err, hash) {
