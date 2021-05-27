@@ -504,8 +504,11 @@ async function events_add(bodyObj) {
         "activity_API_ID": activity.activity_API_ID,
         "activity_venueID": activity.activity_venueID,
         "activity_Blurb": activity.blurb,
-        "artists": activity.existing_artists,
+        "artists": [],
         "newartists": [],
+      }
+      for (const exartist of activity.existing_artists) {
+        evtObj.artists.push(exartist);
       }
       for (const artist of activity.new_artists) {
         if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
@@ -515,7 +518,7 @@ async function events_add(bodyObj) {
             // internally 'select 1 + ? + ? as result' is prepared first. On subsequent calls cached statement is re-used
           // });
           const statement = "INSERT into actor (actor_Name, actor_Local, actor_Defunct) VALUES (?, ?, ?)";
-          const vals = [ artist.artist_name, 'yes', 'yes'];
+          const vals = [ artist.artist_name, 'no', 'no'];
           try {
             const result = await dbpool.execute(statement, vals);
             const actor_id = result.insertId;
