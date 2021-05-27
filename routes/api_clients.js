@@ -492,9 +492,11 @@ async function main() {
 }
 
 async function events_add(bodyObj) {
+  const dbpool = await db.getPool();
   const returnarr = [];
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
+      console.log(activity);
       const evtObj = {
         "activity_startDate": activity.activity_startDate,
         "activity_Time": activity.activity_Time,
@@ -507,7 +509,34 @@ async function events_add(bodyObj) {
       }
       for (const artist of activity.new_artists) {
         if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
-          evtObj.newartists.push(artist);
+          // prepared statements are super easy!
+          // connection.execute('select 1 + ? + ? as result', [5, 6], (err, rows) => {
+            // rows: [ { result: 12 } ]
+            // internally 'select 1 + ? + ? as result' is prepared first. On subsequent calls cached statement is re-used
+          // });
+          const statement = "INSERT into actor (actor_Name, actor_Local, actor_Defunct) VALUES (?, ?, ?)";
+          const vals = [ artist.artist_name, 'yes', 'yes'];
+          try {
+            const result = await dbpool.execute(statement, vals);
+            const actor_id = result.insertId;
+            evtObj.artists.push({artistid: actor_id});
+          } catch (error) {
+            console.error(error);
+          }
+          // call artists insert & add the new artist
+          // in actor:
+          // actor_Name
+          // actor_Twitter -- not gonna implement this yet! Need a whole Twitter client!
+          // actor_Local --> no (default is yes)
+          // actor_Defunct --> no (default is yes)
+          // actor_BestURL --> foreign key to:
+          // actorlinks
+          // actorlinks_ActorID --> the actor_ID we get after inserting a new actor
+          // actorlinks_ID --> auto increment, we need it to insert into actor_BestURL
+          // actorlinks_URL --> the URL
+          // actorlinks_Name --> if it's Bandcamp, I have been doing "actorname at Bandcamp"
+          // get the artist ID back
+          // push the artist ID into evtObj.artists
         }
       }
       returnarr.push(evtObj);

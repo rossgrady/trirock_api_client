@@ -102,7 +102,6 @@ module.exports = async function (passport) {
             }
             const querystring2 = "INSERT into users (username, password) VALUES ('" + username + "', '" + hash + "')";
             console.log(querystring2);
-
             try {
               const rows2 = await db.query(dbpool, querystring2);
               console.log('think we inserted our user ' + util.inspect(rows2, true, 4, true));
