@@ -4,6 +4,7 @@ var tokenStorage = require('../utils/remember-me-token');
 var GoogleAuthenticator = require('passport-2fa-totp').GoogleAuthenticator;
 var TwoFAStrategy = require('passport-2fa-totp').Strategy;
 var RememberMeStrategy = require('passport-remember-me').Strategy;
+const util = require('util');
 
 module.exports = async function (passport) {
   const INVALID_LOGIN = 'Invalid username or password';
@@ -84,10 +85,12 @@ module.exports = async function (passport) {
       if (req.body.password !== req.body.confirmPassword) {
         return done(null, false, { message: 'Passwords do not match' });
       }
+      console.log('normal checks passed');
       const querystring1 = "SELECT * from users where username = '" + username + "'";
       console.log(querystring1);
       try {
         const rows1 = db.query(dbpool, querystring1);
+        console.log(util.inspect(rows1, true, 5, true));
         if (typeof rows1 !== 'undefined') {
           return done(null, false, { message: 'username taken' });
         } else {
