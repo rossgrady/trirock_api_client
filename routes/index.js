@@ -70,35 +70,38 @@ router.get('/setup-2fa', authenticated, function (req, res, next) {
     });
 });
 
-router.post('/setup-2fa', authenticated, function (req, res, next) {
-    if (!req.session.qr) {
-        req.flash('setup-2fa-error', 'The Account cannot be registered. Please try again.');
+router.post('/setup-2fa', authenticated, async function (req, res, next) {
+  if (!req.session.qr) {
+      req.flash('setup-2fa-error', 'The Account cannot be registered. Please try again.');
+      return res.redirect('/setup-2fa');
+  }
+  const dbpool = await db.getPool();
+  const querystring1 = "SELECT * from users where id = '" + req.user.id + "'";
+  console.log(querystring1);
+  try {
+    const rows1 = await db.query(dbpool, querystring1);
+    if (rows1.length > 0) {
+      const querystring2 = "UPDATE users set secret = '" + req.session.qr + "' WHERE id = '" + req.user.id + "'";
+      console.log(querystring2);
+      try {
+        const rows2 = await db.query(dbpool, querystring2);
+        res.redirect('/profile');
+      } catch (error) {
+        console.error(error);
+        req.flash('setup-2fa-error', error);
         return res.redirect('/setup-2fa');
+      }
+    } else {
+      req.logout();
+      return res.redirect('/');
     }
-    
-    var users = db.get().collection('users');
-    users.findOne(new ObjectID(req.user._id), function (err, user) {
-        if (err) {
-            req.flash('setup-2fa-error', err);
-            return res.redirect('/setup-2fa');
-        }
-        
-        if (!user) {
-            // User is not found. It might be removed directly from the database.
-            req.logout();
-            return res.redirect('/');
-        }
-        
-        users.update(user, { $set: { secret: req.session.qr } }, function (err) {
-            if (err) {
-                req.flash('setup-2fa-error', err);
-                return res.redirect('/setup-2fa');
-            }
-            
-            res.redirect('/profile');
-        });      
-    });
+  } catch (error) {
+    console.error(error);
+    req.flash('setup-2fa-error', error);
+    return res.redirect('/setup-2fa');
+  }
 });
+
 
 router.get('/profile', authenticated, function (req, res, next) {
     return res.render("profile", {
