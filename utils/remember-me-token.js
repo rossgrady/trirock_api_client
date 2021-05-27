@@ -5,14 +5,17 @@ module.exports = {
   consume: async function (token, done) {
     const dbpool = await db.getPool();
     const querystring1 = "SELECT * from tokens WHERE token = " + token;
+    console.log(querystring1);
     try {
       const rows1 = await db.query(dbpool, querystring1);
       if (typeof rows1 !== 'undefined') {
         const querystring2 = "SELECT * from users where id = " + rows1[0].user;
+        console.log(querystring2);
         try {
           const rows2 = await db.query(dbpool, querystring2);
           if (typeof rows2 !== 'undefined') {
             const querystring3 = "DELETE from tokens WHERE token = " + token;
+            console.log(querystring3);
             try {
               const rows3 = await db.query(dbpool, querystring3);
               return done(null, rows2[0].id);
@@ -40,6 +43,7 @@ module.exports = {
     const dbpool = await db.getPool();
     var token = rack();
     const querystring = "INSERT into tokens (token, user) VALUES (" + token + "," + user.id + ")";
+    console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
       return done(null, token);
@@ -56,6 +60,7 @@ module.exports = {
       return done();
     }
     const querystring = "DELETE from tokens WHERE token = " + token;
+    console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
       res.clearCookie('remember_me');

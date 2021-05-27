@@ -13,6 +13,7 @@ module.exports = async function (passport) {
   });
   passport.deserializeUser( async function (id, done) {
     const querystring = "SELECT * from users where id = " + id;
+    console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
       if (typeof rows !== 'undefined') {
@@ -34,6 +35,7 @@ module.exports = async function (passport) {
       // 1st step verification: username and password
       process.nextTick( async function () {
         const querystring = "SELECT * from users where username = " + username;
+        console.log(querystring);
         try {
           const rows = await db.query(dbpool, querystring);
           if (typeof rows !== 'undefined') {
@@ -83,6 +85,7 @@ module.exports = async function (passport) {
         return done(null, false, { message: 'Passwords do not match' });
       }
       const querystring1 = "SELECT * from users where username = " + username;
+      console.log(querystring1);
       try {
         const rows1 = db.query(dbpool, querystring1);
         if (typeof rows1 !== 'undefined') {
@@ -93,6 +96,7 @@ module.exports = async function (passport) {
               return done(err);    
             }
             const querystring2 = "INSERT into users (username, password) VALUES (" + username + ", " + hash + ")";
+            console.log(querystring2);
             const user = {
               username: username,
               password: hash,
