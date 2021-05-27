@@ -1,5 +1,6 @@
 var db = require('../db');
-var bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 var tokenStorage = require('../utils/remember-me-token');
 var GoogleAuthenticator = require('passport-2fa-totp').GoogleAuthenticator;
 var TwoFAStrategy = require('passport-2fa-totp').Strategy;
@@ -93,7 +94,7 @@ module.exports = async function (passport) {
         if (rows1.length > 0) {
           return done(null, false, { message: 'username taken' });
         } else {
-          bcrypt.hash(password, null, null, async function (err, hash) {
+          bcrypt.hash(password, saltRounds, async function (err, hash) {
             if (err) {
               return done(err);    
             }
