@@ -487,7 +487,6 @@ async function main() {
 
 async function events_add(bodyObj) {
   const returnarr = [];
-  console.log(util.inspect(bodyObj, true, 8, true));
   for (const idx in bodyObj.activity_API_ID) {
     const evtObj = {
       "activity_startDate": bodyObj.activity_startDate[idx],
@@ -523,7 +522,6 @@ async function events_add(bodyObj) {
       evtObj.newartists.push(newartistObj);
     }
     if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep[idx] === 'on') {
-      console.log('keep is on so adding to return array');
       returnarr.push(evtObj);
     }
   }
