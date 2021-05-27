@@ -5,7 +5,7 @@ var GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
 var TwoFAStrategy = require('passport-2fa-totp').Strategy;
 var RememberMeStrategy = require('passport-remember-me').Strategy;
 
-const dbpool = await db.getPool();
+const dbpool = db.getPool();
 
 module.exports = function (passport) {
   const INVALID_LOGIN = 'Invalid username or password';

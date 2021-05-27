@@ -1,6 +1,6 @@
 var rack = require('hat').rack();
 var db = require('../db');
-const dbpool = await db.getPool();
+const dbpool = db.getPool();
 
 module.exports = {
   consume: function (token, done) {
