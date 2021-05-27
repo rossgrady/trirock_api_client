@@ -3,7 +3,7 @@ var db = require('../db');
 const dbpool = db.getPool();
 
 module.exports = {
-  consume: function (token, done) {
+  consume: async function (token, done) {
     const querystring1 = "SELECT * from tokens WHERE token = " + token;
     try {
       const rows1 = await db.query(dbpool, querystring1);
@@ -36,7 +36,7 @@ module.exports = {
     }
   },
 
-  create: function (user, done) {
+  create: async function (user, done) {
     var token = rack();
     const querystring = "INSERT into tokens (token, user) VALUES (" + token + "," + user.id + ")";
     try {
@@ -48,7 +48,7 @@ module.exports = {
     }
   },
   
-  logout: function (req, res, done) {
+  logout: async function (req, res, done) {
     var token = req.cookies['remember_me'];
     if (!token) {
       return done();
