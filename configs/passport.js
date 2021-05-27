@@ -34,7 +34,7 @@ module.exports = async function (passport) {
     }, function (username, password, done) {
       // 1st step verification: username and password
       process.nextTick( async function () {
-        const querystring = "SELECT * from users where username = " + username;
+        const querystring = "SELECT * from users where username = '" + username + "'";
         console.log(querystring);
         try {
           const rows = await db.query(dbpool, querystring);
@@ -84,7 +84,7 @@ module.exports = async function (passport) {
       if (req.body.password !== req.body.confirmPassword) {
         return done(null, false, { message: 'Passwords do not match' });
       }
-      const querystring1 = "SELECT * from users where username = " + username;
+      const querystring1 = "SELECT * from users where username = '" + username + "'";
       console.log(querystring1);
       try {
         const rows1 = db.query(dbpool, querystring1);
@@ -95,7 +95,7 @@ module.exports = async function (passport) {
             if (err) {
               return done(err);    
             }
-            const querystring2 = "INSERT into users (username, password) VALUES (" + username + ", " + hash + ")";
+            const querystring2 = "INSERT into users (username, password) VALUES ('" + username + "', '" + hash + "')";
             console.log(querystring2);
             const user = {
               username: username,
