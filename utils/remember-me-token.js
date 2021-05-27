@@ -1,9 +1,9 @@
 var rack = require('hat').rack();
 var db = require('../db');
-const dbpool = db.getPool();
 
 module.exports = {
   consume: async function (token, done) {
+    const dbpool = await db.getPool();
     const querystring1 = "SELECT * from tokens WHERE token = " + token;
     try {
       const rows1 = await db.query(dbpool, querystring1);
@@ -37,6 +37,7 @@ module.exports = {
   },
 
   create: async function (user, done) {
+    const dbpool = await db.getPool();
     var token = rack();
     const querystring = "INSERT into tokens (token, user) VALUES (" + token + "," + user.id + ")";
     try {
@@ -49,6 +50,7 @@ module.exports = {
   },
   
   logout: async function (req, res, done) {
+    const dbpool = await db.getPool();
     var token = req.cookies['remember_me'];
     if (!token) {
       return done();
