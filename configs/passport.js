@@ -89,7 +89,7 @@ module.exports = async function (passport) {
       const querystring1 = "SELECT * from users where username = '" + username + "'";
       console.log(querystring1);
       try {
-        const rows1 = db.query(dbpool, querystring1);
+        const rows1 = await db.query(dbpool, querystring1);
         console.log(util.inspect(rows1, true, 5, true));
         if (typeof rows1 !== 'undefined') {
           return done(null, false, { message: 'username taken' });
