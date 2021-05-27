@@ -7,75 +7,72 @@ const tokenStorage = require('../utils/remember-me-token');
 const GoogleAuthenticator = require('passport-2fa-totp').GoogeAuthenticator;
 const db = require('../db');
 
-var authenticated = function (req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    
-    return res.redirect('/');
+const authenticated = function (req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  return res.redirect('/');
 }
 
 router.get('/', function(req, res, next) {
-    if (req.isAuthenticated()) {
-        return res.redirect('/profile');
-    }
-    
-    var errors = req.flash('error');
-    return res.render('index', { 
-        errors: errors
-    });
+  if (req.isAuthenticated()) {
+    return res.redirect('/profile');
+  }
+  var errors = req.flash('error');
+  return res.render('index', { 
+    errors: errors
+  });
 });
 
 router.post('/', passport.authenticate('login', {
-    failureRedirect: '/',
-    failureFlash: true,
-    badRequestMessage: 'Invalid username or password.'
+  failureRedirect: '/',
+  failureFlash: true,
+  badRequestMessage: 'Invalid username or password.'
 }), function (req, res, next) {
-    if (!req.body.remember) {
-        return res.redirect('/profile');    
+  if (!req.body.remember) {
+    return res.redirect('/profile');    
+  }
+  // Create remember_me cookie and redirect to /profile page
+  tokenStorage.create(req.user, function (err, token) {
+    if (err) {
+      return next(err);
     }
-    
-    // Create remember_me cookie and redirect to /profile page
-    tokenStorage.create(req.user, function (err, token) {
-        if (err) {
-            return next(err);
-        }
-        
-        res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
-        return res.redirect('/profile');
-    });    
+    res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
+    return res.redirect('/profile');
+  });    
 });
 
+/*
 router.get('/register', function (req, res, next) {
-    var errors = req.flash('error');
-    return res.render('register', {
-        errors: errors
-    });
+  var errors = req.flash('error');
+  return res.render('register', {
+    errors: errors
+  });
 });
 
 router.post('/register', passport.authenticate('register', {
-    successRedirect: '/setup-2fa',
-    failureRedirect: '/register',
-    failureFlash: true
+  successRedirect: '/setup-2fa',
+  failureRedirect: '/register',
+  failureFlash: true
 }));
+*/
 
 router.get('/setup-2fa', authenticated, function (req, res, next) {
-    var errors = req.flash('setup-2fa-error');
-    console.log(errors);
-    var qrInfo = GoogleAuthenticator.register(req.user.username);
-    console.log(util.inspect(qrInfo, true, 9, true));
-    req.session.qr = qrInfo.secret;
-    
-    return res.render('setup-2fa', {
-        errors: errors,
-        qr: qrInfo.qr
-    });
+  var errors = req.flash('setup-2fa-error');
+  console.log(errors);
+  var qrInfo = GoogleAuthenticator.register(req.user.username);
+  console.log(util.inspect(qrInfo, true, 9, true));
+  req.session.qr = qrInfo.secret;
+  return res.render('setup-2fa', {
+    errors: errors,
+    qr: qrInfo.qr
+  });
 });
 
 router.post('/setup-2fa', authenticated, async function (req, res, next) {
   if (!req.session.qr) {
-      req.flash('setup-2fa-error', 'The Account cannot be registered. Please try again.');
-      return res.redirect('/setup-2fa');
+    req.flash('setup-2fa-error', 'The Account cannot be registered. Please try again.');
+    return res.redirect('/setup-2fa');
   }
   const dbpool = await db.getPool();
   const querystring1 = "SELECT * from users where id = '" + req.user.id + "'";
@@ -106,16 +103,16 @@ router.post('/setup-2fa', authenticated, async function (req, res, next) {
 
 
 router.get('/profile', authenticated, function (req, res, next) {
-    return res.render("profile", {
-        user: req.user
-    });
+  return res.render("profile", {
+    user: req.user
+  });
 });
 
 router.get('/logout', authenticated, function (req, res, next) {
-    tokenStorage.logout(req, res, function () {
-        req.logout();
-        return res.redirect('/');    
-    });
+  tokenStorage.logout(req, res, function () {
+    req.logout();
+    return res.redirect('/');    
+  });
 });
 
 
