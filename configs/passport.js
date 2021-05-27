@@ -90,7 +90,7 @@ module.exports = async function (passport) {
       console.log(querystring1);
       try {
         const rows1 = await db.query(dbpool, querystring1);
-        if (if rows.length > 0) {
+        if (rows.length > 0) {
           return done(null, false, { message: 'username taken' });
         } else {
           bcrypt.hash(password, null, null, async function (err, hash) {
