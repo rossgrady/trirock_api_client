@@ -149,7 +149,7 @@ async function artist_lookup(artists, dbpool) {
     const parts = name1.split(',');
     for (const part of parts) {
       let candidate = part.trim();
-      candidate = candidate.replace(reg9, ''),
+      candidate = candidate.replace(reg9, '');
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
