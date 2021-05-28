@@ -413,15 +413,14 @@ async function ical_events() {
   const rubyURL = 'http://rubydeluxeraleigh.com/?ical=1&tribe_display=list'
   try {
     const webEvents = await ical.async.fromURL(rubyURL);
-    console.log(util.inspect(webEvents, true, 8, true));
     for (const idx in webEvents) {
       if (webEvents[idx].type === 'VEVENT') {
-        console.log(webEvents[idx].summary);
-        console.log(webEvents[idx].description);
-        console.log(webEvents[idx].start.getDate());
-        console.log(webEvents[idx].start.toLocaleTimeString('en-US'));
-        console.log(webEvents[idx].uid);
-        console.log(webEvents[idx].categories[0]);
+        console.log('summary: ' + webEvents[idx].summary);
+        console.log('description: ' + webEvents[idx].description);
+        console.log('date: ' + util.inspect(webEvents[idx].start.getDate()));
+        console.log('time: ' + webEvents[idx].start.toLocaleTimeString('en-US'));
+        console.log('api_id: ' + webEvents[idx].uid);
+        console.log('category: ' + webEvents[idx].categories[0]);
       }
     }
     return webEvents;
