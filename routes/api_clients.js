@@ -126,12 +126,16 @@ async function artist_lookup(artists, dbpool) {
     const parts = name1.split(',');
     for (const part of parts) {
       let candidate = part.trim();
+      console.log('trying to figure out what went wrong with Moon Unit');
+      console.log(candidate);
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
+      console.log(candidate);
       if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
+          console.log('not in database');
           const fnd = candidate.match(reg9);
           if (fnd !== null) {
             const article = fnd.groups.article.trim();
@@ -150,8 +154,10 @@ async function artist_lookup(artists, dbpool) {
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             const articlereg = / \[(The|A|An)\]$/;
+            console.log('found this: ' + artobj.actor_Name);
             const compname = artobj.actor_Name.replace(articlereg,'');
             if (compname.toLowerCase() === candidate.toLowerCase()) {
+              console.log('match! ' + candidate);
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
@@ -162,6 +168,7 @@ async function artist_lookup(artists, dbpool) {
               };
               trues.push(candobj);
             } else {
+              console.log('not identical match ' + candidate);
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
