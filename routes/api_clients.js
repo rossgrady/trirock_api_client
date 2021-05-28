@@ -126,13 +126,7 @@ async function artist_lookup(artists, dbpool) {
     const parts = name1.split(',');
     for (const part of parts) {
       let candidate = part.trim();
-      console.log('trying to figure out what went wrong with Moon Unit');
-      const fnd = candidate.match(reg9);
-      if (fnd !== null) {
-        const article = fnd.groups.article.trim();
-        candidate = candidate.replace(reg9, '');
-        candidate = candidate + " [" + article + "]";
-      }
+      candidate = candidate.replace(reg9, ''),
       console.log(candidate);
       const falses = [];
       const trues = [];
