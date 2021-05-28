@@ -127,6 +127,12 @@ async function artist_lookup(artists, dbpool) {
     for (const part of parts) {
       let candidate = part.trim();
       console.log('trying to figure out what went wrong with Moon Unit');
+      const fnd = candidate.match(reg9);
+      if (fnd !== null) {
+        const article = fnd.groups.article.trim();
+        candidate = candidate.replace(reg9, '');
+        candidate = candidate + " [" + article + "]";
+      }
       console.log(candidate);
       const falses = [];
       const trues = [];
@@ -136,13 +142,6 @@ async function artist_lookup(artists, dbpool) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           console.log('not in database');
-          const reg19 = /^(?<article>A |An |The )/i;
-          const fnd = candidate.match(reg19);
-          if (fnd !== null) {
-            const article = fnd.groups.article.trim();
-            candidate = candidate.replace(reg9, '');
-            candidate = candidate + " [" + article + "]";
-          }
           const candobj = {
             'origname': candidate,
             'dbname': '',
