@@ -42,6 +42,12 @@ async function dblookup(namestring, dbpool) {
 }
 
 async function dbinsert(insertObj) {
+  // insertOjb = {
+  //   'table': table-to-insert-into,
+  //   'fields': {
+  //      'column': 'value',
+  //    }
+  //  }  
   const dbpool = await db.getPool();
   const vals = [];
   let cols = '(';
@@ -508,39 +514,44 @@ async function main() {
 }
 
 async function events_add(bodyObj) {
-
-  const returnarr = [];
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
+      const artists = [];
       const evtObj = {
-        "activity_startDate": activity.activity_startDate,
-        "activity_Time": activity.activity_Time,
-        "activity_endDate": activity.activity_startDate,
-        "activity_API_ID": activity.activity_API_ID,
-        "activity_venueID": activity.activity_venueID,
-        "activity_Blurb": activity.blurb,
-        "artists": [],
-        "newartists": [],
+        'table': 'activity',
+        'fields': {
+          "activity_startDate": activity.activity_startDate,
+          "activity_Time": activity.activity_Time,
+          "activity_endDate": activity.activity_startDate,
+          "activity_API_ID": activity.activity_API_ID,
+          "activity_API": activity.activity_API,
+          "activity_venueID": activity.activity_venueID,
+          "activity_Blurb": activity.blurb,
+        }
       }
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
-          evtObj.artists.push(exartist);
+          artists.push(exartist);
         }
       }
-      for (const artist of activity.new_artists) {
-        if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
+      for (const newartist of activity.new_artists) {
+        if (typeof newartist.addone !== 'undefined' && newartist.addone === 'add') {
           const insertobj = {
             'table': 'actor',
             'fields': {
-              'actor_Name': artist.artist_name,
+              'actor_Name': newartist.artist_name,
               'actor_Local': 'no',
               'actor_Defunct': 'no',
             }
           };
-          const result = await dbinsert(insertobj);
-          const actor_id = result[0].insertId;
-          evtObj.artists.push({artistid: actor_id});
-
+          try {
+            const result = await dbinsert(insertobj);
+            const actor_id = result[0].insertId;
+            artists.push({artistid: actor_id});
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
           // call artists insert & add the new artist
           // in actor:
           // actor_Name
@@ -554,26 +565,33 @@ async function events_add(bodyObj) {
           // actorlinks_URL --> the URL
           // actorlinks_Name --> if it's Bandcamp, I have been doing "actorname at Bandcamp"
           // get the artist ID back
-          // push the artist ID into evtObj.artists
         }
       }
-      // OK now we insert into activity:
-      // activity_Blurb
-      // activity_Time
-      // activity_VenueID
-      // activity_StartDate
-      // activity_EndDate
-      // activity_API
-      // activity_API_ID
-      // then we cache activity_ID (returned from insert)
-      // and loop through evtObj.artists & do
-      // insert into actlink
-      // actlink_ActorID
-      // actlink_ActivityID
-      returnarr.push(evtObj);
+      try {
+        const result = await dbinsert(evtObj);
+        const activity_id = result[0].insertId;
+        for (const artist of artists) {
+          const activityobj = {
+            'table': 'actlink',
+            'fields': {
+              'actlink_ActorID': artist.actor_id,
+              'actlink_ActivityID': activity_id,
+            }
+          };
+          try {
+            const result = await dbinsert(activityobj);
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     }
   }
-  return returnarr;
+  return true;
 }
 
 module.exports = { main, events_add };
