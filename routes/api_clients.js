@@ -417,7 +417,8 @@ async function ical_events() {
       if (webEvents[idx].type === 'VEVENT') {
         console.log('summary: ' + webEvents[idx].summary);
         console.log('description: ' + webEvents[idx].description);
-        console.log('date: ' + util.inspect(webEvents[idx].start.getDate()));
+        console.log('date: ' + util.inspect(webEvents[idx].start, true, 5, true));
+        console.log(typeof webEvents[idx].start);
         console.log('time: ' + webEvents[idx].start.toLocaleTimeString('en-US'));
         console.log('api_id: ' + webEvents[idx].uid);
         console.log('category: ' + webEvents[idx].categories[0]);
