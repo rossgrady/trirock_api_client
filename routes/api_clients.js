@@ -571,8 +571,9 @@ async function events_add(bodyObj) {
       try {
         const result = await dbinsert(evtObj);
         const activity_id = result[0].insertId;
+        let activityobj;
         for (const artist of artists) {
-          const activityobj = {
+          activityobj = {
             'table': 'actlink',
             'fields': {
               'actlink_ActorID': artist.actor_id,
