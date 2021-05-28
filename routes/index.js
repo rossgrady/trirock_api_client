@@ -133,7 +133,7 @@ router.get('/events', authenticated, async function(req, res, next) {
   res.render('events', renderObj);
 });
 
-router.get('/ical', authenticated, async function(req, res, next) {
+router.get('/ical_events', authenticated, async function(req, res, next) {
   const events = await ical();
   const renderObj = {};
   //  events: events,
