@@ -41,6 +41,29 @@ async function dblookup(namestring, dbpool) {
   }
 }
 
+async function dbinsert(insertObj) {
+  const dbpool = await db.getPool();
+  const vals = [];
+  let cols = '(';
+  let placeholders = '(';
+  for (column, value in insertObj.fields) {
+    cols += column + ", ";
+    placeholders += "?, ";
+    vals.push(value);
+  }
+  const reg = /,$/;
+  cols = cols.replace(reg, ')');
+  placeholders = placeholders.replace(reg, ')');
+  const statement = `INSERT into ${insertObj.table} ${cols} VALUES ${placeholders}`;
+  console.log(statement);
+  try {
+    const result = await dbpool.execute(statement, vals);
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function find_URLs(testchunk) {
   const urlsarray = [];
   if(typeof testchunk !== 'undefined' && testchunk !== '') {
@@ -485,7 +508,7 @@ async function main() {
 }
 
 async function events_add(bodyObj) {
-  const dbpool = await db.getPool();
+
   const returnarr = [];
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
@@ -504,20 +527,18 @@ async function events_add(bodyObj) {
       }
       for (const artist of activity.new_artists) {
         if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
-          // prepared statements are super easy!
-          // connection.execute('select 1 + ? + ? as result', [5, 6], (err, rows) => {
-            // rows: [ { result: 12 } ]
-            // internally 'select 1 + ? + ? as result' is prepared first. On subsequent calls cached statement is re-used
-          // });
-          const statement = "INSERT into actor (actor_Name, actor_Local, actor_Defunct) VALUES (?, ?, ?)";
-          const vals = [ artist.artist_name, 'no', 'no'];
-          try {
-            const result = await dbpool.execute(statement, vals);
-            const actor_id = result[0].insertId;
-            evtObj.artists.push({artistid: actor_id});
-          } catch (error) {
-            console.error(error);
-          }
+          const insertobj = {
+            'table': 'actor',
+            'fields': {
+              'actor_Name': artist.artist_name,
+              'actor_Local': 'no',
+              'actor_Defunct': 'no',
+            }
+          };
+          const result = await dbinsert(insertobj);
+          const actor_id = result[0].insertId;
+          evtObj.artists.push({artistid: actor_id});
+
           // call artists insert & add the new artist
           // in actor:
           // actor_Name
@@ -534,6 +555,19 @@ async function events_add(bodyObj) {
           // push the artist ID into evtObj.artists
         }
       }
+      // OK now we insert into activity:
+      // activity_Blurb
+      // activity_Time
+      // activity_VenueID
+      // activity_StartDate
+      // activity_EndDate
+      // activity_API
+      // activity_API_ID
+      // then we cache activity_ID (returned from insert)
+      // and loop through evtObj.artists & do
+      // insert into actlink
+      // actlink_ActorID
+      // actlink_ActivityID
       returnarr.push(evtObj);
     }
   }
