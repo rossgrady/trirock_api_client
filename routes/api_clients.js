@@ -127,15 +127,12 @@ async function artist_lookup(artists, dbpool) {
     for (const part of parts) {
       let candidate = part.trim();
       candidate = candidate.replace(reg9, ''),
-      console.log(candidate);
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
-      console.log(candidate);
       if (candidate.length > 2) {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
-          console.log('not in database');
           const candobj = {
             'origname': candidate,
             'dbname': '',
@@ -148,10 +145,8 @@ async function artist_lookup(artists, dbpool) {
         } else if (dbartist.length >= 1) {
           for (artobj of dbartist) {
             const articlereg = / \[(The|A|An)\]$/;
-            console.log('found this: ' + artobj.actor_Name);
             const compname = artobj.actor_Name.replace(articlereg,'');
             if (compname.toLowerCase() === candidate.toLowerCase()) {
-              console.log('match! ' + candidate);
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
@@ -162,7 +157,6 @@ async function artist_lookup(artists, dbpool) {
               };
               trues.push(candobj);
             } else {
-              console.log('not identical match ' + candidate);
               const candobj = {
                 'origname': candidate,
                 'dbname': artobj.actor_Name,
@@ -434,8 +428,6 @@ async function main() {
       }
     }
   }
-  console.log('built main_events, now looping through it');
-  console.log(util.inspect(main_events, true, 8, true));
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[`${evtday}`].length === 2) {
@@ -497,7 +489,6 @@ async function events_add(bodyObj) {
   const returnarr = [];
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
-      console.log(activity);
       const evtObj = {
         "activity_startDate": activity.activity_startDate,
         "activity_Time": activity.activity_Time,
@@ -518,15 +509,10 @@ async function events_add(bodyObj) {
             // rows: [ { result: 12 } ]
             // internally 'select 1 + ? + ? as result' is prepared first. On subsequent calls cached statement is re-used
           // });
-          console.log('about to add ' + artist.artist_name);
           const statement = "INSERT into actor (actor_Name, actor_Local, actor_Defunct) VALUES (?, ?, ?)";
           const vals = [ artist.artist_name, 'no', 'no'];
           try {
             const result = await dbpool.execute(statement, vals);
-            console.log('if it worked '+ util.inspect(result, true, 8, true));
-            console.log(typeof result);
-            console.log(util.inspect(result[0], true, 5, true));
-            console.log(util.inspect(result[1], true, 7, true));
             const actor_id = result[0].insertId;
             evtObj.artists.push({artistid: actor_id});
           } catch (error) {
