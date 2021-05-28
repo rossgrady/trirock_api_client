@@ -522,8 +522,10 @@ async function events_add(bodyObj) {
         "artists": [],
         "newartists": [],
       }
-      for (const exartist of activity.existing_artists) {
-        evtObj.artists.push(exartist);
+      if(typeof activity.existing_artists !== 'undefined'){
+        for (const exartist of activity.existing_artists) {
+          evtObj.artists.push(exartist);
+        }
       }
       for (const artist of activity.new_artists) {
         if (typeof artist.addone !== 'undefined' && artist.addone === 'add') {
