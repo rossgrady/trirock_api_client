@@ -14,6 +14,7 @@ block content
           each val, evtidx in events
             if val 
               input(type='hidden' name=`events[${evtidx}][activity_API_ID]` value=val.activity_API_ID)
+              input(type='hidden' name=`events[${evtidx}][activity_API]` value=val.activity_API)
               input(type='hidden' name=`events[${evtidx}][activity_startDate]` value=val.activity_startDate)
               input(type='hidden' name=`events[${evtidx}][activity_Time]` value=val.activity_Time)  
               input(type='hidden' name=`events[${evtidx}][activity_venueID]` value=val.venue_ID)            

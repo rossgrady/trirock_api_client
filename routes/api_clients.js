@@ -41,6 +41,35 @@ async function dblookup(namestring, dbpool) {
   }
 }
 
+async function dbinsert(insertObj) {
+  // insertOjb = {
+  //   'table': table-to-insert-into,
+  //   'fields': {
+  //      'column': 'value',
+  //    }
+  //  }  
+  const dbpool = await db.getPool();
+  const vals = [];
+  let cols = '(';
+  let placeholders = '(';
+  for (column in insertObj.fields) {
+    cols += column + ", ";
+    placeholders += "?, ";
+    vals.push(insertObj.fields[column]);
+  }
+  const reg = /\, $/;
+  cols = cols.replace(reg, ')');
+  placeholders = placeholders.replace(reg, ')');
+  const statement = `INSERT into ${insertObj.table} ${cols} VALUES ${placeholders}`;
+  console.log(statement);
+  try {
+    const result = await dbpool.execute(statement, vals);
+    return result;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 function find_URLs(testchunk) {
   const urlsarray = [];
   if(typeof testchunk !== 'undefined' && testchunk !== '') {
@@ -90,7 +119,7 @@ async function artist_lookup(artists, dbpool) {
     const reg6 = /\//ig;
     const reg7 = / with /ig;
     const reg8 = /\W$/;
-    const reg9 = /^(A |An |The )/i;
+    const reg9 = /^(?<article>A |An |The )/i;
     const reg10 = /and friends/gi;
     const reg11 = /special guest(s)*/gi;
     const reg12 = /\s{1}[b-zB-z]{1}\s{1}/g;
@@ -126,6 +155,7 @@ async function artist_lookup(artists, dbpool) {
     const parts = name1.split(',');
     for (const part of parts) {
       let candidate = part.trim();
+      candidate = candidate.replace(reg9, '');
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
@@ -427,8 +457,6 @@ async function main() {
       }
     }
   }
-  console.log('built main_events, now looping through it');
-  console.log(util.inspect(main_events, true, 8, true));
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[`${evtday}`].length === 2) {
@@ -486,48 +514,87 @@ async function main() {
 }
 
 async function events_add(bodyObj) {
-  const returnarr = [];
-  console.log(util.inspect(bodyObj, true, 8, true));
-  for (const idx in bodyObj.activity_API_ID) {
-    const evtObj = {
-      "activity_startDate": bodyObj.activity_startDate[idx],
-      "activity_Time": bodyObj.activity_Time[idx],
-      "activity_endDate": bodyObj.activity_startDate[idx],
-      "activity_API_ID": bodyObj.activity_API_ID[idx],
-      "activity_venueID": bodyObj.activity_venueID[idx],
-      "activity_Blurb": bodyObj.blurb[idx],
-      "artists": [],
-      "newartists":[],
-    }
-    if (typeof bodyObj.artistid[idx] !== 'undefined'){
-      for (const artists_id of bodyObj.artistid[idx]){
-        evtObj.artists.push(artists_id);
-      }
-    }
-    if (typeof bodyObj.addone[idx] !== 'undefined') {
-      for (const newartists_idx in bodyObj.addone[idx]){
-        const newartistObj = {
-          "newartist_name": bodyObj.newartistname[idx][newartists_idx],
-          "newartist_twitter": bodyObj.newartist_twitter[idx][newartists_idx],
-          "newartist_url": bodyObj.newartist_url[idx][newartists_idx],
+  for (const activity of bodyObj.events) {
+    if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
+      const artists = [];
+      const evtObj = {
+        'table': 'activity',
+        'fields': {
+          "activity_startDate": activity.activity_startDate,
+          "activity_Time": activity.activity_Time,
+          "activity_endDate": activity.activity_startDate,
+          "activity_API_ID": activity.activity_API_ID,
+          "activity_API": activity.activity_API,
+          "activity_venueID": activity.activity_venueID,
+          "activity_Blurb": activity.blurb,
         }
-        evtObj.newartists.push(newartistObj);
       }
-    }
-    if (typeof bodyObj.addone2 !== 'undefined' && typeof bodyObj.addone2[idx] !== 'undefined' && bodyObj.addone2[idx] === 'on'){
-      const newartistObj = {
-        "newartist_name": bodyObj.newartistname2[idx],
-        "newartist_twitter": bodyObj.newartist_twitter2[idx],
-        "newartist_url": bodyObj.newartist_url2[idx],
+      console.log('going to try to insert this activity: ' + util.inspect(evtObj, true, 8, true));
+      if(typeof activity.existing_artists !== 'undefined'){
+        for (const exartist of activity.existing_artists) {
+          artists.push(exartist);
+        }
       }
-      evtObj.newartists.push(newartistObj);
-    }
-    if (typeof bodyObj.keep[idx] !== 'undefined' && bodyObj.keep[idx] === 'on') {
-      console.log('keep is on so adding to return array');
-      returnarr.push(evtObj);
+      for (const newartist of activity.new_artists) {
+        if (typeof newartist.addone !== 'undefined' && newartist.addone === 'add') {
+          const insertobj = {
+            'table': 'actor',
+            'fields': {
+              'actor_Name': newartist.artist_name,
+              'actor_Local': 'no',
+              'actor_Defunct': 'no',
+            }
+          };
+          try {
+            const result = await dbinsert(insertobj);
+            const actor_id = result[0].insertId;
+            artists.push({artistid: actor_id});
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+          // call artists insert & add the new artist
+          // in actor:
+          // actor_Name
+          // actor_Twitter -- not gonna implement this yet! Need a whole Twitter client!
+          // actor_Local --> no (default is yes)
+          // actor_Defunct --> no (default is yes)
+          // actor_BestURL --> foreign key to:
+          // actorlinks
+          // actorlinks_ActorID --> the actor_ID we get after inserting a new actor
+          // actorlinks_ID --> auto increment, we need it to insert into actor_BestURL
+          // actorlinks_URL --> the URL
+          // actorlinks_Name --> if it's Bandcamp, I have been doing "actorname at Bandcamp"
+          // get the artist ID back
+        }
+      }
+      try {
+        const result = await dbinsert(evtObj);
+        const activity_id = result[0].insertId;
+        console.log('hopefully inserted the event & got this back: ' + activity_id);
+        for (const artist of artists) {
+          const activityobj = {
+            'table': 'actlink',
+            'fields': {
+              'actlink_ActorID': artist.artistid,
+              'actlink_ActivityID': activity_id,
+              },
+          };
+          console.log('trying to insert this obj: ' + util.inspect(activityobj, true, 8, true));
+          try {
+            const result = await dbinsert(activityobj);
+          } catch (error) {
+            console.error(error);
+            return false;
+          }
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
     }
   }
-  return returnarr;
+  return true;
 }
 
 module.exports = { main, events_add };
