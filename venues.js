@@ -148,8 +148,14 @@ module.exports = {
     },
     {
         "etix_id": ["12128"],
+        "ical_url": ["http://rubydeluxeraleigh.com/?ical=1&tribe_display=list"],
         "name": "Ruby Deluxe",
         "venue_id": "223",
+    },
+    {
+        "ical_url": ["http://wickedwitchraleigh.com/?ical=1&tribe_display=list"],
+        "name": "The Wicked Witch",
+        "venue_id": "237",
     },
     {
         "etix_id": ["36"],

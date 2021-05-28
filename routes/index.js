@@ -133,13 +133,4 @@ router.get('/events', authenticated, async function(req, res, next) {
   res.render('events', renderObj);
 });
 
-router.get('/ical_events', authenticated, async function(req, res, next) {
-  const events = await ical_events();
-  const renderObj = {};
-  //  events: events,
-  //}
-  console.log(util.inspect(events, true, 4, true));
-  res.render('index', renderObj);
-});
-
 module.exports = router;

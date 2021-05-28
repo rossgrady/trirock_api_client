@@ -409,24 +409,48 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
   }
 }
 
-async function ical_events() {
-  const rubyURL = 'http://rubydeluxeraleigh.com/?ical=1&tribe_display=list'
+async function ical_events(venueURL, timeWindow, dbpool) {
+  const returnarr = [];
   try {
-    const webEvents = await ical.async.fromURL(rubyURL);
+    const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
-      if (webEvents[idx].type === 'VEVENT') {
-        console.log('summary: ' + webEvents[idx].summary);
-        console.log('description: ' + webEvents[idx].description);
-        console.log('date: ' + util.inspect(webEvents[idx].start, true, 5, true));
-        const startDate = dayjs(webEvents[idx].start);
-        console.log(util.inspect(startDate, true, 7, true));
-        console.log(typeof webEvents[idx].start);
-        console.log('time: ' + webEvents[idx].start.toLocaleTimeString('en-US'));
-        console.log('api_id: ' + webEvents[idx].uid);
-        console.log('category: ' + webEvents[idx].categories[0]);
+      if (webEvents[idx].type === 'VEVENT' && webEvents[idx].categories[0] === 'Show') {
+        const rawArtist = {
+          "name": webEvents[idx].summary,
+          "url": "",
+          };
+        const rawArtists = [];
+        const urls = find_URLs(webEvents[idx].description);
+        const startTime = dayjs(webEvents[idx].start);
+        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const eventObj = {
+          "activity_startDate": startDate,
+          "activity_Time": activityTime,
+          "activity_endDate": startDate,
+          "activity_Timestamp": timestamp.unix(),
+          "activity_timeObj": startTime,
+          "activity_API": "ical",
+          "activity_API_ID": webEvents[idx].uid,
+          "artists": [],
+          "orig_artists": [],
+          "urls": urls,
+          "activity_Blurb": '',
+        };
+        rawArtists.push(rawArtist);
+        eventObj.orig_artists.push(rawArtist);
+        const cookedArtists = await artist_lookup(rawArtists, dbpool);
+        for (const artiste of cookedArtists) {
+          eventObj.artists.push(artiste);
+          if (typeof artiste.blurb_snippet !== 'undefined') {
+            eventObj.activity_Blurb = artiste.blurb_snippet;
+          }
+        }
+        returnarr.push(eventObj);
       }
     }
-    return webEvents;
+    return returnarr;
   } catch (error) {
     console.error(error);
   }
@@ -445,6 +469,19 @@ async function main() {
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
         const events = await ticketmaster(id, duration, dbpool);
+        for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
+          }
+          evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
+        }
+      }
+    }
+    if (typeof venue.ical_url !== 'undefined') {
+      for (const url of venue.ical_url) {
+        const events = await ical_events(url, duration, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
