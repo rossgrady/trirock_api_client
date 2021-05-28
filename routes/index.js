@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add } = require('./api_clients');
+const { main, events_add, ical_events } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -134,7 +134,7 @@ router.get('/events', authenticated, async function(req, res, next) {
 });
 
 router.get('/ical_events', authenticated, async function(req, res, next) {
-  const events = await ical();
+  const events = await ical_events();
   const renderObj = {};
   //  events: events,
   //}
