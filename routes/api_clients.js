@@ -51,7 +51,7 @@ async function dbinsert(insertObj) {
     placeholders += "?, ";
     vals.push(insertObj.fields[column]);
   }
-  const reg = /,$/;
+  const reg = /\,$/;
   cols = cols.replace(reg, ')');
   placeholders = placeholders.replace(reg, ')');
   const statement = `INSERT into ${insertObj.table} ${cols} VALUES ${placeholders}`;
