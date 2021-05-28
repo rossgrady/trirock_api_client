@@ -412,6 +412,16 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
 async function ical_events() {
   const rubyURL = 'http://rubydeluxeraleigh.com/?ical=1&tribe_display=list'
   const webEvents = await ical.async.fromURL(rubyURL);
+  for (const activity of webEvents) {
+    if (activity.type === 'VEVENT') {
+      console.log(activity.summary);
+      console.log(activity.description);
+      console.log(activity.start.getDate());
+      console.log(activity.start.toLocaleTimeString('en-US'));
+      console.log(activity.uid);
+      console.log(activity.categories[0]);
+    }
+  }
   return webEvents;
 }
 
