@@ -116,16 +116,15 @@ router.get('/logout', authenticated, function (req, res, next) {
 });
 
 
-router.post('/events-add', async function(req, res, next) {
+router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
-  console.log(util.inspect(processed, true, 4, true));
-  const renderObj = {
-    title: 'First Pass!',
+  if (processed) {
+    res.render('index', renderObj);
   }
   res.render('index', renderObj);
 });
 
-router.get('/events', async function(req, res, next) {
+router.get('/events', authenticated, async function(req, res, next) {
   const events = await main();
   const renderObj = {
     events: events,
