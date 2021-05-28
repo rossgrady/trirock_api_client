@@ -517,10 +517,12 @@ async function events_add(bodyObj) {
             // rows: [ { result: 12 } ]
             // internally 'select 1 + ? + ? as result' is prepared first. On subsequent calls cached statement is re-used
           // });
+          console.log('about to add ' + artist.artist_name);
           const statement = "INSERT into actor (actor_Name, actor_Local, actor_Defunct) VALUES (?, ?, ?)";
           const vals = [ artist.artist_name, 'no', 'no'];
           try {
             const result = await dbpool.execute(statement, vals);
+            console.log('if it worked '+ util.inspect(result, true, 6, true));
             const actor_id = result.insertId;
             evtObj.artists.push({artistid: actor_id});
           } catch (error) {
