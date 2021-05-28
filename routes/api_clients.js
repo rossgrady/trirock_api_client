@@ -46,10 +46,10 @@ async function dbinsert(insertObj) {
   const vals = [];
   let cols = '(';
   let placeholders = '(';
-  for (column, value in insertObj.fields) {
+  for (column in insertObj.fields) {
     cols += column + ", ";
     placeholders += "?, ";
-    vals.push(value);
+    vals.push(insertObj.fields[column]);
   }
   const reg = /,$/;
   cols = cols.replace(reg, ')');
