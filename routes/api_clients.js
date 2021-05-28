@@ -414,7 +414,7 @@ async function ical_events(venueURL, timeWindow, dbpool) {
   try {
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
-      if (webEvents[idx].type === 'VEVENT' && webEvents[idx].categories[0] === 'Show') {
+      if (webEvents[idx].type === 'VEVENT') {
         const rawArtist = {
           "name": webEvents[idx].summary,
           "url": "",
