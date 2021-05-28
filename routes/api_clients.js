@@ -6,6 +6,7 @@ dayjs.extend(utc);
 dayjs.extend(timezone);
 const util = require('util');
 const namecase = require('namecase');
+const ical = require('node-ical');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -408,6 +409,12 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
   }
 }
 
+async function ical() {
+  const rubyURL = 'http://rubydeluxeraleigh.com/?ical=1&tribe_display=list'
+  const webEvents = await ical.async.fromURL(rubyURL);
+  return webEvents;
+}
+
 async function main() {
   const dbpool = await db.getPool();
   const main_events = [];
@@ -597,4 +604,4 @@ async function events_add(bodyObj) {
   return true;
 }
 
-module.exports = { main, events_add };
+module.exports = { main, events_add, ical };

@@ -118,6 +118,7 @@ router.get('/logout', authenticated, function (req, res, next) {
 
 router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
+  const renderObj = {};
   if (processed) {
     res.render('index', renderObj);
   }
@@ -130,6 +131,15 @@ router.get('/events', authenticated, async function(req, res, next) {
     events: events,
   }
   res.render('events', renderObj);
+});
+
+router.get('/ical', authenticated, async function(req, res, next) {
+  const events = await ical();
+  const renderObj = {};
+  //  events: events,
+  //}
+  console.log(util.inspect(events, true, 4, true));
+  res.render('index', renderObj);
 });
 
 module.exports = router;
