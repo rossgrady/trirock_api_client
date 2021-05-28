@@ -570,7 +570,6 @@ async function events_add(bodyObj) {
       }
       try {
         const result = await dbinsert(evtObj);
-        console.log('maybe just inserted it, got back: ' + util.inspect(result, true, 8, true));
         const activity_id = result[0].insertId;
         for (const artist of artists) {
           const activityobj = {
@@ -578,7 +577,7 @@ async function events_add(bodyObj) {
             'fields': {
               'actlink_ActorID': artist.actor_id,
               'actlink_ActivityID': activity_id,
-            }
+              },
           };
           try {
             const result = await dbinsert(activityobj);
