@@ -529,6 +529,7 @@ async function events_add(bodyObj) {
           "activity_Blurb": activity.blurb,
         }
       }
+      console.log('going to try to insert this activity: ' + util.inspect(evtObj, true, 8, true));
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
           artists.push(exartist);
@@ -569,6 +570,7 @@ async function events_add(bodyObj) {
       }
       try {
         const result = await dbinsert(evtObj);
+        console.log('maybe just inserted it, got back: ' + util.inspect(result, true, 8, true));
         const activity_id = result[0].insertId;
         for (const artist of artists) {
           const activityobj = {
