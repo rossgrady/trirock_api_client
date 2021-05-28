@@ -576,7 +576,7 @@ async function events_add(bodyObj) {
           const activityobj = {
             'table': 'actlink',
             'fields': {
-              'actlink_ActorID': artist.actor_id,
+              'actlink_ActorID': artist.artistid,
               'actlink_ActivityID': activity_id,
               },
           };
