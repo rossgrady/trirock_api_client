@@ -90,7 +90,7 @@ async function artist_lookup(artists, dbpool) {
     const reg6 = /\//ig;
     const reg7 = / with /ig;
     const reg8 = /\W$/;
-    const reg9 = /^(A |An |The )/i;
+    const reg9 = /^(?<article>A |An |The )/i;
     const reg10 = /and friends/gi;
     const reg11 = /special guest(s)*/gi;
     const reg12 = /\s{1}[b-zB-z]{1}\s{1}/g;
