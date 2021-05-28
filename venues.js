@@ -93,6 +93,7 @@ module.exports = {
     {
         "etix_id": ["1309", "12884", "14674", "1285"],
         "eventbrite_id": ["33175485", "44427049"],
+        "ical_url": ['https://local506.com/events/?ical=1&tribe_display=list'],
         "name": "Local 506",
         "venue_id": 3,
     },
