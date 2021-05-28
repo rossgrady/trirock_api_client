@@ -522,8 +522,11 @@ async function events_add(bodyObj) {
           const vals = [ artist.artist_name, 'no', 'no'];
           try {
             const result = await dbpool.execute(statement, vals);
-            console.log('if it worked '+ util.inspect(result, true, 6, true));
-            const actor_id = result.insertId;
+            console.log('if it worked '+ util.inspect(result, true, 8, true));
+            console.log(typeof result);
+            console.log(util.inspect(result[0], true, 5, true));
+            console.log(util.inspect(result[1], true, 7, true));
+            const actor_id = result[0].insertId;
             evtObj.artists.push({artistid: actor_id});
           } catch (error) {
             console.error(error);
