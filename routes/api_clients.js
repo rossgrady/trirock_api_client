@@ -467,7 +467,7 @@ async function ical_events(baseURL, timeWindow, dbpool) {
 }
 
 async function tribe(baseURL, timeWindow, dbpool) {
-  const returnarr = [];
+  let returnarr = [];
   const tribeURL = baseURL + 'events/';
   const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
   try {
@@ -532,10 +532,11 @@ async function tribe(baseURL, timeWindow, dbpool) {
           }
         }
         returnarr.push(eventObj);
+        return(eventObj);
       } catch (error) {
         console.error(error);
       }
-    });
+    }).get();
     console.log('what is in this? ' + util.inspect(mappeditems, true, 8, true));
     console.log('final return array from tribe: ' + util.inspect(returnarr, true, 4, true));
     return returnarr;
