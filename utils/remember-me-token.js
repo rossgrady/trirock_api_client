@@ -1,13 +1,17 @@
 var rack = require('hat').rack();
+const { URITooLong } = require('http-errors');
 var db = require('../db');
+const util = require('util');
 
 module.exports = {
   consume: async function (token, done) {
+    console.log('in rememberme.consume');
     const dbpool = await db.getPool();
     const querystring1 = "SELECT * from tokens WHERE token = '" + token + "'";
     console.log(querystring1);
     try {
       const rows1 = await db.query(dbpool, querystring1);
+      console.log('query returned: ' + util.inspect(rows1, true, 5, true));
       if (rows1.length > 0) {
         const querystring2 = "SELECT * from users where id = '" + rows1[0].user + "'";
         console.log(querystring2);
