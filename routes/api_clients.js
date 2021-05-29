@@ -417,7 +417,9 @@ async function ical_events(baseURL, timeWindow, dbpool) {
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
       const startTime = dayjs(webEvents[idx].start);
+      console.log('starttime is ' + util.inspect(startTime, true, 3, true));
       if (webEvents[idx].type === 'VEVENT' && startTime.isAfter(dayjs())) {
+        console.log('I *think* starttime is after now');
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
         if (typeof webEvents[idx].categories !== 'undefined' && webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
           continue;
