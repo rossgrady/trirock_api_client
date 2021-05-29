@@ -131,7 +131,8 @@ module.exports = async function (passport) {
   passport.use(new RememberMeStrategy(function (token, done) {
     process.nextTick(function() {
       console.log('in the rememberme strategy wrapper');
-      console.log('tokenstorage.consume with: ' + util.inspect(err, true, 1, true) + util.inspect(user, true, 3, true));
+      console.log('tokenstorage.consume with user: ' + util.inspect(user, true, 3, true));
+      console.log('and token: ' + token);
       tokenStorage.consume(token, function (err, user) {
         if (err) {
           return done(err);
