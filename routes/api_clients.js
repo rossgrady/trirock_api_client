@@ -532,7 +532,8 @@ async function tribe(baseURL, timeWindow, dbpool) {
           }
         }
         console.log(' about to push this to returnarr: ' + util.inspect(eventObj, true, 3, true));
-        returnarr.push(eventObj);
+        const pushreturn = returnarr.push(eventObj);
+        console.log(util.inspect(pushreturn, true, 10, true));
       } catch (error) {
         console.error(error);
       }
