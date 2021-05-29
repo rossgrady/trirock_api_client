@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add, ical_events } = require('./api_clients');
+const { main, events_add, tribe } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -131,6 +131,14 @@ router.get('/events', authenticated, async function(req, res, next) {
     events: events,
   }
   res.render('events', renderObj);
+});
+
+router.get('/tribe', authenticated, async function(req, res, next) {
+  const events = await tribe();
+  const renderObj = {
+  //  events: events,
+  }
+  res.render('index', renderObj);
 });
 
 module.exports = router;

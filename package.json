@@ -19,6 +19,7 @@
     "morgan": "^1.10.0",
     "mysql2": "^2.2.5",
     "namecase": "^1.1.2",
+    "node-html-parser": "^3.3.4",
     "node-ical": "^0.13.0",
     "passport": "^0.4.1",
     "passport-2fa-totp": "^0.0.1",
