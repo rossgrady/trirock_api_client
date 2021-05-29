@@ -417,14 +417,11 @@ async function ical_events(baseURL, timeWindow, dbpool) {
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
       const startTime = dayjs(webEvents[idx].start);
-      console.log('in ical -- starttime is ' + util.inspect(startTime, true, 3, true));
       if (webEvents[idx].type === 'VEVENT' && startTime.isAfter(dayjs())) {
-        console.log('I *think* starttime is after now');
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
         if (typeof webEvents[idx].categories !== 'undefined' && webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
           continue;
         }
-        console.log('working on: ' + webEvents[idx].summary);
         const rawArtist = {
           "name": webEvents[idx].summary,
           "url": "",
@@ -467,7 +464,6 @@ async function ical_events(baseURL, timeWindow, dbpool) {
 }
 
 async function tribe(baseURL, timeWindow, dbpool) {
-  let returnarr = [];
   const tribeURL = baseURL + 'events/';
   const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
   try {
@@ -536,11 +532,13 @@ async function tribe(baseURL, timeWindow, dbpool) {
         console.error(error);
       }
     }).get();
-    Promise.all(mappeditems).then(function(eventObjs){
+    const returnarr = await Promise.all(mappeditems).then(function(eventObjs){
+      console.log(eventObjs);
       return eventObjs;
     }).catch(function(eventObjs){ // if any image fails to load, then() is skipped and catch is called
-        console.log(eventObjs) // returns array of images that failed to load
+        console.log(eventObjs); // returns array of images that failed to load
     });
+    return returnarr;
   } catch (error) {
     console.error(error);
   }
