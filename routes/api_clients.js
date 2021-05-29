@@ -537,10 +537,12 @@ async function tribe(baseURL, timeWindow, dbpool) {
       }
     }).get();
     Promise.all(mappeditems).then(function(eventObjs){
+      console.log('inside the promiseall, exciting ' + util.inspect(eventObjs, true, 8, true));
       returnarr.push(eventObjs);
     }).catch(function(eventObjs){ // if any image fails to load, then() is skipped and catch is called
         console.log(eventObjs) // returns array of images that failed to load
     });
+    console.log('about to return this array?? ' + util.inspect(returnarr, true, 8, true));
     return returnarr;
   } catch (error) {
     console.error(error);
