@@ -418,7 +418,7 @@ async function ical_events(baseURL, timeWindow, dbpool) {
     for (const idx in webEvents) {
       if (webEvents[idx].type === 'VEVENT') {
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
-        if (typeof webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
+        if (typeof webEvents[idx].categories !== 'undefined' && webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
           continue;
         }
         const rawArtist = {
