@@ -461,10 +461,14 @@ async function ical_events(venueURL, timeWindow, dbpool) {
 
 async function tribe() {
   const l506url = 'https://local506.com/events/';
+  const l506api = 'https://local506.com/wp-json/tribe/events/v1/events/'
   const rawpage = await axios.get(l506url);
   const dompage = parser.parse(rawpage.data);
   for (const eventdiv of dompage.querySelectorAll('.type-tribe_events')) {
-    console.log(eventdiv.attributes);
+    const idstring = eventdiv.id;
+    const postid = idstring.replace('post-', '');
+    const eventdata = await axios.get(l506api + postid);
+    console.log(util.inspect(eventdata.data, true, 8, true));
   }
 }
 
