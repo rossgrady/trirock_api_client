@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add } = require('./api_clients');
+const { main, events_add, ical_events } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -118,6 +118,7 @@ router.get('/logout', authenticated, function (req, res, next) {
 
 router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
+  const renderObj = {};
   if (processed) {
     res.render('index', renderObj);
   }
