@@ -462,10 +462,11 @@ async function ical_events(venueURL, timeWindow, dbpool) {
 async function tribe() {
   const l506url = 'https://local506.com/events/';
   const rawpage = await axios.get(l506url);
-  console.log(rawpage.data);
   const dompage = parser.parse(rawpage.data);
-  const targetdiv = dompage.querySelectorAll('#tribe-events-content');
-  console.log(util.inspect(targetdiv, true, 9, true));
+  const targetdiv = dompage.querySelectorAll('.vcalendar');
+  for (const eventdiv of targetdiv.querySelectorAll('.type-tribe_events')) {
+    console.log(eventdiv.attributes);
+  }
 }
 
 async function main() {
