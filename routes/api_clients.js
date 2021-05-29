@@ -531,14 +531,16 @@ async function tribe(baseURL, timeWindow, dbpool) {
             eventObj.activity_Blurb = artiste.blurb_snippet;
           }
         }
-        returnarr.push(eventObj);
         return(eventObj);
       } catch (error) {
         console.error(error);
       }
     }).get();
-    console.log('what is in this? ' + util.inspect(mappeditems, true, 8, true));
-    console.log('final return array from tribe: ' + util.inspect(returnarr, true, 4, true));
+    Promise.all(mappeditems).then(function(eventObjs){
+      returnarr.push(eventObjs);
+    }).catch(function(eventObjs){ // if any image fails to load, then() is skipped and catch is called
+        console.log(eventObjs) // returns array of images that failed to load
+    });
     return returnarr;
   } catch (error) {
     console.error(error);
