@@ -7,7 +7,7 @@ dayjs.extend(timezone);
 const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
-const parser = require('node-html-parser');
+const cheerio = require('cheerio');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -463,13 +463,14 @@ async function tribe() {
   const l506url = 'https://local506.com/events/';
   const l506api = 'https://local506.com/wp-json/tribe/events/v1/events/'
   const rawpage = await axios.get(l506url);
-  const dompage = parser.parse(rawpage.data);
-  for (const eventdiv of dompage.querySelectorAll('.type-tribe_events')) {
-    const idstring = eventdiv.id;
-    const postid = idstring.replace('post-', '');
-    const eventdata = await axios.get(l506api + postid);
-    console.log(util.inspect(eventdata.data, true, 8, true));
-  }
+  const dompage = cheerio.load(rawpage.data);
+  console.log(util.inspect(dompage('.eventTitleDiv', '.rhino-event-info').html()));
+  //for (const eventdiv of dompage.querySelectorAll('.type-tribe_events')) {
+  //  const idstring = eventdiv.id;
+  //  const postid = idstring.replace('post-', '');
+  //  const eventdata = await axios.get(l506api + postid);
+  //  console.log(util.inspect(eventdata.data, true, 8, true));
+ // }
 }
 
 async function main() {
