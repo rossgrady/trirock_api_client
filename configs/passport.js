@@ -139,6 +139,7 @@ module.exports = async function (passport) {
           return done(null, false);
         } else {
           console.log('got success, passing this on to next step: ' + util.inspect(user, true, 3, true));
+          console.log('if that was not a user object then it is consumes fault');
           return done(null, user);
         }
       });
@@ -147,6 +148,7 @@ module.exports = async function (passport) {
   function (user, done) {
     process.nextTick(function() {
       console.log('calling tokenstorage.create for this user: ' + util.inspect(user, true, 3, true));
+      console.log('but Im supposed to be calling create with a user object');
       tokenStorage.create(user, done);
     });
   }));

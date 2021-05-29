@@ -46,7 +46,8 @@ module.exports = {
   create: async function (user, done) {
     const dbpool = await db.getPool();
     var token = rack();
-    const querystring = "INSERT into tokens (token, user) VALUES ('" + token + "', '" + user + "')";
+    console.log('I was passed user from somewhere: ' + util.inspect(user, true, 3, true));
+    const querystring = "INSERT into tokens (token, user) VALUES ('" + token + "', '" + user.id + "')";
     console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
