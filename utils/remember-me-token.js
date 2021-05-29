@@ -22,7 +22,7 @@ module.exports = {
             console.log(querystring3);
             try {
               const rows3 = await db.query(dbpool, querystring3);
-              return done(null, rows2[0];
+              return done(null, rows2[0]);
             } catch (error) {
               console.error(error);
               return done(error);
