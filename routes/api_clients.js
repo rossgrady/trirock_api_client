@@ -473,7 +473,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
   try {
     const rawpage = await axios.get(tribeURL);
     const $ = cheerio.load(rawpage.data);
-    $('.type-tribe_events').each(async (index, element) => {
+    $.when($('.type-tribe_events').each(async (index, element) => {
       let postid = $(element).attr('id');
       let title = $(element).find('#eventTitle').find('h2').html();
       let subtitle = $(element).find('.eventSubHeader').html();
@@ -537,7 +537,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
       } catch (error) {
         console.error(error);
       }
-    }).then( () => {
+    })).done(() => {
       console.log('final return array from tribe: ' + util.inspect(returnarr, true, 4, true));
       return returnarr;
     });
