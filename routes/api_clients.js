@@ -416,7 +416,8 @@ async function ical_events(baseURL, timeWindow, dbpool) {
     const venueURL = baseURL + '?ical=1&tribe_display=list';
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
-      if (webEvents[idx].type === 'VEVENT') {
+      const startTime = dayjs(webEvents[idx].start);
+      if (webEvents[idx].type === 'VEVENT' && startTime.isAfter(dayjs())) {
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
         if (typeof webEvents[idx].categories !== 'undefined' && webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
           continue;
@@ -427,7 +428,6 @@ async function ical_events(baseURL, timeWindow, dbpool) {
           };
         const rawArtists = [];
         const urls = find_URLs(webEvents[idx].description);
-        const startTime = dayjs(webEvents[idx].start);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
