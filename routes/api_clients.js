@@ -463,7 +463,7 @@ async function tribe() {
   const l506url = 'https://local506.com/events/';
   const rawpage = await axios.get(l506url);
   const dompage = parser.parse(rawpage);
-  console.log(util.inspect(dompage, true, 6, true));
+  console.log(util.inspect(dompage, true, 9, true));
 }
 
 async function main() {
