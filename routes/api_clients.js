@@ -537,9 +537,10 @@ async function tribe(baseURL, timeWindow, dbpool) {
       } catch (error) {
         console.error(error);
       }
+    }).then( () => {
+      console.log('final return array from tribe: ' + util.inspect(returnarr, true, 4, true));
+      return returnarr;
     });
-    console.log('final return array from tribe: ' + util.inspect(returnarr, true, 4, true));
-    return returnarr;
   } catch (error) {
     console.error(error);
   }
