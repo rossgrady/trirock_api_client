@@ -7,7 +7,7 @@ dayjs.extend(timezone);
 const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
-import { parse } from 'node-html-parser';
+const parser = require('node-html-parser');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -462,7 +462,7 @@ async function ical_events(venueURL, timeWindow, dbpool) {
 async function tribe() {
   const l506url = 'https://local506.com/events/';
   const rawpage = await axios.get(l506url);
-  const dompage = parse(rawpage);
+  const dompage = parser.parse(rawpage);
   console.log(dompage.querySelector('.vcalendar'));
 }
 
