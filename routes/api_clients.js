@@ -161,7 +161,7 @@ async function artist_lookup(artists, dbpool) {
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
-      if (candidate.length > 2) {
+      if (candidate.length > 2 && candidate !== 'And') {
         const dbartist = await dblookup(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const candobj = {
@@ -493,8 +493,8 @@ async function tribe(baseURL, timeWindow, dbpool) {
       const eventid = postid.replace('post-', '');
       try {
         const eventdata = await axios.get(apiURL + eventid);
-        if (typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
-          return;
+        if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
+          break;
         }
         const rawArtist = {
           "name": title,
