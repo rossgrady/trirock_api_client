@@ -467,67 +467,76 @@ async function tribe(baseURL, timeWindow, dbpool) {
   const returnarr = [];
   const tribeURL = baseURL + 'events/';
   const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
-  const rawpage = await axios.get(tribeURL);
-  const $ = cheerio.load(rawpage.data);
-  $('.type-tribe_events').each(async (index, element) => {
-    let postid = $(element).attr('id');
-    let title = $(element).find('#eventTitle').find('h2').html();
-    let subtitle = $(element).find('.eventSubHeader').html();
-    if (typeof title !== 'undefined' && title !== null) {
-      title = title.trim();
-    } else {
-      title = $(element).find('.tribe-events-list-event-title').find('a').text();
+  try {
+    const rawpage = await axios.get(tribeURL);
+    const $ = cheerio.load(rawpage.data);
+    $('.type-tribe_events').each(async (index, element) => {
+      let postid = $(element).attr('id');
+      let title = $(element).find('#eventTitle').find('h2').html();
+      let subtitle = $(element).find('.eventSubHeader').html();
       if (typeof title !== 'undefined' && title !== null) {
         title = title.trim();
+      } else {
+        title = $(element).find('.tribe-events-list-event-title').find('a').text();
+        if (typeof title !== 'undefined' && title !== null) {
+          title = title.trim();
+        }
       }
-    }
-    if (typeof subtitle !== 'undefined' && subtitle !== null) {
-      title = title + ' ' + subtitle.trim();
-    } else {
-      subtitle = $(element).find('.tribe-events-list-event-description').find('p').text();
       if (typeof subtitle !== 'undefined' && subtitle !== null) {
         title = title + ' ' + subtitle.trim();
+      } else {
+        subtitle = $(element).find('.tribe-events-list-event-description').find('p').text();
+        if (typeof subtitle !== 'undefined' && subtitle !== null) {
+          title = title + ' ' + subtitle.trim();
+        }
       }
-    }
-    const eventid = postid.replace('post-', '');
-    const eventdata = await axios.get(apiURL + eventid);
-    if (typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
-      return;
-    }
-    const rawArtist = {
-      "name": title,
-      "url": "",
-      };
-    const rawArtists = [];
-    const urls = find_URLs(subtitle);
-    const startTime = dayjs(eventdata.data.utc_start_date);
-    const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
-    const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
-    const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-    const eventObj = {
-      "activity_startDate": startDate,
-      "activity_Time": activityTime,
-      "activity_endDate": startDate,
-      "activity_Timestamp": timestamp.unix(),
-      "activity_timeObj": startTime,
-      "activity_API": "tribe",
-      "activity_API_ID": eventdata.data.id,
-      "artists": [],
-      "orig_artists": [],
-      "urls": urls,
-      "activity_Blurb": '',
-    };
-    rawArtists.push(rawArtist);
-    eventObj.orig_artists.push(rawArtist);
-    const cookedArtists = await artist_lookup(rawArtists, dbpool);
-    for (const artiste of cookedArtists) {
-      eventObj.artists.push(artiste);
-      if (typeof artiste.blurb_snippet !== 'undefined') {
-        eventObj.activity_Blurb = artiste.blurb_snippet;
+      const eventid = postid.replace('post-', '');
+      try {
+        const eventdata = await axios.get(apiURL + eventid);
+        if (typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
+          return;
+        }
+        const rawArtist = {
+          "name": title,
+          "url": "",
+          };
+        const rawArtists = [];
+        const urls = find_URLs(subtitle);
+        const startTime = dayjs(eventdata.data.utc_start_date);
+        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        const eventObj = {
+          "activity_startDate": startDate,
+          "activity_Time": activityTime,
+          "activity_endDate": startDate,
+          "activity_Timestamp": timestamp.unix(),
+          "activity_timeObj": startTime,
+          "activity_API": "tribe",
+          "activity_API_ID": eventdata.data.id,
+          "artists": [],
+          "orig_artists": [],
+          "urls": urls,
+          "activity_Blurb": '',
+        };
+        rawArtists.push(rawArtist);
+        eventObj.orig_artists.push(rawArtist);
+        const cookedArtists = await artist_lookup(rawArtists, dbpool);
+        for (const artiste of cookedArtists) {
+          eventObj.artists.push(artiste);
+          if (typeof artiste.blurb_snippet !== 'undefined') {
+            eventObj.activity_Blurb = artiste.blurb_snippet;
+          }
+        }
+        returnarr.push(eventObj);
+      } catch (error) {
+        console.error(error);
       }
-    }
-    returnarr.push(eventObj);
-  });
+    });
+  } catch (error) {
+    console.error(error);
+  }
+  return returnarr;
 }
 
 async function main() {
