@@ -539,8 +539,10 @@ async function tribe(baseURL, timeWindow, dbpool) {
     Promise.all(mappeditems).then(function(eventObjs){
       console.log('inside the promiseall, exciting ' + util.inspect(eventObjs, true, 8, true));
       for (eventObj of eventObjs) {
+        console.log('is this a single event obj? ' + util.inspect(eventObj, true, 9, true));
         returnarr.push(eventObj);
       }
+      console.log('why cant I just return from here?' + util.inspect(returnarr, true, 8, true));
       return returnarr;
     }).catch(function(eventObjs){ // if any image fails to load, then() is skipped and catch is called
         console.log(eventObjs) // returns array of images that failed to load
