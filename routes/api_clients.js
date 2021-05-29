@@ -493,9 +493,6 @@ async function tribe(baseURL, timeWindow, dbpool) {
       const eventid = postid.replace('post-', '');
       try {
         const eventdata = await axios.get(apiURL + eventid);
-        if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
-          break;
-        }
         const rawArtist = {
           "name": title,
           "url": "",
