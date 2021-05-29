@@ -16,11 +16,13 @@ module.exports = async function (passport) {
     return done(null, user.id);    
   });
   passport.deserializeUser( async function (id, done) {
+    console.log('in deserializeUser');
     const querystring = "SELECT * from users where id = " + id;
     console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
       if (rows.length > 0) {
+        console.log('returning this: ' + util.inspect(rows[0], true, 3, true));
         return done(null, rows[0])
       } else {
         return done(null, false);
@@ -38,6 +40,7 @@ module.exports = async function (passport) {
     }, function (username, password, done) {
       // 1st step verification: username and password
       process.nextTick( async function () {
+        console.log('in passport login');
         const querystring = "SELECT * from users where username = '" + username + "'";
         console.log(querystring);
         try {
@@ -45,6 +48,7 @@ module.exports = async function (passport) {
           if (rows.length > 0) {
             const result = await bcrypt.compare(password, rows[0].password);
             if (result === true) {
+              console.log('checked password, its good, returning: ' + util.inspect(rows[0], true, 3, true));
               return done(null, rows[0]);
             } else {
               return done(null, false, { message: INVALID_LOGIN });
@@ -126,12 +130,15 @@ module.exports = async function (passport) {
 
   passport.use(new RememberMeStrategy(function (token, done) {
     process.nextTick(function() {
+      console.log('in the rememberme strategy wrapper');
+      console.log('tokenstorage.consume with: ' + util.inspect(err, true, 1, true) + util.inspect(user, true, 3, true));
       tokenStorage.consume(token, function (err, user) {
         if (err) {
           return done(err);
         } else if (user === false) {
           return done(null, false);
         } else {
+          console.log('got success, passing this on to next step: ' + util.inspect(user, true, 3, true));
           return done(null, user);
         }
       });
@@ -139,6 +146,7 @@ module.exports = async function (passport) {
   },
   function (user, done) {
     process.nextTick(function() {
+      console.log('calling tokenstorage.create for this user: ' + util.inspect(user, true, 3, true));
       tokenStorage.create(user, done);
     });
   }));
