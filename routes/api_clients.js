@@ -491,8 +491,10 @@ async function tribe(baseURL, timeWindow, dbpool) {
         }
       }
       const eventid = postid.replace('post-', '');
+      console.log('in tribe, about to lookup: ' + eventid);
       try {
         const eventdata = await axios.get(apiURL + eventid);
+        console.log('that lookup yielded: ' + util.inspect(eventdata.data, true, 1, true));
         const rawArtist = {
           "name": title,
           "url": "",
