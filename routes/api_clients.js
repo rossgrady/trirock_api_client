@@ -410,13 +410,17 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
   }
 }
 
-async function ical_events(venueURL, timeWindow, dbpool) {
+async function ical_events(baseURL, timeWindow, dbpool) {
   const returnarr = [];
   try {
+    const venueURL = baseURL + '?ical=1&tribe_display=list';
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
       if (webEvents[idx].type === 'VEVENT') {
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
+        if (typeof webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
+          continue;
+        }
         const rawArtist = {
           "name": webEvents[idx].summary,
           "url": "",
@@ -459,18 +463,71 @@ async function ical_events(venueURL, timeWindow, dbpool) {
   return false;
 }
 
-async function tribe() {
-  const l506url = 'https://local506.com/events/';
-  const l506api = 'https://local506.com/wp-json/tribe/events/v1/events/'
-  const rawpage = await axios.get(l506url);
-  const dompage = cheerio.load(rawpage.data);
-  console.log(util.inspect(dompage('.eventTitleDiv' > '.rhino-event-info').html()));
-  //for (const eventdiv of dompage.querySelectorAll('.type-tribe_events')) {
-  //  const idstring = eventdiv.id;
-  //  const postid = idstring.replace('post-', '');
-  //  const eventdata = await axios.get(l506api + postid);
-  //  console.log(util.inspect(eventdata.data, true, 8, true));
- // }
+async function tribe(baseURL, timeWindow, dbpool) {
+  const returnarr = [];
+  const tribeURL = baseURL + 'events/';
+  const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
+  const rawpage = await axios.get(tribeURL);
+  const $ = cheerio.load(rawpage.data);
+  $('.type-tribe_events').each(async (index, element) => {
+    let postid = $(element).attr('id');
+    let title = $(element).find('#eventTitle').find('h2').html();
+    let subtitle = $(element).find('.eventSubHeader').html();
+    if (typeof title !== 'undefined' && title !== null) {
+      title = title.trim();
+    } else {
+      title = $(element).find('.tribe-events-list-event-title').find('a').text();
+      if (typeof title !== 'undefined' && title !== null) {
+        title = title.trim();
+      }
+    }
+    if (typeof subtitle !== 'undefined' && subtitle !== null) {
+      title = title + ' ' + subtitle.trim();
+    } else {
+      subtitle = $(element).find('.tribe-events-list-event-description').find('p').text();
+      if (typeof subtitle !== 'undefined' && subtitle !== null) {
+        title = title + ' ' + subtitle.trim();
+      }
+    }
+    const eventid = postid.replace('post-', '');
+    const eventdata = await axios.get(apiURL + eventid);
+    if (typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show') {
+      return;
+    }
+    const rawArtist = {
+      "name": title,
+      "url": "",
+      };
+    const rawArtists = [];
+    const urls = find_URLs(subtitle);
+    const startTime = dayjs(eventdata.data.utc_start_date);
+    const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+    const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+    const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+    const eventObj = {
+      "activity_startDate": startDate,
+      "activity_Time": activityTime,
+      "activity_endDate": startDate,
+      "activity_Timestamp": timestamp.unix(),
+      "activity_timeObj": startTime,
+      "activity_API": "tribe",
+      "activity_API_ID": eventdata.data.id,
+      "artists": [],
+      "orig_artists": [],
+      "urls": urls,
+      "activity_Blurb": '',
+    };
+    rawArtists.push(rawArtist);
+    eventObj.orig_artists.push(rawArtist);
+    const cookedArtists = await artist_lookup(rawArtists, dbpool);
+    for (const artiste of cookedArtists) {
+      eventObj.artists.push(artiste);
+      if (typeof artiste.blurb_snippet !== 'undefined') {
+        eventObj.activity_Blurb = artiste.blurb_snippet;
+      }
+    }
+    returnarr.push(eventObj);
+  });
 }
 
 async function main() {
@@ -495,9 +552,22 @@ async function main() {
         }
       }
     }
-    if (typeof venue.ical_url !== 'undefined') {
-      for (const url of venue.ical_url) {
+    if (typeof venue.tribe_baseurl !== 'undefined') {
+      for (const url of venue.tribe_baseurl) {
         const events = await ical_events(url, duration, dbpool);
+        for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
+          }
+          evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
+        }
+      }
+    }
+    if (typeof venue.tribe_baseurl !== 'undefined') {
+      for (const url of venue.tribe_baseurl) {
+        const events = await tribe(url, duration, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];

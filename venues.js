@@ -93,7 +93,7 @@ module.exports = {
     {
         "etix_id": ["1309", "12884", "14674", "1285"],
         "eventbrite_id": ["33175485", "44427049"],
-        "ical_url": ['https://local506.com/events/?ical=1&tribe_display=list'],
+        "tribe_baseurl": ['https://local506.com/'],
         "name": "Local 506",
         "venue_id": 3,
     },
@@ -149,12 +149,12 @@ module.exports = {
     },
     {
         "etix_id": ["12128"],
-        "ical_url": ["http://rubydeluxeraleigh.com/?ical=1&tribe_display=list"],
+        "tribe_baseurl": ['http://rubydeluxeraleigh.com/'],
         "name": "Ruby Deluxe",
         "venue_id": "223",
     },
     {
-        "ical_url": ["http://wickedwitchraleigh.com/?ical=1&tribe_display=list"],
+        "tribe_baseurl": ['https://wickedwitchraleigh.com/'],
         "name": "The Wicked Witch",
         "venue_id": "237",
     },
