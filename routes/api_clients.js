@@ -463,8 +463,7 @@ async function tribe() {
   const l506url = 'https://local506.com/events/';
   const rawpage = await axios.get(l506url);
   const dompage = parser.parse(rawpage.data);
-  const targetdiv = dompage.querySelectorAll('.vcalendar');
-  for (const eventdiv of targetdiv.querySelectorAll('.type-tribe_events')) {
+  for (const eventdiv of dompage.querySelectorAll('.type-tribe_events')) {
     console.log(eventdiv.attributes);
   }
 }
