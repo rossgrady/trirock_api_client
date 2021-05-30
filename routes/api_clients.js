@@ -8,7 +8,7 @@ const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
 const cheerio = require('cheerio');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -28,13 +28,31 @@ function str_escape(string_to_escape) {
   return escaped_string;
 }
 
-async function dblookup(namestring, dbpool) {
+async function dblookup_artist(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
   try {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
       return rows;
+    } else {
+      const nullarr = [];
+      return nullarr;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function dblookup_shows(dbpool) {
+  const returnobj = {};
+  const rightnow = dayjs().unix();
+  const querystring = `SELECT activity_ID, activity_API, activity_API_ID, activity_StartDate, activity_Time, activity_EndDate, activity_Blurb, activity_VenueID, venue_ID, venue_Name FROM activity, venue WHERE activity_VenueID=venue_ID AND UNIX_TIMESTAMP(activity_EndDate) >= ${rightnow} ORDER BY activity_StartDate`;
+  try {
+    const rows = await db.query(dbpool, querystring);
+    if (typeof rows !== 'undefined') {
+      // return rows;
+      console.log(util.inspect(rows, true, 3, true));
     } else {
       const nullarr = [];
       return nullarr;
@@ -165,7 +183,7 @@ async function artist_lookup(artists, dbpool) {
       const trues = [];
       candidate = await to_titlecase(candidate);
       if (candidate.length > 2 && candidate !== 'And') {
-        const dbartist = await dblookup(candidate, dbpool);
+        const dbartist = await dblookup_artist(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const candobj = {
             'origname': candidate,
@@ -760,6 +778,7 @@ async function main() {
       }
     }
   }
+  const shows = await dblookup_shows(dbpool);
   return return_events;
 }
 
