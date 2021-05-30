@@ -492,11 +492,8 @@ async function tribe(baseURL, timeWindow, dbpool) {
         }
       }
       const eventid = postid.replace('post-', '');
-      console.log('in tribe, about to lookup: ' + eventid);
       try {
         const eventdata = await axios.get(apiURL + eventid);
-        console.log('page parser produced: ' + title);
-        console.log('api produced: '+ eventdata.data.title);
         const rawArtist = {
           "name": title,
           "url": "",
@@ -522,23 +519,26 @@ async function tribe(baseURL, timeWindow, dbpool) {
         };
         rawArtists.push(rawArtist);
         eventObj.orig_artists.push(rawArtist);
-        const cookedArtists = await artist_lookup(rawArtists, dbpool);
-        for (const artiste of cookedArtists) {
-          eventObj.artists.push(artiste);
-          if (typeof artiste.blurb_snippet !== 'undefined') {
-            eventObj.activity_Blurb = artiste.blurb_snippet;
+        if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0] !== 'Show' ) {
+          //skip
+        } else {
+          const cookedArtists = await artist_lookup(rawArtists, dbpool);
+          for (const artiste of cookedArtists) {
+            eventObj.artists.push(artiste);
+            if (typeof artiste.blurb_snippet !== 'undefined') {
+              eventObj.activity_Blurb = artiste.blurb_snippet;
+            }
           }
+          return(eventObj);
         }
-        return(eventObj);
       } catch (error) {
         console.error(error);
       }
     }).get();
     const returnarr = await Promise.all(mappeditems).then(function(eventObjs){
-      console.log(eventObjs);
       return eventObjs;
-    }).catch(function(eventObjs){ // if any image fails to load, then() is skipped and catch is called
-        console.log(eventObjs); // returns array of images that failed to load
+    }).catch(function(eventObjs){ 
+        console.error(eventObjs); 
     });
     return returnarr;
   } catch (error) {
@@ -568,6 +568,8 @@ async function main() {
         }
       }
     }
+    /* just using this for Tribe sites is redundant -- saving it to refactor for
+    // sites that have ical links that *aren't* Tribe sites
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
         const events = await ical_events(url, duration, dbpool);
@@ -581,10 +583,10 @@ async function main() {
         }
       }
     }
+    */
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
         const events = await tribe(url, duration, dbpool);
-        console.log('this is what I got back from the tribe client: ' + util.inspect(events, true, 8, true));
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
