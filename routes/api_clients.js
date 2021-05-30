@@ -52,7 +52,7 @@ async function dblookup_shows(dbpool) {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
       for (const row of rows) {
-        returnobj.row[activity_API_ID] = row;
+        returnobj.row['activity_API_ID'] = row;
       }
       return returnobj
     } else {
