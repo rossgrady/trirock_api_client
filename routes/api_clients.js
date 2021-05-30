@@ -8,12 +8,13 @@ const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
 const cheerio = require('cheerio');
+const {google} = require('googleapis');
 
 const conf = require('../config');
 const { venues } = require('../venues');
 const db = require('../db');
 
-const duration = 1814400000; // 3 weeks
+const duration = 1814400000; // 3 weeks in ms
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -465,6 +466,65 @@ async function ical_events(baseURL, timeWindow, dbpool) {
   return false;
 }
 
+async function gcal_events(gcal_id, timeWindow, dbpool) {
+  const returnarr = [];
+  const calendar = google.calendar({
+    version: 'v3',
+    // All requests made with this object will use the specified auth.
+    auth: conf.api_key,
+  });
+  const nowdt = dayjs().format();
+  const enddt = dayjs().add(timeWindow, 'ms').format();
+  try {
+    const activities = await calendar.events.list(
+      {
+        calendarId: gcal_id,
+        timeMin: nowdt,
+        timeMax: enddt,
+      });
+    for (const activity of activities.data.items) {
+      const rawArtist = {
+        "name": activity.summary,
+        "url": "",
+        };
+      const rawArtists = [];
+      const start = activity.start.dateTime || activity.start.date;
+      const startTime = dayjs(start);
+      const urls = find_URLs(activity.description);
+      const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+      const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+      const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+      const eventObj = {
+        "activity_startDate": startDate,
+        "activity_Time": activityTime,
+        "activity_endDate": startDate,
+        "activity_Timestamp": timestamp.unix(),
+        "activity_timeObj": startTime,
+        "activity_API": "gcal",
+        "activity_API_ID": activity.id,
+        "artists": [],
+        "orig_artists": [],
+        "urls": urls,
+        "activity_Blurb": '',
+      };
+      rawArtists.push(rawArtist);
+      eventObj.orig_artists.push(rawArtist);
+      const cookedArtists = await artist_lookup(rawArtists, dbpool);
+      for (const artiste of cookedArtists) {
+        eventObj.artists.push(artiste);
+        if (typeof artiste.blurb_snippet !== 'undefined') {
+          eventObj.activity_Blurb = artiste.blurb_snippet;
+        }
+      }
+      returnarr.push(eventObj);
+    }
+    return returnarr;
+  } catch (error) {
+    console.error(error);
+  }
+  return false;
+}
+
 async function tribe(baseURL, timeWindow, dbpool) {
   const tribeURL = baseURL + 'events/';
   const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
@@ -520,15 +580,6 @@ async function tribe(baseURL, timeWindow, dbpool) {
         rawArtists.push(rawArtist);
         eventObj.orig_artists.push(rawArtist);
         if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show' ) {
-          const cookedArtists = await artist_lookup(rawArtists, dbpool);
-          for (const artiste of cookedArtists) {
-            eventObj.artists.push(artiste);
-            if (typeof artiste.blurb_snippet !== 'undefined') {
-              eventObj.activity_Blurb = artiste.blurb_snippet;
-            }
-          }
-          console.log(util.inspect(eventdata.data.categories, true, 3, true));
-          console.log('I *think* this is a Ruby non-show event ' + util.inspect(eventObj, true, 4, true));
           return {
             'skip' : true,
           };
@@ -603,6 +654,19 @@ async function main() {
       }
     }
     */
+    if (typeof venue.gcal_id !== 'undefined') {
+      for (const id of venue.gcal_id) {
+        const events = await gcal_events(id, duration, dbpool);
+        for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
+          }
+          evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
+        }
+      }
+    }
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
         const events = await tribe(url, duration, dbpool);

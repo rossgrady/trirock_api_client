@@ -10,6 +10,7 @@ module.exports = {
     },
     {
         "name": "Arcana",
+        'gcal_id': ['m0fm2tmkij36m84p5q6bbgfat8@group.calendar.google.com'],
         "venue_id": "229",
     },
     {
