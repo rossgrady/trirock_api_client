@@ -529,7 +529,9 @@ async function tribe(baseURL, timeWindow, dbpool) {
           }
           console.log(util.inspect(eventdata.data.categories, true, 3, true));
           console.log('I *think* this is a Ruby non-show event ' + util.inspect(eventObj, true, 4, true));
-          // return(eventObj);
+          return {
+            'skip' : true,
+          };
         } else {
           const cookedArtists = await artist_lookup(rawArtists, dbpool);
           for (const artiste of cookedArtists) {
@@ -545,7 +547,15 @@ async function tribe(baseURL, timeWindow, dbpool) {
       }
     }).get();
     const returnarr = await Promise.all(mappeditems).then(function(eventObjs){
-      return eventObjs;
+      const finalarr = [];
+      for (eventobj of eventObjs) {
+        if (typeof eventobj.skip !== 'undefined' && eventobj.skip === true) {
+          // do nothing
+        } else {
+          finalarr.push(eventobj);
+        }
+      }
+      return finalarr;
     }).catch(function(eventObjs){ 
         console.error(eventObjs); 
     });
