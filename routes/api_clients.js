@@ -54,8 +54,13 @@ async function dblookup_shows(dbpool) {
       for (const row of rows) {
         const idx = row.activity_API_ID;
         returnobj[idx] = row;
+        const querystring2 = `SELECT * from (actor,actlink) where actor_ID=actlink_ActorID AND actlink_ActivityID=${row.activity_ID} order by actlink_ID`;
+        const actors = await db.query(dbpool, querystring2);
+        if (typeof actors !== 'undefined') {
+          returnobj[idx].actors = actors;
+        }
       }
-      return returnobj
+      return returnobj;
     } else {
       const nullarr = [];
       return nullarr;
