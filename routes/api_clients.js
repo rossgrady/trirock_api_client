@@ -519,7 +519,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
         };
         rawArtists.push(rawArtist);
         eventObj.orig_artists.push(rawArtist);
-        if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0] !== 'Show' ) {
+        if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show' ) {
           const cookedArtists = await artist_lookup(rawArtists, dbpool);
           for (const artiste of cookedArtists) {
             eventObj.artists.push(artiste);
@@ -529,7 +529,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
           }
           console.log(util.inspect(eventdata.data.categories, true, 3, true));
           console.log('I *think* this is a Ruby non-show event ' + util.inspect(eventObj, true, 4, true));
-          return(eventObj);
+          // return(eventObj);
         } else {
           const cookedArtists = await artist_lookup(rawArtists, dbpool);
           for (const artiste of cookedArtists) {
