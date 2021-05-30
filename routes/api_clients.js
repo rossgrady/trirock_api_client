@@ -471,7 +471,7 @@ async function gcal_events(gcal_id, timeWindow, dbpool) {
   const calendar = google.calendar({
     version: 'v3',
     // All requests made with this object will use the specified auth.
-    auth: conf.api_key,
+    auth: conf.gcal_api_key,
   });
   const nowdt = dayjs().format();
   const enddt = dayjs().add(timeWindow, 'ms').format();
