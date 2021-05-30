@@ -783,7 +783,11 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool);
-  console.log(util.inspect(shows, true, 3, true));
+  for (const prop in shows) {
+    if (shows.hasOwnProperty(prop)) {
+      console.log(`shows.${prop} = ${shows[prop]}`);
+    }
+  }
   return return_events;
 }
 
