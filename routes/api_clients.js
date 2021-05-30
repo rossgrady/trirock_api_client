@@ -784,8 +784,19 @@ async function main() {
   for (idx in return_events) {
     const lookup = return_events[idx].activity_API_ID;
     console.log(lookup);
-    return_events[idx].dbevent = shows[`${lookup}`];
-    console.log(util.inspect(return_events[idx], true, 5, true));
+    console.log(`${lookup}`);
+    if (typeof shows.lookup !== 'undefined') {
+      console.log('bare dot');
+      console.log(util.inspect(shows.lookup, true, 2, true));
+    }
+    if (typeof shows[lookup] !== 'undefined') {
+      console.log('plain bracket');
+      console.log(util.inspect(shows[lookup], true, 2, true));
+    }
+    if (typeof shows[`${lookup}`] !== 'undefined') {
+      console.log('fancy bracket');
+      console.log(util.inspect(shows[`${lookup}`], true, 2, true));
+    }
   }
   for (const prop in shows) {
     if (shows.hasOwnProperty(prop)) {
