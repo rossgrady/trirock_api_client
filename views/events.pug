@@ -32,6 +32,13 @@ block content
                   ul.list-unstyled
                     for orig_artist in val.orig_artists 
                       li= orig_artist.name
+                  if typeof val.dbevent !== 'undefined'
+                    .bg-warning
+                      span= val.dbevent.activity_StartDate
+                      span= val.dbevent.venue_Name
+                      ul.list-unstyled
+                      for actor in val.dbevent.actors
+                        li= actor.actor_Name
                 td
                   ul.list-unstyled
                     each artist, index in val.artists 
