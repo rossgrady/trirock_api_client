@@ -484,11 +484,11 @@ async function tribe(baseURL, timeWindow, dbpool) {
         }
       }
       if (typeof subtitle !== 'undefined' && subtitle !== null) {
-        title = title + ' ' + subtitle.trim();
+        title = title + ', ' + subtitle.trim();
       } else {
         subtitle = $(element).find('.tribe-events-list-event-description').find('p').text();
         if (typeof subtitle !== 'undefined' && subtitle !== null) {
-          title = title + ' ' + subtitle.trim();
+          title = title + ', ' + subtitle.trim();
         }
       }
       const eventid = postid.replace('post-', '');
@@ -527,6 +527,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
               eventObj.activity_Blurb = artiste.blurb_snippet;
             }
           }
+          console.log(util.inspect(eventdata.data.categories, true, 3, true));
           console.log('I *think* this is a Ruby non-show event ' + util.inspect(eventObj, true, 4, true));
           return(eventObj);
         } else {
