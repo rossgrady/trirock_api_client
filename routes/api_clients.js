@@ -52,7 +52,6 @@ async function dblookup_shows(dbpool) {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
       for (const row of rows) {
-        console.log(util.inspect(row, true, 3, true));
         const idx = row.activity_API_ID;
         returnobj[idx] = row;
       }
@@ -86,7 +85,6 @@ async function dbinsert(insertObj) {
   cols = cols.replace(reg, ')');
   placeholders = placeholders.replace(reg, ')');
   const statement = `INSERT into ${insertObj.table} ${cols} VALUES ${placeholders}`;
-  console.log(statement);
   try {
     const result = await dbpool.execute(statement, vals);
     return result;
@@ -783,9 +781,13 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool);
+  for (idx in return_events) {
+    return_events[idx].dbevent = shows.return_events[idx].activity_API_ID;
+    console.log(util.inspect(return_events[idx], true, 5, true));
+  }
   for (const prop in shows) {
     if (shows.hasOwnProperty(prop)) {
-      console.log(`shows.${prop}.venue_Name = ${shows[prop].venue_Name}`);
+      //console.log(`shows.${prop}.venue_Name = ${shows[prop].venue_Name}`);
     }
   }
   return return_events;
@@ -807,7 +809,6 @@ async function events_add(bodyObj) {
           "activity_Blurb": activity.blurb,
         }
       }
-      console.log('going to try to insert this activity: ' + util.inspect(evtObj, true, 8, true));
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
           artists.push(exartist);
@@ -849,7 +850,6 @@ async function events_add(bodyObj) {
       try {
         const result = await dbinsert(evtObj);
         const activity_id = result[0].insertId;
-        console.log('hopefully inserted the event & got this back: ' + activity_id);
         for (const artist of artists) {
           const activityobj = {
             'table': 'actlink',
@@ -858,7 +858,6 @@ async function events_add(bodyObj) {
               'actlink_ActivityID': activity_id,
               },
           };
-          console.log('trying to insert this obj: ' + util.inspect(activityobj, true, 8, true));
           try {
             const result = await dbinsert(activityobj);
           } catch (error) {
