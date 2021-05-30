@@ -11,13 +11,10 @@ module.exports = async function (passport) {
   const INVALID_LOGIN = 'Invalid username or password';
   const dbpool = await db.getPool();
   passport.serializeUser(function (user, done) {
-    console.log("hey! I am back up in passport.serializeUser");
-    console.log(util.inspect(user, true, 2, true));
     return done(null, user.id);    
   });
   passport.deserializeUser( async function (id, done) {
     const querystring = "SELECT * from users where id = " + id;
-    console.log(querystring);
     try {
       const rows = await db.query(dbpool, querystring);
       if (rows.length > 0) {
@@ -39,7 +36,6 @@ module.exports = async function (passport) {
       // 1st step verification: username and password
       process.nextTick( async function () {
         const querystring = "SELECT * from users where username = '" + username + "'";
-        console.log(querystring);
         try {
           const rows = await db.query(dbpool, querystring);
           if (rows.length > 0) {
@@ -88,9 +84,7 @@ module.exports = async function (passport) {
       if (req.body.password !== req.body.confirmPassword) {
         return done(null, false, { message: 'Passwords do not match' });
       }
-      console.log('normal checks passed');
       const querystring1 = "SELECT * from users where username = '" + username + "'";
-      console.log(querystring1);
       try {
         const rows1 = await db.query(dbpool, querystring1);
         if (rows1.length > 0) {
@@ -101,16 +95,13 @@ module.exports = async function (passport) {
               return done(err);    
             }
             const querystring2 = "INSERT into users (username, password) VALUES ('" + username + "', '" + hash + "')";
-            console.log(querystring2);
             try {
               const rows2 = await db.query(dbpool, querystring2);
-              console.log('think we inserted our user ' + util.inspect(rows2, true, 4, true));
               const user = {
                 username: username,
                 password: hash,
                 id: rows2.insertId
               };
-              console.log('about to return our user ' + util.inspect(user, true, 4, true));
               return done(null, user);
             } catch (error) {
               console.error(error);

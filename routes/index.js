@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add, ical_events } = require('./api_clients');
+const { main, events_add, tribe } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -9,6 +9,7 @@ const db = require('../db');
 
 const authenticated = function (req, res, next) {
   if (req.isAuthenticated()) {
+    console.log('yes you are authenticated congratulations');
     return next();
   }
   return res.redirect('/');
@@ -30,14 +31,17 @@ router.post('/', passport.authenticate('login', {
   badRequestMessage: 'Invalid username or password.'
 }), function (req, res, next) {
   if (!req.body.remember) {
+    console.log('missing req.body.remember');
     return res.redirect('/profile');    
   }
   // Create remember_me cookie and redirect to /profile page
+  console.log('we checked the remember box so passing req.user to created: ' + util.inspect(req.user, true,3,true));
   tokenStorage.create(req.user, function (err, token) {
     if (err) {
       return next(err);
     }
     res.cookie('remember_me', token, { path: '/', httpOnly: true, maxAge: 604800000 });
+    console.log('set cookie, now redirecting to profile');
     return res.redirect('/profile');
   });    
 });
@@ -131,6 +135,14 @@ router.get('/events', authenticated, async function(req, res, next) {
     events: events,
   }
   res.render('events', renderObj);
+});
+
+router.get('/tribe', authenticated, async function(req, res, next) {
+  const events = await tribe();
+  const renderObj = {
+  //  events: events,
+  }
+  res.render('index', renderObj);
 });
 
 module.exports = router;
