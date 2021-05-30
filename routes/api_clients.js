@@ -786,11 +786,13 @@ async function main() {
     console.log(lookup);
     if (typeof shows[`${lookup}`] !== 'undefined') {
       return_events[idx].dbevent = shows[`${lookup}`];
+      delete shows[`${lookup}`];
     }
   }
   for (const prop in shows) {
+    console.log('this is what is left in db but not found via the apis:');
     if (shows.hasOwnProperty(prop)) {
-      //console.log(`shows.${prop}.venue_Name = ${shows[prop].venue_Name}`);
+      console.log(util.inspect(`shows.${prop}`, true, 5, true));
     }
   }
   console.log(util.inspect(return_events, true, 7, true));
