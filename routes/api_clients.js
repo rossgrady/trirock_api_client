@@ -51,8 +51,10 @@ async function dblookup_shows(dbpool) {
   try {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
-      // return rows;
-      console.log(util.inspect(rows, true, 3, true));
+      for (const row of rows) {
+        returnobj.row[activity_API_ID] = row;
+      }
+      return returnobj
     } else {
       const nullarr = [];
       return nullarr;
@@ -779,6 +781,7 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool);
+  console.log(util.inspect(shows, true, 3, true));
   return return_events;
 }
 
