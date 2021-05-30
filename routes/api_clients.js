@@ -786,7 +786,6 @@ async function main() {
   for (const prop in shows) {
     if (shows.hasOwnProperty(prop)) {
       console.log(`shows.${prop}.venue_Name = ${shows[prop].venue_Name}`);
-      console.log(`shows.${prop}.venue_Name = ${shows[prop][venue_Name]}`);
     }
   }
   return return_events;
