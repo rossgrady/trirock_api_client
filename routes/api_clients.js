@@ -782,7 +782,8 @@ async function main() {
   }
   const shows = await dblookup_shows(dbpool);
   for (idx in return_events) {
-    return_events[idx].dbevent = shows.return_events[idx].activity_API_ID;
+    const lookup = return_events[idx].activity_API_ID;
+    return_events[idx].dbevent = shows[lookup];
     console.log(util.inspect(return_events[idx], true, 5, true));
   }
   for (const prop in shows) {
