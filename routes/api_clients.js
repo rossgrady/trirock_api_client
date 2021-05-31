@@ -590,11 +590,6 @@ async function tribe(baseURL, timeWindow, dbpool) {
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-        console.log('in tribe, trying to fix dates');
-        console.log(util.inspect(eventdata.data.start_date, true, 6, true));
-        console.log(util.inspect(startTime, true, 5, true));
-        console.log(startDate);
-        console.log(activityTime);
         const eventObj = {
           "activity_startDate": startDate,
           "activity_Time": activityTime,
