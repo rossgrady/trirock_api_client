@@ -270,11 +270,6 @@ async function etix(venueID, timeWindow, dbpool) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
-        console.log('what about etix');
-        console.log(activity.startTime);
-        console.log(util.inspect(startTime, true, 7, true));
-        console.log(startDate);
-        console.log(activityTime);
         const rawArtists = [];
         const urls = find_URLs(activity.description);
         const eventObj = {
@@ -340,11 +335,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
-        console.log('what about Eventbrite');
-        console.log(activity.start.utc);
-        console.log(util.inspect(startTime, true, 7, true));
-        console.log(startDate);
-        console.log(activityTime);
         const rawArtist = {
             "name": activity.name.text,
             "url": "",
@@ -405,11 +395,6 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
           const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-          console.log('what about Ticketmaster');
-          console.log(activity.dates.start.dateTime);
-          console.log(util.inspect(startTime, true, 7, true));
-          console.log(startDate);
-          console.log(activityTime);
           const eventObj = {
             "activity_startDate": startDate,
             "activity_Time": activityTime,
@@ -535,11 +520,6 @@ async function gcal_events(gcal_id, timeWindow, dbpool) {
       const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
       const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
       const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-      console.log('in gcal, do I have date issues here too?');
-      console.log(start);
-      console.log(util.inspect(startTime, true, 7, true));
-      console.log(startDate);
-      console.log(activityTime);
       const eventObj = {
         "activity_startDate": startDate,
         "activity_Time": activityTime,
@@ -607,7 +587,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
         const rawArtists = [];
         const urls = find_URLs(subtitle);
         dayjs.tz.setDefault("America/New_York");
-        const startTime = dayjs(eventdata.data.start_date);
+        const startTime = dayjs.tz(eventdata.data.start_date, "America/New_York");
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
