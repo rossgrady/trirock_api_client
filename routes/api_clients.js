@@ -269,6 +269,11 @@ async function etix(venueID, timeWindow, dbpool) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        console.log('what about etix');
+        console.log(activity.startTime);
+        console.log(util.inspect(startTime, true, 7, true));
+        console.log(startDate);
+        console.log(activityTime);
         const rawArtists = [];
         const urls = find_URLs(activity.description);
         const eventObj = {
@@ -334,6 +339,11 @@ async function eventbrite(venueID, timeWindow, dbpool) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        console.log('what about Eventbrite');
+        console.log(activity.start.utc);
+        console.log(util.inspect(startTime, true, 7, true));
+        console.log(startDate);
+        console.log(activityTime);
         const rawArtist = {
             "name": activity.name.text,
             "url": "",
@@ -394,6 +404,11 @@ async function ticketmaster(venueID, timeWindow, dbpool) {
           const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
           const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
           const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+          console.log('what about Ticketmaster');
+          console.log(activity.dates.start.dateTime);
+          console.log(util.inspect(startTime, true, 7, true));
+          console.log(startDate);
+          console.log(activityTime);
           const eventObj = {
             "activity_startDate": startDate,
             "activity_Time": activityTime,
@@ -519,6 +534,11 @@ async function gcal_events(gcal_id, timeWindow, dbpool) {
       const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
       const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
       const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+      console.log('in gcal, do I have date issues here too?');
+      console.log(start);
+      console.log(util.inspect(startTime, true, 7, true));
+      console.log(startDate);
+      console.log(activityTime);
       const eventObj = {
         "activity_startDate": startDate,
         "activity_Time": activityTime,
@@ -586,13 +606,13 @@ async function tribe(baseURL, timeWindow, dbpool) {
         const rawArtists = [];
         const urls = find_URLs(subtitle);
         const startTime = dayjs.utc(eventdata.data.utc_start_date);
+        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         console.log('in tribe, trying to fix dates');
         console.log(util.inspect(eventdata.data.start_date, true, 6, true));
         console.log(util.inspect(eventdata.data.utc_start_date, true, 6, true));
         console.log(util.inspect(startTime, true, 5, true));
-        const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
-        const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
-        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         console.log(startDate);
         console.log(activityTime);
         const eventObj = {
@@ -794,7 +814,6 @@ async function main() {
   const shows = await dblookup_shows(dbpool);
   for (idx in return_events) {
     const lookup = return_events[idx].activity_API_ID;
-    console.log(lookup);
     if (typeof shows[`${lookup}`] !== 'undefined') {
       return_events[idx].dbevent = shows[`${lookup}`];
       delete shows[`${lookup}`];
@@ -803,10 +822,9 @@ async function main() {
   for (const prop in shows) {
     console.log('this is what is left in db but not found via the apis:');
     if (shows.hasOwnProperty(prop)) {
-      console.log(util.inspect(`shows.${prop}`, true, 5, true));
+      // do something with these!!!
     }
   }
-  console.log(util.inspect(return_events, true, 7, true));
   return return_events;
 }
 
