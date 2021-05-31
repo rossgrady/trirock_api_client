@@ -24,7 +24,7 @@ block content
               tr
                 td
                   .form-check
-                    if dbevent === true
+                    if dbevent === false
                       input(type="checkbox" class="form-check-input" id=`events[${evtidx}][keep]` name=`events[${evtidx}][keep]` value="yes" checked)
                       label(class="form-check-label" for=`events[${evtidx}][keep]`) 
                     else
@@ -41,7 +41,9 @@ block content
                       li= orig_artist.name
                   if dbevent === true
                     .bg-warning
-                      span= val.dbevent.activity_StartDate
+                      - const startDate = dayjs(val.dbevent.activity_StartDate).tz("America/New_York").format('YYYY-MM-DD');
+                      span= startDate
+                      span= val.dbevent.activity_Time
                       span= val.dbevent.venue_Name
                       ul.list-unstyled
                       for actor in val.dbevent.actors
