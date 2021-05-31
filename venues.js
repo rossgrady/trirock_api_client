@@ -48,7 +48,7 @@ module.exports = {
     {
       "ticketmaster_id": ["KovZpZAFF1nA"],
       "name": "Duke Energy Center",
-      "venue_id": undefined,
+      "venue_id": "250",
     },
     {
       "ticketmaster_id": ["KovZpZAdEEvA"],
@@ -84,19 +84,19 @@ module.exports = {
     {
         "eventbrite_id": ["56939487"],
         "name": "Orange County Speedway",
-        "venue_id": undefined,
+        "venue_id": "251",
     },
     {
         "eventbrite_id": ["58314985"],
         "name": "Oddco",
-        "venue_id": undefined,
+        "venue_id": "252",
     },
     {
         "etix_id": ["1309", "12884", "14674", "1285"],
         "eventbrite_id": ["33175485", "44427049"],
         "tribe_baseurl": ['https://local506.com/'],
         "name": "Local 506",
-        "venue_id": 3,
+        "venue_id": "3",
     },
     {
         "etix_id": ["8396"],
