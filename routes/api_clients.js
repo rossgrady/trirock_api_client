@@ -45,23 +45,32 @@ async function dblookup_artist(namestring, dbpool) {
   }
 }
 
-async function dblookup_shows(dbpool) {
+async function dblookup_shows(dbpool, retype) {
   const returnobj = {};
+  const returnarr = [];
   const rightnow = dayjs().unix();
   const querystring = `SELECT activity_ID, activity_API, activity_API_ID, activity_StartDate, activity_Time, activity_EndDate, activity_Blurb, activity_VenueID, venue_ID, venue_Name FROM activity, venue WHERE activity_VenueID=venue_ID AND UNIX_TIMESTAMP(activity_EndDate) >= ${rightnow} ORDER BY activity_StartDate`;
   try {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
-      for (const row of rows) {
+      for (let row of rows) {
         const idx = row.activity_API_ID;
-        returnobj[idx] = row;
         const querystring2 = `SELECT * from (actor,actlink) where actor_ID=actlink_ActorID AND actlink_ActivityID=${row.activity_ID} order by actlink_ID`;
         const actors = await db.query(dbpool, querystring2);
         if (typeof actors !== 'undefined') {
-          returnobj[idx].actors = actors;
+          row.actors = actors;
+        }
+        if (retype === 'object') {
+          returnobj[idx] = row;
+        } else {
+          returnarr.push(row);
         }
       }
-      return returnobj;
+      if (retype === 'object') {
+        return returnobj;
+      } else {
+        return returnarr;
+      }
     } else {
       const nullarr = [];
       return nullarr;
@@ -330,8 +339,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
     const response = await axios.get(ebrite_url, config);
     const returnarr = [];
     for (const activity of response.data.events) {
-      console.log('spot checking eventbrite now');
-      console.log(util.inspect(activity, true, 2, true));
       const startTime = dayjs(activity.start.utc);
       if(typeof activity.status !== 'undefined' && activity.status === 'live' && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
@@ -365,8 +372,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
             eventObj.activity_Blurb = artiste.blurb_snippet;
           }
         }
-        console.log('made it through');
-        console.log(util.inspect(eventObj, true, 2, true));
         returnarr.push(eventObj);
       }
     }
@@ -790,7 +795,7 @@ async function main() {
       }
     }
   }
-  const shows = await dblookup_shows(dbpool);
+  const shows = await dblookup_shows(dbpool, 'object');
   for (idx in return_events) {
     const lookup = return_events[idx].activity_API_ID;
     if (typeof shows[`${lookup}`] !== 'undefined') {
@@ -888,4 +893,4 @@ async function events_add(bodyObj) {
   return true;
 }
 
-module.exports = { main, events_add, ical_events, tribe };
+module.exports = { main, events_add, dblookup_shows };

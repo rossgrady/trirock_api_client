@@ -1,0 +1,29 @@
+extends layout
+
+block content
+  .container-fluid
+    table.table.table-striped.table-sm.table-bordered.table-responsive
+      thead
+        tr
+          td.w-25 Date/Time
+          td.w-25 Venue
+          td.w-25 Artists
+          td.w-25 Blurb
+      tbody
+        each val, evtidx in events
+          if val           
+            tr
+              td
+                - const startDate = dayjs(val.activity_StartDate).tz("America/New_York").format('YYYY-MM-DD');
+                span= startDate
+                br
+                span.text-nowrap= val.activity_Time
+              td
+                span.text-nowrap= val.venue_Name                
+              td
+                ul.list-unstyled
+                  for actor in val.actors
+                    li= actor.actor_Name
+              td
+                = val.activity_Blurb
+

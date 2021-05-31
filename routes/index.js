@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add, tribe } = require('./api_clients');
+const { main, events_add, dblookup_shows } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -122,11 +122,9 @@ router.get('/logout', authenticated, function (req, res, next) {
 
 router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
-  const renderObj = {};
-  if (processed) {
-    res.render('index', renderObj);
-  }
-  res.render('index', renderObj);
+  const dbpool = await db.getPool();
+  const events = await dblookup_shows(dbpool, 'array');
+  res.render('shows', events);
 });
 
 router.get('/events', authenticated, async function(req, res, next) {
@@ -137,12 +135,10 @@ router.get('/events', authenticated, async function(req, res, next) {
   res.render('events', renderObj);
 });
 
-router.get('/tribe', authenticated, async function(req, res, next) {
-  const events = await tribe();
-  const renderObj = {
-  //  events: events,
-  }
-  res.render('index', renderObj);
+router.get('/shows', authenticated, async function(req, res, next) {
+  const dbpool = await db.getPool();
+  const events = await dblookup_shows(dbpool, 'array');
+  res.render('shows', events);
 });
 
 module.exports = router;
