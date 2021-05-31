@@ -124,7 +124,10 @@ router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
   const dbpool = await db.getPool();
   const events = await dblookup_shows(dbpool, 'array');
-  res.render('shows', events);
+  const renderObj = {
+    events: events,
+  }
+  res.render('shows', renderObj);
 });
 
 router.get('/events', authenticated, async function(req, res, next) {
@@ -138,8 +141,10 @@ router.get('/events', authenticated, async function(req, res, next) {
 router.get('/shows', authenticated, async function(req, res, next) {
   const dbpool = await db.getPool();
   const events = await dblookup_shows(dbpool, 'array');
-  console.log(util.inspect(events, true, 3, true));
-  res.render('shows', events);
+  const renderObj = {
+    events: events,
+  }
+  res.render('shows', renderObj);
 });
 
 module.exports = router;
