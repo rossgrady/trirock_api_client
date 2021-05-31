@@ -265,6 +265,8 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
+      console.log('looking at etix');
+      console.log(util.inspect(activity, true, 3, true));
       const startTime = dayjs(activity.startTime);
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
@@ -308,6 +310,8 @@ async function etix(venueID, timeWindow, dbpool) {
             eventObj.activity_Blurb = artiste.blurb_snippet;
           }
         }
+        console.log('ran the gauntlet, adding');
+        console.log(util.inspect(eventObj, true, 3, true));
         returnarr.push(eventObj);
       }
     }
