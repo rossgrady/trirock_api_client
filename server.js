@@ -35,6 +35,8 @@ app.use(session({
 
 app.use(flash());
 
+app.locals.dayjs = require('dayjs');
+
 setupPassport(passport);
 app.use(passport.initialize());
 app.use(passport.session());
