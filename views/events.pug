@@ -43,11 +43,14 @@ block content
                     .bg-warning
                       - const startDate = dayjs(val.dbevent.activity_StartDate).tz("America/New_York").format('YYYY-MM-DD');
                       span= startDate
+                      br
                       span= val.dbevent.activity_Time
+                      br
                       span= val.dbevent.venue_Name
+                      br
                       ul.list-unstyled
-                      for actor in val.dbevent.actors
-                        li= actor.actor_Name
+                        for actor in val.dbevent.actors
+                          li= actor.actor_Name
                 td
                   ul.list-unstyled
                     each artist, index in val.artists 
