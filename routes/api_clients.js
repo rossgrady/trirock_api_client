@@ -4,6 +4,8 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.tz.setDefault("America/New_York")
+
 const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
@@ -605,7 +607,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
           };
         const rawArtists = [];
         const urls = find_URLs(subtitle);
-        const startTime = dayjs.utc(eventdata.data.utc_start_date);
+        const startTime = dayjs(eventdata.data.start_date);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
