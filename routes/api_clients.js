@@ -4,11 +4,12 @@ const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 dayjs.extend(utc);
 dayjs.extend(timezone);
+
 const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
 const cheerio = require('cheerio');
-const {google} = require('googleapis');
+const { google } = require('googleapis');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -28,13 +29,48 @@ function str_escape(string_to_escape) {
   return escaped_string;
 }
 
-async function dblookup(namestring, dbpool) {
+async function dblookup_artist(namestring, dbpool) {
   const escaped_string = str_escape(namestring);
   const querystring = "SELECT actor_Name, actor_ID FROM actor WHERE actor_Name LIKE '%" + escaped_string + "%'";
   try {
     const rows = await db.query(dbpool, querystring);
     if (typeof rows !== 'undefined') {
       return rows;
+    } else {
+      const nullarr = [];
+      return nullarr;
+    }
+  } catch (error) {
+    console.error(error);
+  }
+}
+
+async function dblookup_shows(dbpool, retype) {
+  const returnobj = {};
+  const returnarr = [];
+  const rightnow = dayjs().unix();
+  const querystring = `SELECT activity_ID, activity_API, activity_API_ID, activity_StartDate, activity_Time, activity_EndDate, activity_Blurb, activity_VenueID, venue_ID, venue_Name FROM activity, venue WHERE activity_VenueID=venue_ID AND UNIX_TIMESTAMP(activity_EndDate) >= ${rightnow} ORDER BY activity_StartDate`;
+  try {
+    const rows = await db.query(dbpool, querystring);
+    if (typeof rows !== 'undefined') {
+      for (let row of rows) {
+        const idx = row.activity_API_ID;
+        const querystring2 = `SELECT * from (actor,actlink) where actor_ID=actlink_ActorID AND actlink_ActivityID=${row.activity_ID} order by actlink_ID`;
+        const actors = await db.query(dbpool, querystring2);
+        if (typeof actors !== 'undefined') {
+          row.actors = actors;
+        }
+        if (retype === 'object') {
+          returnobj[idx] = row;
+        } else {
+          returnarr.push(row);
+        }
+      }
+      if (retype === 'object') {
+        return returnobj;
+      } else {
+        return returnarr;
+      }
     } else {
       const nullarr = [];
       return nullarr;
@@ -64,7 +100,6 @@ async function dbinsert(insertObj) {
   cols = cols.replace(reg, ')');
   placeholders = placeholders.replace(reg, ')');
   const statement = `INSERT into ${insertObj.table} ${cols} VALUES ${placeholders}`;
-  console.log(statement);
   try {
     const result = await dbpool.execute(statement, vals);
     return result;
@@ -165,7 +200,7 @@ async function artist_lookup(artists, dbpool) {
       const trues = [];
       candidate = await to_titlecase(candidate);
       if (candidate.length > 2 && candidate !== 'And') {
-        const dbartist = await dblookup(candidate, dbpool);
+        const dbartist = await dblookup_artist(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
           const candobj = {
             'origname': candidate,
@@ -240,7 +275,7 @@ async function etix(venueID, timeWindow, dbpool) {
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
       const startTime = dayjs(activity.startTime);
-      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && activity.category === "Concerts" && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
+      if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
@@ -560,7 +595,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
           };
         const rawArtists = [];
         const urls = find_URLs(subtitle);
-        const startTime = dayjs(eventdata.data.utc_start_date);
+        const startTime = dayjs.tz(eventdata.data.start_date, "America/New_York");
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
@@ -760,6 +795,20 @@ async function main() {
       }
     }
   }
+  const shows = await dblookup_shows(dbpool, 'object');
+  for (idx in return_events) {
+    const lookup = return_events[idx].activity_API_ID;
+    if (typeof shows[`${lookup}`] !== 'undefined') {
+      return_events[idx].dbevent = shows[`${lookup}`];
+      delete shows[`${lookup}`];
+    }
+  }
+  for (const prop in shows) {
+    console.log('this is what is left in db but not found via the apis:');
+    if (shows.hasOwnProperty(prop)) {
+      // do something with these!!!
+    }
+  }
   return return_events;
 }
 
@@ -779,7 +828,6 @@ async function events_add(bodyObj) {
           "activity_Blurb": activity.blurb,
         }
       }
-      console.log('going to try to insert this activity: ' + util.inspect(evtObj, true, 8, true));
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
           artists.push(exartist);
@@ -821,7 +869,6 @@ async function events_add(bodyObj) {
       try {
         const result = await dbinsert(evtObj);
         const activity_id = result[0].insertId;
-        console.log('hopefully inserted the event & got this back: ' + activity_id);
         for (const artist of artists) {
           const activityobj = {
             'table': 'actlink',
@@ -830,7 +877,6 @@ async function events_add(bodyObj) {
               'actlink_ActivityID': activity_id,
               },
           };
-          console.log('trying to insert this obj: ' + util.inspect(activityobj, true, 8, true));
           try {
             const result = await dbinsert(activityobj);
           } catch (error) {
@@ -847,4 +893,4 @@ async function events_add(bodyObj) {
   return true;
 }
 
-module.exports = { main, events_add, ical_events, tribe };
+module.exports = { main, events_add, dblookup_shows };

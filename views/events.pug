@@ -13,6 +13,9 @@ block content
         tbody
           each val, evtidx in events
             if val 
+              - let dbevent = false
+              - if (typeof val.dbevent !== 'undefined')
+                - dbevent = true
               input(type='hidden' name=`events[${evtidx}][activity_API_ID]` value=val.activity_API_ID)
               input(type='hidden' name=`events[${evtidx}][activity_API]` value=val.activity_API)
               input(type='hidden' name=`events[${evtidx}][activity_startDate]` value=val.activity_startDate)
@@ -21,8 +24,12 @@ block content
               tr
                 td
                   .form-check
-                    input(type="checkbox" class="form-check-input" id=`events[${evtidx}][keep]` name=`events[${evtidx}][keep]` value="yes" checked)
-                    label(class="form-check-label" for=`events[${evtidx}][keep]`) 
+                    if dbevent === false
+                      input(type="checkbox" class="form-check-input" id=`events[${evtidx}][keep]` name=`events[${evtidx}][keep]` value="yes" checked)
+                      label(class="form-check-label" for=`events[${evtidx}][keep]`) 
+                    else
+                      input(type="checkbox" class="form-check-input" id=`events[${evtidx}][keep]` name=`events[${evtidx}][keep]` value="yes")
+                      label(class="form-check-label" for=`events[${evtidx}][keep]`) 
                   span.text-nowrap= val.activity_startDate
                   br
                   span.text-nowrap= val.activity_Time
@@ -32,6 +39,18 @@ block content
                   ul.list-unstyled
                     for orig_artist in val.orig_artists 
                       li= orig_artist.name
+                  if dbevent === true
+                    .bg-warning
+                      - const startDate = dayjs(val.dbevent.activity_StartDate).tz("America/New_York").format('YYYY-MM-DD');
+                      span= startDate
+                      br
+                      span= val.dbevent.activity_Time
+                      br
+                      span= val.dbevent.venue_Name
+                      br
+                      ul.list-unstyled
+                        for actor in val.dbevent.actors
+                          li= actor.actor_Name
                 td
                   ul.list-unstyled
                     each artist, index in val.artists 
