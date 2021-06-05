@@ -16,7 +16,7 @@ block content
               - let dbevent = false
               - if (typeof val.dbevent !== 'undefined')
                 - dbevent = true
-              - for orig_artist in val.orig_artists
+              - for (orig_artist of val.orig_artists)
                 - let reg1 = /tribute/gi;
                 - let reg2 = /tarot/gi;
                 - let reg3 = /symphony/gi;
