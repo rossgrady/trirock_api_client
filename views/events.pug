@@ -14,6 +14,7 @@ block content
           each val, evtidx in events
             if val 
               - let dbevent = false
+              - let skip = false
               - if (typeof val.dbevent !== 'undefined')
                 - dbevent = true
               - for (orig_artist of val.orig_artists)
@@ -21,7 +22,7 @@ block content
                 - let reg2 = /tarot/gi;
                 - let reg3 = /symphony/gi;
                 - if (reg1.test(orig_artist.name) || reg2.test(orig_artist.name) || reg3.test(orig_artist.name))
-                  - dbevent = true
+                  - skip = true
               input(type='hidden' name=`events[${evtidx}][activity_API_ID]` value=val.activity_API_ID)
               input(type='hidden' name=`events[${evtidx}][activity_API]` value=val.activity_API)
               input(type='hidden' name=`events[${evtidx}][activity_startDate]` value=val.activity_startDate)
@@ -30,7 +31,7 @@ block content
               tr
                 td
                   .form-check
-                    if dbevent === false
+                    if dbevent === false && skip === false
                       input(type="checkbox" class="form-check-input" id=`events[${evtidx}][keep]` name=`events[${evtidx}][keep]` value="yes" checked)
                       label(class="form-check-label" for=`events[${evtidx}][keep]`) 
                     else
