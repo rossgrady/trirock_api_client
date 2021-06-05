@@ -16,6 +16,12 @@ block content
               - let dbevent = false
               - if (typeof val.dbevent !== 'undefined')
                 - dbevent = true
+              - for orig_artist in val.orig_artists
+                - let reg1 = /tribute/gi;
+                - let reg2 = /tarot/gi;
+                - let reg3 = /symphony/gi;
+                - if (reg1.test(orig_artist.name) || reg2.test(orig_artist.name) || reg3.test(orig_artist.name))
+                  - dbevent = true
               input(type='hidden' name=`events[${evtidx}][activity_API_ID]` value=val.activity_API_ID)
               input(type='hidden' name=`events[${evtidx}][activity_API]` value=val.activity_API)
               input(type='hidden' name=`events[${evtidx}][activity_startDate]` value=val.activity_startDate)
