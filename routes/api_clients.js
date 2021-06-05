@@ -167,6 +167,7 @@ async function artist_lookup(artists, dbpool) {
     const reg16 = /(?<blurb>in the record shop)/i;
     const reg17 = / \+ /gi;
     const reg18 = / - /gi;
+    const reg20 = / – /gi; // yes this is a different dash
     const reg19 = /\&amp;/gi;
     let name1 = artist.name.replace(reg1,'');
     const found = name1.match(reg16);
