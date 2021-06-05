@@ -48,7 +48,7 @@ async function dblookup_artist(namestring, dbpool) {
 async function dblookup_shows(dbpool, retype) {
   const returnobj = {};
   const returnarr = [];
-  const rightnow = dayjs().unix();
+  const rightnow = dayjs().tz("America/New_York").unix();
   const querystring = `SELECT activity_ID, activity_API, activity_API_ID, activity_StartDate, activity_Time, activity_EndDate, activity_Blurb, activity_VenueID, venue_ID, venue_Name FROM activity, venue WHERE activity_VenueID=venue_ID AND UNIX_TIMESTAMP(activity_EndDate) >= ${rightnow} ORDER BY activity_StartDate`;
   try {
     const rows = await db.query(dbpool, querystring);
@@ -199,6 +199,7 @@ async function artist_lookup(artists, dbpool) {
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
+      console.log(candidate);
       if (candidate.length > 2 && candidate !== 'And') {
         const dbartist = await dblookup_artist(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
