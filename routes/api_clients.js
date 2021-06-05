@@ -190,6 +190,7 @@ async function artist_lookup(artists, dbpool) {
     name1 = name1.replace(reg5, ', ');
     name1 = name1.replace(reg17, ', ');
     name1 = name1.replace(reg18, ', ');
+    name1 = name1.replace(reg20, ', ');
     name1 = name1.replace(reg6, ', ');
     name1 = name1.replace(reg8,'');
     name1 = name1.replace(reg14,', ');
@@ -200,7 +201,6 @@ async function artist_lookup(artists, dbpool) {
       const falses = [];
       const trues = [];
       candidate = await to_titlecase(candidate);
-      console.log(candidate);
       if (candidate.length > 2 && candidate !== 'And') {
         const dbartist = await dblookup_artist(candidate, dbpool);
         if (typeof dbartist === 'undefined' || dbartist.length === 0) {
