@@ -128,7 +128,7 @@ module.exports = {
         "venue_id": "93",
     },
     {
-        "etix_id": ["35"],
+        "etix_id": ["35", "21011"],
         "eventbrite_id": ["59182129"],
         "name": "Cat's Cradle",
         "venue_id": "2",
