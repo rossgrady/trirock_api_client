@@ -2,8 +2,10 @@ const axios = require('axios');
 const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
+const duration = require('dayjs/plugin/duration');
 dayjs.extend(utc);
 dayjs.extend(timezone);
+dayjs.extend(duration);
 
 const util = require('util');
 const namecase = require('namecase');
@@ -15,7 +17,7 @@ const conf = require('../config');
 const { venues } = require('../venues');
 const db = require('../db');
 
-const duration = 1814400000; // 3 weeks in ms
+const twoweeks = dayjs.duration(2, 'w').asMilliseconds();
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -664,7 +666,7 @@ async function main() {
     }
     if (typeof venue.ticketmaster_id !== 'undefined') {
       for (const id of venue.ticketmaster_id) {
-        const events = await ticketmaster(id, duration, dbpool);
+        const events = await ticketmaster(id, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -679,7 +681,7 @@ async function main() {
     // sites that have ical links that *aren't* Tribe sites
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
-        const events = await ical_events(url, duration, dbpool);
+        const events = await ical_events(url, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -693,7 +695,7 @@ async function main() {
     */
     if (typeof venue.gcal_id !== 'undefined') {
       for (const id of venue.gcal_id) {
-        const events = await gcal_events(id, duration, dbpool);
+        const events = await gcal_events(id, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -706,7 +708,7 @@ async function main() {
     }
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
-        const events = await tribe(url, duration, dbpool);
+        const events = await tribe(url, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -719,7 +721,7 @@ async function main() {
     }
     if (typeof venue.etix_id !== 'undefined') {
       for (const id of venue.etix_id) {
-        const events = await etix(id, duration, dbpool);
+        const events = await etix(id, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -732,7 +734,7 @@ async function main() {
     }
     if (typeof venue.eventbrite_id !== 'undefined') {
       for (const id of venue.eventbrite_id) {
-        const events = await eventbrite(id, duration, dbpool);
+        const events = await eventbrite(id, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
