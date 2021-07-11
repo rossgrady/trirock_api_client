@@ -3,15 +3,17 @@ const dayjs = require('dayjs');
 const utc = require('dayjs/plugin/utc');
 const timezone = require('dayjs/plugin/timezone'); // dependent on utc plugin
 const duration = require('dayjs/plugin/duration');
+const customParseFormat = require('dayjs/plugin/customParseFormat')
 dayjs.extend(utc);
 dayjs.extend(timezone);
 dayjs.extend(duration);
-
+dayjs.extend(customParseFormat);
 const util = require('util');
 const namecase = require('namecase');
 const ical = require('node-ical');
 const cheerio = require('cheerio');
 const { google } = require('googleapis');
+const crypto = require('crypto');
 
 const conf = require('../config');
 const { venues } = require('../venues');
@@ -564,6 +566,83 @@ async function gcal_events(gcal_id, timeWindow, dbpool) {
   return false;
 }
 
+async function jemsite(baseURL, timeWindow, dbpool) {
+  try {
+    const rawArtists = [];
+    const rawpage = await axios.get(baseURL);
+    const $ = cheerio.load(rawpage.data);
+    const mappeditems = $('.feventitem').map( async (index, element) => {
+      const title = $(element).find('a.newsitemtitle').html();
+      let evtlink = '';
+      if ($(element).find('a.newsitemtitle').attr('href') !== '/') {
+        evtlink = $(element).find('a.newsitemtitle').attr('href');
+      }
+      const rawArtist = {
+        "name": title,
+        "url": evtlink,
+        };
+      rawArtists.push(rawArtist);
+      const evtdate = $(element).find('.newsitemtitle').find('h3').html();
+      const subhed = $(element).find('.newsitemtitle').find('h3:nth-of-type(2)').html();
+      const timex = /(?<timelabel> <b> Time: <\/b>)(?<time>.*)(?<costlabel> <b>Cost:<\/b>)(?<cost>.*)/;
+      const found = subhed.match(timex);
+      let eventtime = '';
+      if (found !== null) {
+        eventtime = found.groups.time;
+      }
+      $(element).find('.newsitemtitle').find('h4').find('a').each(function(){
+        const rawArtist = {
+          "name": $(this).html(),
+          "url": $(this).attr('href'),
+          };
+        rawArtists.push(rawArtist);
+      });
+      const eventid = crypto.createHash('md5').update(title + evtdate).digest('hex');
+      const evtdateonly = evtdate.split(',')[1];
+      const fulldate = eventtime + ', ' + evtdateonly + ', ' + dayjs().year();
+      const startTime = dayjs.tz(fulldate, 'h:m a, MMMM D, YYYY', "America/New_York");
+      const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
+      const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+      const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+      const eventObj = {
+        "activity_startDate": startDate,
+        "activity_Time": activityTime,
+        "activity_endDate": startDate,
+        "activity_Timestamp": timestamp.unix(),
+        "activity_timeObj": startTime,
+        "activity_API": "jemsite",
+        "activity_API_ID": eventid,
+        "artists": [],
+        "orig_artists": rawArtists,
+        "urls": [],
+        "activity_Blurb": '',
+      };
+      
+      const cookedArtists = await artist_lookup(rawArtists, dbpool);
+      for (const artiste of cookedArtists) {
+        eventObj.artists.push(artiste);
+        if (typeof artiste.blurb_snippet !== 'undefined') {
+          eventObj.activity_Blurb = artiste.blurb_snippet;
+        }
+      }
+      
+      return(eventObj);
+    }).get();
+    const returnarr = await Promise.all(mappeditems).then(function(eventObjs){
+      const finalarr = [];
+      for (eventobj of eventObjs) {
+        finalarr.push(eventobj);
+      }
+      return finalarr;
+    }).catch(function(eventObjs){ 
+        console.error(eventObjs); 
+    });
+    return returnarr;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 async function tribe(baseURL, timeWindow, dbpool) {
   const tribeURL = baseURL + 'events/';
   const apiURL = baseURL + 'wp-json/tribe/events/v1/events/';
@@ -709,6 +788,19 @@ async function main() {
     if (typeof venue.tribe_baseurl !== 'undefined') {
       for (const url of venue.tribe_baseurl) {
         const events = await tribe(url, twoweeks, dbpool);
+        for (const evt of events) {
+          if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
+            main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
+          }
+          evt.venue_ID = venue.venue_id;
+          evt.venue_Name = venue.name;
+          main_events[venue.venue_id].events[`${evt.activity_Timestamp}`].push(evt);
+        }
+      }
+    }
+    if (typeof venue.jemsite_url !== 'undefined') {
+      for (const url of venue.jemsite_url) {
+        const events = await jemsite(url, twoweeks, dbpool);
         for (const evt of events) {
           if (typeof main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] === 'undefined') {
             main_events[venue.venue_id].events[`${evt.activity_Timestamp}`] = [];
@@ -897,4 +989,4 @@ async function events_add(bodyObj) {
   return true;
 }
 
-module.exports = { main, events_add, dblookup_shows };
+module.exports = { main, events_add, dblookup_shows, jemsite };
