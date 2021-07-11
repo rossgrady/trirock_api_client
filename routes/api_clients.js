@@ -568,10 +568,10 @@ async function gcal_events(gcal_id, timeWindow, dbpool) {
 
 async function jemsite(baseURL, timeWindow, dbpool) {
   try {
-    const rawArtists = [];
     const rawpage = await axios.get(baseURL);
     const $ = cheerio.load(rawpage.data);
     const mappeditems = $('.feventitem').map( async (index, element) => {
+      const rawArtists = [];
       const title = $(element).find('a.newsitemtitle').html();
       let evtlink = '';
       if ($(element).find('a.newsitemtitle').attr('href') !== '/') {
