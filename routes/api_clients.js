@@ -598,9 +598,9 @@ async function jemsite(baseURL, timeWindow, dbpool) {
         rawArtists.push(rawArtist);
       });
       const eventid = crypto.createHash('md5').update(title + evtdate).digest('hex');
-      const evtdateonly = evtdate.split(',')[1];
-      const fulldate = eventtime + ', ' + evtdateonly + ', ' + dayjs().year();
-      const startTime = dayjs.tz(fulldate, 'h:m a, MMMM D, YYYY', "America/New_York");
+      const evtdateonly = evtdate.split(',')[1].trim();
+      const fulldate = eventtime + ' ' + evtdateonly + ' ' + dayjs().year();
+      const startTime = dayjs.tz(fulldate, 'h:mm a MMMM D YYYY', "America/New_York");
       const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
       const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
       const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
@@ -617,7 +617,6 @@ async function jemsite(baseURL, timeWindow, dbpool) {
         "urls": [],
         "activity_Blurb": '',
       };
-      
       const cookedArtists = await artist_lookup(rawArtists, dbpool);
       for (const artiste of cookedArtists) {
         eventObj.artists.push(artiste);
