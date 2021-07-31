@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add, dblookup_shows } = require('./api_clients');
+const { main, events_add, events_add_json, dblookup_shows } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
