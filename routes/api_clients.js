@@ -282,7 +282,7 @@ async function etix(venueID, timeWindow, dbpool) {
         console.log("starttime source: " + activity.startTime);
         console.log("startTime: " + startTime);
         console.log("startDate: " + startDate);
-        console.log("activityTime: " = activityTime);
+        console.log("activityTime: " + activityTime);
         console.log("timestamp: " + timestamp);
         const rawArtists = [];
         const urls = find_URLs(activity.description);
@@ -682,7 +682,7 @@ async function tribe(baseURL, timeWindow, dbpool) {
         console.log("starttime source: " + eventdata.data.start_date);
         console.log("startTime: " + startTime);
         console.log("startDate: " + startDate);
-        console.log("activityTime: " = activityTime);
+        console.log("activityTime: " + activityTime);
         console.log("timestamp: " + timestamp);
         const eventObj = {
           "activity_startDate": startDate,
