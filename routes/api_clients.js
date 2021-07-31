@@ -273,12 +273,11 @@ async function etix(venueID, timeWindow, dbpool) {
     const response = await axios.get(etix_url, config);
     const returnarr = [];
     for (const activity of response.data.venues[0].activities) {
-      //const startTime = dayjs(activity.startTime);
-      const startTime = dayjs.tz(activity.startTime, "America/New_York");
+      const startTime = dayjs(activity.startTime);
       if (typeof activity.status !== 'undefined' && activity.status !== "notOnSale" && activity.activityType === "performance" && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
-        const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        const timestamp = startDate.set('h',12).set('m',0).set('s',0).set('ms',0);
         console.log("debugging diff between etix and tribe timestamps -- this is Etix:");
         console.log("starttime source: " + activity.startTime);
         console.log("startTime: " + startTime);
