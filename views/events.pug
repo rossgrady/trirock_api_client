@@ -62,6 +62,7 @@ block content
                   ul.list-unstyled
                     each artist, index in val.artists 
                       - let even = index % 2 === 0
+                      - let newartistidx = index + 1
                       li(class=even ? 'bg-light' : 'bg-transparent')
                         if artist.best 
                           .form-check
@@ -73,39 +74,39 @@ block content
                             label(class="form-check-label text-info" for=`events[${evtidx}][existing_artists][${index}][artistid]`)= artist.dbname
                         else
                           .row
-                            label(class="form-check-label col-sm-4" for=`events[${evtidx}][new_artists][${index}][addone]`)
+                            label(class="form-check-label col-sm-4" for=`events[${evtidx}][new_artists][${newartistidx}][addone]`)
                             .col-sm-8 
-                              input(type="checkbox" class="form-check-input" id=`events[${evtidx}][new_artists][${index}][addone]` name=`events[${evtidx}][new_artists][${index}][addone]` value='add' checked)
+                              input(type="checkbox" class="form-check-input" id=`events[${evtidx}][new_artists][${newartistidx}][addone]` name=`events[${evtidx}][new_artists][${index}][addone]` value='add' checked)
                           .row
-                            label(for=`events[${evtidx}][new_artists][${index}][artist_name]` class='col-sm-4 col-form-label') Artist Name
+                            label(for=`events[${evtidx}][new_artists][${newartistidx}][artist_name]` class='col-sm-4 col-form-label') Artist Name
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${index}][artist_name]` name=`events[${evtidx}][new_artists][${index}][artist_name]` value=artist.origname)
+                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${newartistidx}][artist_name]` name=`events[${evtidx}][new_artists][${index}][artist_name]` value=artist.origname)
                           .row
-                            label(for=`events[${evtidx}][new_artists][${index}][artist_twitter]` class='col-sm-4 col-form-label') Artist Twitter
+                            label(for=`events[${evtidx}][new_artists][${newartistidx}][artist_twitter]` class='col-sm-4 col-form-label') Artist Twitter
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${index}][artist_twitter]` name=`events[${evtidx}][new_artists][${index}][artist_twitter]`)
+                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${newartistidx}][artist_twitter]` name=`events[${evtidx}][new_artists][${index}][artist_twitter]`)
                           .row
-                            label(for=`events[${evtidx}][new_artists][${index}][artist_url]` class='col-sm-4 col-form-label') Artist URL
+                            label(for=`events[${evtidx}][new_artists][${newartistidx}][artist_url]` class='col-sm-4 col-form-label') Artist URL
                             .col-sm-8
-                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${index}][artist_url]` name=`events[${evtidx}][new_artists][${index}][artist_url]`)
+                              input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${newartistidx}][artist_url]` name=`events[${evtidx}][new_artists][${index}][artist_url]`)
                     - let even = val.artists.length % 2 === 0
                     li(class=even ? 'bg-light' : 'bg-transparent')
                       .row
-                        label(class="form-check-label col-sm-4" for=`events[${evtidx}][new_artists][${val.artists.length}][addone]`)
+                        label(class="form-check-label col-sm-4" for=`events[${evtidx}][new_artists][0][addone]`)
                         .col-sm-8
-                          input(type="checkbox" class="form-check-input" id=`events[${evtidx}][new_artists][${val.artists.length}][addone]` name=`events[${evtidx}][new_artists][${val.artists.length}][addone]` value='add')
+                          input(type="checkbox" class="form-check-input" id=`events[${evtidx}][new_artists][0][addone]` name=`events[${evtidx}][new_artists][${val.artists.length}][addone]` value='add')
                       .row
-                        label(for=`events[${evtidx}][new_artists][${val.artists.length}][artist_name]` class='col-sm-4 col-form-label') Artist Name
+                        label(for=`events[${evtidx}][new_artists][0][artist_name]` class='col-sm-4 col-form-label') Artist Name
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${val.artists.length}][artist_name]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_name]`)
+                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][0][artist_name]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_name]`)
                       .row
-                        label(for=`events[${evtidx}][new_artists][${val.artists.length}][artist_twitter]` class='col-sm-4 col-form-label') Artist Twitter
+                        label(for=`events[${evtidx}][new_artists][0][artist_twitter]` class='col-sm-4 col-form-label') Artist Twitter
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${val.artists.length}][artist_twitter]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_twitter]`)
+                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][0][artist_twitter]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_twitter]`)
                       .row
-                        label(for=`events[${evtidx}][new_artists][${val.artists.length}][artist_url]` class='col-sm-4 col-form-label') Artist URL
+                        label(for=`events[${evtidx}][new_artists][0][artist_url]` class='col-sm-4 col-form-label') Artist URL
                         .col-sm-8
-                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][${val.artists.length}][artist_url]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_url]`)
+                          input(class='form-control-sm' type='text' id=`events[${evtidx}][new_artists][0][artist_url]` name=`events[${evtidx}][new_artists][${val.artists.length}][artist_url]`)
                 td
                   textarea(class='form-control-sm' id=`events[${evtidx}][blurb]` name=`events[${evtidx}][blurb]` rows='3')= val.activity_Blurb
                 td
