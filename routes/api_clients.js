@@ -901,6 +901,12 @@ async function main() {
  // }
   return return_events;
 }
+
+async function events_add_json(bodyObj) {
+  console.log("this is what the json object looks like:");
+  console.log(util.inspect(bodyObj, true, 12, true));
+  return true;
+}
 //this is the form processor
 //currently we pass in req.body
 async function events_add(bodyObj) {
@@ -988,4 +994,4 @@ async function events_add(bodyObj) {
   return true;
 }
 
-module.exports = { main, events_add, dblookup_shows, jemsite };
+module.exports = { main, events_add, events_add_json, dblookup_shows };

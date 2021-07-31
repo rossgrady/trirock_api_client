@@ -130,6 +130,11 @@ router.post('/events-add', authenticated, async function(req, res, next) {
   res.render('shows', renderObj);
 });
 
+router.post('/events-json', authenticated, async function(req, res, next) {
+  const processed = await events_add_json(req.body);
+  res.status(200);
+});
+
 router.get('/events', authenticated, async function(req, res, next) {
   const events = await main();
   const renderObj = {

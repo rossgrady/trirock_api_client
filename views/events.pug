@@ -2,7 +2,7 @@ extends layout
 
 block content
   .container-fluid
-    form(method='post', action='/events-add', role='form')
+    form(method='post', action='/events-json', role='form' id='eventform')
       table.table.table-striped.table-sm.table-bordered.table-responsive
         thead
           tr
@@ -113,4 +113,4 @@ block content
                     ul.list-unstyled
                       for url in val.urls 
                         li.text-break= url
-      button.btn.btn-default(type='submit') Submit
+      button.btn.btn-default(type='submit' id='eventform-submit') Submit
