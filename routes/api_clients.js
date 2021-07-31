@@ -834,12 +834,6 @@ async function main() {
   }
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
-      if (venueid === '3') {
-        console.log("Working on Local 506 events");
-        console.log("here is one day's events for " + evtday);
-        console.log(util.inspect(main_events[venueid].events[`${evtday}`]));
-        console.log("the only way dedupe even fires is if this is 2: " + main_events[venueid].events[`${evtday}`].length);
-      }
       if (main_events[venueid].events[`${evtday}`].length === 2) {
         let api_same = 0;
         let identical = 1;
@@ -851,36 +845,18 @@ async function main() {
         if (main_events[venueid].events[`${evtday}`][0].activity_API_ID > main_events[venueid].events[`${evtday}`][1].activity_API_ID) {
           target_event = 0;
           source_event = 1;
-          if(venueid === '3') {
-            console.log("venue is Local 506 and I just swapped source and target");
-          }
         }
         for (const source_artist of main_events[venueid].events[`${evtday}`][source_event].artists) {
           let found = 0;
-          if(venueid === '3') {
-            console.log("comparing Local 506 artist " + source_artist.origname);
-          }
           for (const target_artist of main_events[venueid].events[`${evtday}`][target_event].artists) {
-            if(venueid === '3') {
-              console.log("to " + target_artist.origname);
-            }
             if (source_artist.origname === target_artist.origname) {
               found = 1;
             }
           }
           if (found === 0) {
-            if(venueid === '3') {
-              console.log("local 506 artist wasn't matched, so ");
-            }
             if (api_same === 0) {
-              if(venueid === '3') {
-                console.log("so pushing " + source_artist.origname + " to target event");
-              }
               main_events[venueid].events[`${evtday}`][target_event].artists.push(source_artist);
             } else {
-              if(venueid === '3') {
-                console.log("setting identical to zero because . . . I'm not sure why actually");
-              }
               identical = 0;
             }
           }
@@ -896,15 +872,9 @@ async function main() {
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else if (api_same === 0) {
-          if(venueid === '3') {
-            console.log("different APIs so removing " + source_event);
-          }
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else {
-          if(venueid === '3') {
-            console.log("welp, just passing along both");
-          }
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
           return_events.push(main_events[venueid].events[`${evtday}`][source_event]);
         }
@@ -916,6 +886,8 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool, 'object');
+  console.log("what is happening to return_events???");
+  console.log(util.inspect(return_events, true, 9, true));
   for (const idx in return_events) {
     console.log(idx);
     const lookup = return_events[idx].activity_API_ID;
