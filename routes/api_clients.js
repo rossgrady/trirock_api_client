@@ -842,18 +842,12 @@ async function main() {
         let identical = 1;
         let target_event = 1;
         let source_event = 0;
-        console.log("currently target_event = " + target_event);
-        console.log("currently source_event = " + source_event);
-        console.log("source event is: " + util.inspect(main_events[venueid].events[`${evtday}`][source_event], true, 7, true));
-        console.log("target event is: " + util.inspect(main_events[venueid].events[`${evtday}`][target_event], true, 7, true));
         if (main_events[venueid].events[`${evtday}`][0].activity_API === main_events[venueid].events[`${evtday}`][1].activity_API) {
           api_same = 1;
         }
         if (main_events[venueid].events[`${evtday}`][0].activity_API_ID > main_events[venueid].events[`${evtday}`][1].activity_API_ID) {
           target_event = 0;
           source_event = 1;
-          console.log("currently target_event = " + target_event);
-          console.log("currently source_event = " + source_event);
         }
         for (const source_artist of main_events[venueid].events[`${evtday}`][source_event].artists) {
           let found = 0;
@@ -885,9 +879,12 @@ async function main() {
           console.log("currently target_event = " + target_event);
           console.log("currently source_event = " + source_event);
           console.log("about to remove " + util.inspect(main_events[venueid].events[`${evtday}`][source_event], true, 7, true));
-          const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           console.log("but! should be keeping " + util.inspect(main_events[venueid].events[`${evtday}`][target_event], true, 7, true));
-          return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
+          const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
+          console.log("I just removed " + util.inspect(removed, true, 8, true));
+          console.log("so now the array is " + util.inspect(main_events[venueid].events[`${evtday}`], true, 7, true));
+          console.log("so instead I will push " + util.inspect(main_events[venueid].events[`${evtday}`][0], true, 7, true));
+          return_events.push(main_events[venueid].events[`${evtday}`][0]);
         } else {
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
           return_events.push(main_events[venueid].events[`${evtday}`][source_event]);
