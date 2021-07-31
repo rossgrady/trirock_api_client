@@ -900,10 +900,7 @@ async function main() {
   }
   for (const prop in shows) {
     console.log('this is what is left in db but not found via the apis:');
-    if (shows.hasOwnProperty(prop)) {
-      // do something with these!!!
-      console.log(shows[`${prop}`].activity_startDate);
-    }
+    console.log(util.inspect(shows, true, 7, true));
   }
   return return_events;
 }
