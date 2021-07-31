@@ -843,7 +843,9 @@ async function main() {
         if (main_events[venueid].events[`${evtday}`][0].activity_API === main_events[venueid].events[`${evtday}`][1].activity_API) {
           api_same = 1;
           console.log("same API");
-        };
+          console.log("venueID is : " + venueid);
+          console.log("API ID is: " + main_events[venueid].events[`${evtday}`][0].activity_API);
+        }
         if (main_events[venueid].events[`${evtday}`][0].activity_API_ID > main_events[venueid].events[`${evtday}`][1].activity_API_ID) {
           target_event = 0;
           source_event = 1;
@@ -880,6 +882,7 @@ async function main() {
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else {
+          console.log("fell through to this else, so pushing both events");
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
           return_events.push(main_events[venueid].events[`${evtday}`][source_event]);
         }
@@ -898,10 +901,10 @@ async function main() {
       delete shows[`${lookup}`];
     }
   }
-  for (const prop in shows) {
-    console.log('this is what is left in db but not found via the apis:');
-    console.log(util.inspect(shows, true, 7, true));
-  }
+ // for (const prop in shows) {
+    //console.log('this is what is left in db but not found via the apis:');
+    //console.log(util.inspect(shows, true, 7, true));
+ // }
   return return_events;
 }
 
