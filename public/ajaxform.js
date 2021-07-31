@@ -9,6 +9,8 @@ $(document).ready(function () {
       data: jsonString,
       contentType: "application/json",
     }).done(function (data) {
+      console.log("got response: " + data);
+      console.log("redirecting!");
       window.location = '/shows';
     });
   });
