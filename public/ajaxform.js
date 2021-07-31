@@ -1,7 +1,7 @@
 $(document).ready(function () {
-  $('eventform').submit(function (event) {
+  $('#eventform').submit(function (event) {
     event.preventDefault();
-    const obj = $('eventform').serializeJSON();
+    const obj = $('#eventform').serializeJSON();
     const jsonString = JSON.stringify(obj);
     $.ajax({
       type: "POST",
