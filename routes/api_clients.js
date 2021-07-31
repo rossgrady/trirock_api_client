@@ -907,6 +907,7 @@ async function events_add_json(bodyObj) {
   console.log("this is what the body-parsed object looks like:");
   console.log(util.inspect(bodyObj, true, 12, true));
   for (const activity of bodyObj.events) {
+
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
       const artists = [];
       const evtObj = {
@@ -923,13 +924,13 @@ async function events_add_json(bodyObj) {
       }
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
-          if (typeof exartist !== 'null' && typeof exartist !== 'undefined') {
+          if (exartist && typeof exartist !== 'null' && typeof exartist !== 'undefined') {
             artists.push(exartist);
           }
         }
       }
       for (const newartist of activity.new_artists) {
-        if (typeof newartist !== 'null' && typeof newartist !== 'undefined') {
+        if (newartist && typeof newartist !== 'null' && typeof newartist !== 'undefined') {
           if (typeof newartist.addone !== 'undefined' && newartist.addone === 'add') {
             const insertobj = {
               'table': 'actor',
