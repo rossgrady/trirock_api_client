@@ -886,15 +886,13 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool, 'object');
-  console.log("what is happening to return_events???");
-  console.log(util.inspect(return_events, true, 9, true));
   for (const idx in return_events) {
-    console.log(idx);
-    const lookup = return_events[idx].activity_API_ID;
-    console.log(lookup);
-    if (typeof shows[`${lookup}`] !== 'undefined') {
-      return_events[idx].dbevent = shows[`${lookup}`];
-      delete shows[`${lookup}`];
+    if (typeof return_events[idx] !== 'undefined') {
+      const lookup = return_events[idx].activity_API_ID;
+      if (typeof shows[`${lookup}`] !== 'undefined') {
+        return_events[idx].dbevent = shows[`${lookup}`];
+        delete shows[`${lookup}`];
+      }
     }
   }
  // for (const prop in shows) {
