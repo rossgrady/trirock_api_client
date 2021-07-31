@@ -902,17 +902,10 @@ async function main() {
   return return_events;
 }
 
-async function events_add_json(bodyObj) {
-  console.log("this is what the json object looks like:");
-  console.log(util.inspect(bodyObj, true, 12, true));
-  return true;
-}
-//this is the form processor
 //currently we pass in req.body
-async function events_add(bodyObj) {
+async function events_add_json(bodyObj) {
   console.log("this is what the body-parsed object looks like:");
   console.log(util.inspect(bodyObj, true, 12, true));
-  /*
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
       const artists = [];
@@ -930,40 +923,31 @@ async function events_add(bodyObj) {
       }
       if(typeof activity.existing_artists !== 'undefined'){
         for (const exartist of activity.existing_artists) {
-          artists.push(exartist);
+          if (typeof exartist !== 'null' && typeof exartist !== 'undefined') {
+            artists.push(exartist);
+          }
         }
       }
       for (const newartist of activity.new_artists) {
-        if (typeof newartist.addone !== 'undefined' && newartist.addone === 'add') {
-          const insertobj = {
-            'table': 'actor',
-            'fields': {
-              'actor_Name': newartist.artist_name,
-              'actor_Local': 'no',
-              'actor_Defunct': 'no',
+        if (typeof newartist !== 'null' && typeof newartist !== 'undefined') {
+          if (typeof newartist.addone !== 'undefined' && newartist.addone === 'add') {
+            const insertobj = {
+              'table': 'actor',
+              'fields': {
+                'actor_Name': newartist.artist_name,
+                'actor_Local': 'no',
+                'actor_Defunct': 'no',
+              }
+            };
+            try {
+              const result = await dbinsert(insertobj);
+              const actor_id = result[0].insertId;
+              artists.push({artistid: actor_id});
+            } catch (error) {
+              console.error(error);
+              return false;
             }
-          };
-          try {
-            const result = await dbinsert(insertobj);
-            const actor_id = result[0].insertId;
-            artists.push({artistid: actor_id});
-          } catch (error) {
-            console.error(error);
-            return false;
           }
-          // call artists insert & add the new artist
-          // in actor:
-          // actor_Name
-          // actor_Twitter -- not gonna implement this yet! Need a whole Twitter client!
-          // actor_Local --> no (default is yes)
-          // actor_Defunct --> no (default is yes)
-          // actor_BestURL --> foreign key to:
-          // actorlinks
-          // actorlinks_ActorID --> the actor_ID we get after inserting a new actor
-          // actorlinks_ID --> auto increment, we need it to insert into actor_BestURL
-          // actorlinks_URL --> the URL
-          // actorlinks_Name --> if it's Bandcamp, I have been doing "actorname at Bandcamp"
-          // get the artist ID back
         }
       }
       try {
@@ -990,8 +974,7 @@ async function events_add(bodyObj) {
       }
     }
   }
-  */
   return true;
 }
 
-module.exports = { main, events_add, events_add_json, dblookup_shows };
+module.exports = { main, events_add_json, dblookup_shows };
