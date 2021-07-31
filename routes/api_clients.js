@@ -85,12 +85,6 @@ async function dblookup_shows(dbpool, retype) {
 }
 
 async function dbinsert(insertObj) {
-  // insertOjb = {
-  //   'table': table-to-insert-into,
-  //   'fields': {
-  //      'column': 'value',
-  //    }
-  //  }  
   const dbpool = await db.getPool();
   const vals = [];
   let cols = '(';
@@ -269,7 +263,6 @@ async function artist_lookup(artists, dbpool) {
   return returnarr;
 }
 
-// it's just description
 
 async function etix(venueID, timeWindow, dbpool) {
   const etix_url = "https://api.etix.com/v1/public/activities?venueIds="+venueID;
@@ -332,8 +325,6 @@ async function etix(venueID, timeWindow, dbpool) {
   }
 }
 
-// it's description.text
-
 async function eventbrite(venueID, timeWindow, dbpool) {
   const ebrite_url_prefix = "https://www.eventbriteapi.com/v3/venues/";
   const ebrite_url_suffix = "/events/?status=live";
@@ -387,7 +378,6 @@ async function eventbrite(venueID, timeWindow, dbpool) {
   }
 }
 
-// looks like it's just info
 async function ticketmaster(venueID, timeWindow, dbpool) {
   const endDate = dayjs().add(timeWindow, 'ms').format('YYYY-MM-DDTHH:mm:ss[Z]');
   const ticketmaster_url_prefix = "http://app.ticketmaster.com/discovery/v2/events.json?apikey="+conf.ticketmaster_api_key+"&venueId=";
@@ -461,7 +451,7 @@ async function ical_events(baseURL, timeWindow, dbpool) {
     const webEvents = await ical.async.fromURL(venueURL);
     for (const idx in webEvents) {
       const startTime = dayjs(webEvents[idx].start);
-      if (webEvents[idx].type === 'VEVENT' && startTime.isAfter(dayjs())) {
+      if (webEvents[idx].type === 'VEVENT' && startTime.isAfter(dayjs()) && startTime.isBefore(dayjs().add(timeWindow, 'ms'))) {
         //  && webEvents[idx].categories[0] === 'Show' -- not universal, sigh
         if (typeof webEvents[idx].categories !== 'undefined' && webEvents[idx].categories[0] !== 'undefined' && webEvents[idx].categories[0] !== 'Show') {
           continue;
@@ -624,13 +614,14 @@ async function jemsite(baseURL, timeWindow, dbpool) {
           eventObj.activity_Blurb = artiste.blurb_snippet;
         }
       }
-      
       return(eventObj);
     }).get();
     const returnarr = await Promise.all(mappeditems).then(function(eventObjs){
       const finalarr = [];
       for (eventobj of eventObjs) {
-        finalarr.push(eventobj);
+        if (eventobj.activity_timeObj.isBefore(dayjs().add(timeWindow, 'ms'))){
+          finalarr.push(eventobj);
+        }
       }
       return finalarr;
     }).catch(function(eventObjs){ 
@@ -697,6 +688,10 @@ async function tribe(baseURL, timeWindow, dbpool) {
         rawArtists.push(rawArtist);
         eventObj.orig_artists.push(rawArtist);
         if (typeof eventdata.data.categories !== 'undefined' && typeof eventdata.data.categories[0] !== 'undefined' && eventdata.data.categories[0].name !== 'Show' ) {
+          return {
+            'skip' : true,
+          };
+        } else if (startTime.isAfter(dayjs().add(timeWindow, 'ms'))) {
           return {
             'skip' : true,
           };
