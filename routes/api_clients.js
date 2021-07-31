@@ -902,7 +902,7 @@ async function main() {
     console.log('this is what is left in db but not found via the apis:');
     if (shows.hasOwnProperty(prop)) {
       // do something with these!!!
-      console.log(prop);
+      console.log(shows.prop.activity_startDate);
     }
   }
   return return_events;
