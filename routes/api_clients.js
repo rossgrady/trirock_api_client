@@ -19,7 +19,7 @@ const conf = require('../config');
 const { venues } = require('../venues');
 const db = require('../db');
 
-const twoweeks = dayjs.duration(3, 'w').asMilliseconds();
+const twoweeks = dayjs.duration(2, 'w').asMilliseconds();
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
@@ -901,8 +901,12 @@ async function main() {
  // }
   return return_events;
 }
-
+//this is the form processor
+//currently we pass in req.body
 async function events_add(bodyObj) {
+  console.log("this is what the body-parsed object looks like:");
+  console.log(util.inspect(bodyObj, true, 12, true));
+  /*
   for (const activity of bodyObj.events) {
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
       const artists = [];
@@ -980,6 +984,7 @@ async function events_add(bodyObj) {
       }
     }
   }
+  */
   return true;
 }
 
