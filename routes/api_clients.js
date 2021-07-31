@@ -19,7 +19,7 @@ const conf = require('../config');
 const { venues } = require('../venues');
 const db = require('../db');
 
-const twoweeks = dayjs.duration(2, 'w').asMilliseconds();
+const twoweeks = dayjs.duration(3, 'w').asMilliseconds();
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
