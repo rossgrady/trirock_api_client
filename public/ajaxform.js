@@ -9,7 +9,7 @@ $(document).ready(function () {
       data: jsonString,
       contentType: "application/json",
     }).done(function (data) {
-      location.href = '/shows';
+      window.location = '/shows';
     });
   });
 });
