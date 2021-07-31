@@ -835,16 +835,19 @@ async function main() {
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[`${evtday}`].length === 2) {
+        console.log("we have 2 shows same venue same day, maybe a dupe");
         let api_same = 0;
         let identical = 1;
         let target_event = 1;
         let source_event = 0;
         if (main_events[venueid].events[`${evtday}`][0].activity_API === main_events[venueid].events[`${evtday}`][1].activity_API) {
           api_same = 1;
+          console.log("same API");
         };
         if (main_events[venueid].events[`${evtday}`][0].activity_API_ID > main_events[venueid].events[`${evtday}`][1].activity_API_ID) {
           target_event = 0;
           source_event = 1;
+          console.log('flipping order of events -- I wonder if the comparison of api ID is failing');
         }
         for (const source_artist of main_events[venueid].events[`${evtday}`][source_event].artists) {
           let found = 0;
@@ -872,6 +875,8 @@ async function main() {
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else if (api_same === 0) {
+          console.log("api isn't the same, wait, are we in here if identical is 1 or 0?");
+          console.log("identical is: " + identical);
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else {
@@ -897,6 +902,7 @@ async function main() {
     console.log('this is what is left in db but not found via the apis:');
     if (shows.hasOwnProperty(prop)) {
       // do something with these!!!
+      console.log(prop);
     }
   }
   return return_events;
