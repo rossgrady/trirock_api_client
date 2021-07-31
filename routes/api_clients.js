@@ -833,6 +833,9 @@ async function main() {
     }
   }
   for (const venueid in main_events) {
+    if (venueid === '3') {
+      console.log("about to de-dupe 506");
+    }
     for (const evtday in main_events[venueid].events) {
       if (main_events[venueid].events[`${evtday}`].length === 2) {
         let api_same = 0;
@@ -872,7 +875,10 @@ async function main() {
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else if (api_same === 0) {
+          console.log("this is probably the culprit: ");
+          console.log("about to remove " + util.inspect(main_events[venueid].events[`${evtday}`][source_event], true, 7, true));
           const removed = main_events[venueid].events[`${evtday}`].splice(source_event, 1);
+          console.log("but! should be keeping " + util.inspect(main_events[venueid].events[`${evtday}`][target_event], true, 7, true));
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
         } else {
           return_events.push(main_events[venueid].events[`${evtday}`][target_event]);
