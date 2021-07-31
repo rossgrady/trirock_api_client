@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { main, events_add, events_add_json, dblookup_shows } = require('./api_clients');
+const { main, events_add_json, dblookup_shows } = require('./api_clients');
 const util = require('util');
 const passport = require('passport');
 const tokenStorage = require('../utils/remember-me-token');
@@ -119,7 +119,7 @@ router.get('/logout', authenticated, function (req, res, next) {
   });
 });
 
-
+/*
 router.post('/events-add', authenticated, async function(req, res, next) {
   const processed = await events_add(req.body);
   const dbpool = await db.getPool();
@@ -129,6 +129,7 @@ router.post('/events-add', authenticated, async function(req, res, next) {
   }
   res.render('shows', renderObj);
 });
+*/
 
 router.post('/events-json', authenticated, async function(req, res, next) {
   const processed = await events_add_json(req.body);

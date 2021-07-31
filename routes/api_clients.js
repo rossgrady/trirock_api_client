@@ -904,10 +904,9 @@ async function main() {
 
 //currently we pass in req.body
 async function events_add_json(bodyObj) {
-  console.log("this is what the body-parsed object looks like:");
-  console.log(util.inspect(bodyObj, true, 12, true));
   for (const activity of bodyObj.events) {
-
+    console.log("looping thru activities");
+    console.log(util.inspect(activity, true, 5, true));
     if (typeof activity.keep !== 'undefined' && activity.keep === 'yes') {
       const artists = [];
       const evtObj = {
@@ -975,6 +974,7 @@ async function events_add_json(bodyObj) {
       }
     }
   }
+  console.log("done, about to return true");
   return true;
 }
 
