@@ -835,7 +835,10 @@ async function main() {
   for (const venueid in main_events) {
     for (const evtday in main_events[venueid].events) {
       if (venueid === '3') {
+        console.log("Working on Local 506 events");
+        console.log("here is one day's events for " + evtday);
         console.log(util.inspect(main_events[venueid].events[`${evtday}`]));
+        console.log("the only way dedupe even fires is if this is 2: " + main_events[venueid].events[`${evtday}`].length);
       }
       if (main_events[venueid].events[`${evtday}`].length === 2) {
         let api_same = 0;
