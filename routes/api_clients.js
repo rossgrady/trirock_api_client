@@ -278,12 +278,6 @@ async function etix(venueID, timeWindow, dbpool) {
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.tz( "America/New_York").set('h',12).set('m',0).set('s',0).set('ms',0);
-        console.log("debugging diff between etix and tribe timestamps -- this is Etix:");
-        console.log("starttime source: " + activity.startTime);
-        console.log("startTime: " + startTime);
-        console.log("startDate: " + startDate);
-        console.log("activityTime: " + activityTime);
-        console.log("timestamp: " + timestamp);
         const rawArtists = [];
         const urls = find_URLs(activity.description);
         const eventObj = {
@@ -678,12 +672,6 @@ async function tribe(baseURL, timeWindow, dbpool) {
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
-        console.log("debugging diff between etix and tribe timestamps -- this is Tribe:");
-        console.log("starttime source: " + eventdata.data.start_date);
-        console.log("startTime: " + startTime);
-        console.log("startDate: " + startDate);
-        console.log("activityTime: " + activityTime);
-        console.log("timestamp: " + timestamp);
         const eventObj = {
           "activity_startDate": startDate,
           "activity_Time": activityTime,
@@ -870,11 +858,11 @@ async function main() {
         for (const source_artist of main_events[venueid].events[`${evtday}`][source_event].artists) {
           let found = 0;
           if(venueid === '3') {
-            console.log("comparing Local 506 artist " + source_artist);
+            console.log("comparing Local 506 artist " + source_artist.origname);
           }
           for (const target_artist of main_events[venueid].events[`${evtday}`][target_event].artists) {
             if(venueid === '3') {
-              console.log("to " + target_artist);
+              console.log("to " + target_artist.origname);
             }
             if (source_artist.origname === target_artist.origname) {
               found = 1;
@@ -886,7 +874,7 @@ async function main() {
             }
             if (api_same === 0) {
               if(venueid === '3') {
-                console.log("so pushing " + source_artist + " to target event");
+                console.log("so pushing " + source_artist.origname + " to target event");
               }
               main_events[venueid].events[`${evtday}`][target_event].artists.push(source_artist);
             } else {
