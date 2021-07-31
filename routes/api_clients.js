@@ -916,8 +916,10 @@ async function main() {
     }
   }
   const shows = await dblookup_shows(dbpool, 'object');
-  for (idx in return_events) {
+  for (const idx in return_events) {
+    console.log(idx);
     const lookup = return_events[idx].activity_API_ID;
+    console.log(lookup);
     if (typeof shows[`${lookup}`] !== 'undefined') {
       return_events[idx].dbevent = shows[`${lookup}`];
       delete shows[`${lookup}`];
