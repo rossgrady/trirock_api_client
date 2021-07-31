@@ -132,7 +132,7 @@ router.post('/events-add', authenticated, async function(req, res, next) {
 
 router.post('/events-json', authenticated, async function(req, res, next) {
   const processed = await events_add_json(req.body);
-  if (processsed) {
+  if (processed) {
     res.status(200);
   }
 });
