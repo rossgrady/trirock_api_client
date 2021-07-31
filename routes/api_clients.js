@@ -278,6 +278,12 @@ async function etix(venueID, timeWindow, dbpool) {
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
+        console.log("debugging diff between etix and tribe timestamps -- this is Etix:");
+        console.log("starttime source: " + activity.startTime);
+        console.log("startTime: " + startTime);
+        console.log("startDate: " + startDate);
+        console.log("activityTime: " = activityTime);
+        console.log("timestamp: " + timestamp);
         const rawArtists = [];
         const urls = find_URLs(activity.description);
         const eventObj = {
@@ -672,6 +678,12 @@ async function tribe(baseURL, timeWindow, dbpool) {
         const startDate = startTime.tz("America/New_York").format('YYYY-MM-DD');
         const activityTime = startTime.tz("America/New_York").format('HH:mm:ss');
         const timestamp = startTime.set('h',12).set('m',0).set('s',0).set('ms',0);
+        console.log("debugging diff between etix and tribe timestamps -- this is Tribe:");
+        console.log("starttime source: " + eventdata.data.start_date);
+        console.log("startTime: " + startTime);
+        console.log("startDate: " + startDate);
+        console.log("activityTime: " = activityTime);
+        console.log("timestamp: " + timestamp);
         const eventObj = {
           "activity_startDate": startDate,
           "activity_Time": activityTime,
